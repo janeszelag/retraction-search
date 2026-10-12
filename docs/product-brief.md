@@ -35,21 +35,23 @@ We believe researchers and journalists will use a faceted search of the full dat
 **Product**
 
 1. Filter the full database by reason, subject, notice type, country, publisher, year and whether the notice is paywalled, with live counts and no result cap. Notice type (retraction, expression of concern, correction, reinstatement) is its own filter, separate from reason. Only retractions are selected by default, as Retraction Watch's guide advises, and the other types and their counts are one click away (decided 2026-10-12).
-2. Make results citable: the URL captures the filters, and every page shows the data date and links to the sources.
+2. Make results citable: the URL captures the whole query, including field searches, and every page shows the data date and links to the sources.
 3. Stay fresh: no more than one working day behind the source CSV.
+4. Search within any field without typing operators: add terms, choose whether results match any or all of them, exclude terms, and see the whole query summarized in plain language. This replaces the official search's wildcards and AND / OR / AND NOT. Typos are tolerated; if near-identical names get mixed up (such as Toronto and Torino), typo tolerance is reduced for that field.
 
 **Learning** (kept separate so they don't justify product decisions)
 
 1. Build and run a scheduled data pipeline: DuckDB locally, then GitHub Actions.
 2. Get fluent with DuckDB and, optionally, Python data tools.
-3. Later: one embeddings feature, and possibly a self-hosted search server.
+3. Run a self-hosted search server, and later build one embeddings feature.
+4. Build natural-language filters, where an LLM turns a typed sentence into filters the user can check and edit.
 
 ## Non-goals
 
 - Detecting misconduct or analyzing images. The site reports what Retraction Watch recorded and makes no new allegations.
 - Author disambiguation, author profiles or author rankings.
 - Accounts, comments or user-submitted content. Missing retractions get reported to Retraction Watch through its own submission form, which the site links to.
-- Anything with an uncapped bill, including LLM calls when people search. Natural-language search is a Phase 5 candidate only if its trigger (below) is met.
+- Anything with an uncapped bill. LLM calls for natural-language filters need a provider with a hard spending cap, plus the site's own rate limit and cache (see Roadmap).
 - Replacing Retraction Watch or Crossref, or appearing affiliated with either.
 
 ## Success metrics
@@ -69,7 +71,7 @@ Targets are set after four weeks of launch data, not before.
 - Cost: the worst-case monthly bill is known in advance. Fixed costs, such as a small search server, are fine. Anything billed by usage needs a hard cap enforced by the provider, so a bug or an attack can't raise the bill past a set ceiling; the service going down at the cap is acceptable. Budget alerts that only notify don't count as caps.
 - Freshness: at most one working day behind the source, with the data date shown.
 - Correctness: row counts and facet counts match a direct DuckDB query on the same snapshot.
-- Performance: the initial download and the time to first search stay under budgets, which are set once Phase 1 measures them.
+- Performance: page loads and search responses stay under budgets set in spec 002.
 - Attribution: every page credits Retraction Watch and links the source. Where the site shows a citation, it gives both ISSNs, each labeled: 2692-4579 for the Retraction Watch Database and 2692-465X for the Retraction Watch blog (as registered on the ISSN Portal; checked 2026-10-12).
 
 **Learning milestone:** the pipeline runs daily for 30 days, and failures send an alert.
@@ -118,18 +120,19 @@ The gap this project fills: faceted browsing of the full Retraction Watch data, 
 | Phase | Output | Done when |
 |---|---|---|
 | 0. Framing | This brief, `CLAUDE.md`, decision record 001 | Reviewed and approved |
-| 1. Data cleaning (spec 001) | DuckDB cleaning of the CSV, and the measured size of the search data | Decision record 002 chooses client-side or server search, and where it's hosted |
-| 2. Local search MVP (spec 002) | Next.js app with facets, counts and record pages | Spec 002's acceptance criteria pass locally |
+| 1. Data cleaning (spec 001) | DuckDB cleaning of the CSV, and the measured size of the search documents | Decision record 002 chooses the search engine and host, with its worst-case monthly cost |
+| 2. Local search MVP (spec 002) | Next.js app and a local search server, with facets, counts and record pages | Spec 002's acceptance criteria pass locally |
 | 3. Pipeline (spec 003) | Download → clean → diff → publish, locally and then on GitHub Actions | Runs unattended and fails loudly on schema changes |
-| 4. Launch | The site, plus a search server if decision record 002 calls for one, within the cost guardrail; analytics in place | Live, updating daily, recording metrics |
-| 5+. Chosen from launch data | Candidates below | |
+| 4. Launch | The site and its search server, within the cost guardrail, with analytics | Live, updating daily, recording metrics |
+| 5. Natural-language filters | An LLM turns a typed sentence into filters the user can edit | A decision record picks an LLM provider whose spending can be hard-capped, and the feature's spec passes |
+| 6+. Chosen from launch data | Candidates below | |
 
-Phase 5+ candidates, each with the evidence that would justify it:
+If decision record 002 confirms Typesense, Phase 5 uses its built-in natural-language search, which turns a sentence into a query and filters that the site can show as the same editable tags as Goal 4. Typesense's docs (checked 2026-10-12) don't mention caching LLM responses or limiting LLM calls, so the site needs its own rate limit and cache.
+
+Phase 6+ candidates, each with the evidence that would justify it:
 
 - **Check a paper.** Cheap and client-side, but it duplicates existing tools. Build it if researchers ask for it during validation.
 - **Abstracts and topic search.** Fits the learning goals. Build it if the zero-result rate for text searches is high, or if validation users ask for it.
-- **Natural-language filters (LLM).** Costs money per query. Build it only if people type full sentences into the search box, and cap the spend.
-- **Search server, if decision record 002 chose client-side search.** A learning project. The cost guardrail allows it as long as its worst-case bill is known.
 
 ## Open questions
 
