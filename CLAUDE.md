@@ -1,0 +1,49 @@
+# Retraction search
+
+A faceted public search over the Retraction Watch database, rebuilt daily from the open CSV. Why it exists, who it's for and how success is measured: [docs/product-brief.md](docs/product-brief.md).
+
+## Hard constraints
+
+- **No uncapped bills.** Fixed monthly costs are fine. Anything billed by usage needs a hard spending cap enforced by the provider; budget alerts that only notify don't count. Don't add a paid API, LLM call or hosted service without a decision record that states its worst-case monthly cost.
+- **Attribution.** The data is CC0: the Retraction Watch database, distributed by Crossref at https://gitlab.com/crossref/retraction-watch-data. Every page credits Retraction Watch and links the source. Never imply affiliation with either.
+- **Author names are not identities.** Names aren't disambiguated. Label author matches as name matches, and don't build per-author counts, rankings or profiles.
+- **Report, don't allege.** Show what Retraction Watch recorded, and label reasons as Retraction Watch's classification. Keep the notice types (retraction, expression of concern, correction, reinstatement) visibly distinct.
+- **Verify external facts.** Prices, API behavior, data counts and other tools' features change. Check the live source before putting a fact in docs or code, note the date checked, and mark anything unchecked as unverified.
+
+## Stack
+
+See [docs/decisions/001-languages.md](docs/decisions/001-languages.md).
+
+- Frontend: Next.js with TypeScript.
+- Data transforms: SQL run by DuckDB, kept in `.sql` files.
+- Pipeline glue: TypeScript on Node 22, using `@duckdb/node-api`.
+- Python: only for exploration notebooks, or for a pipeline step that a decision record approves.
+
+## How we work: lightweight spec-driven development
+
+| File | Purpose |
+|---|---|
+| `docs/product-brief.md` | Why, users, success metrics, non-goals. Changes rarely. |
+| `docs/decisions/NNN-title.md` | One decision each: context, decision, alternatives, consequences. |
+| `docs/specs/NNN-feature/spec.md` | What and why: problem, users, hypothesis, acceptance criteria with IDs (AC1, AC2…), success metrics, non-goals, open questions. No implementation detail. |
+| `docs/specs/NNN-feature/plan.md` | How: approach, data model, trade-offs, test approach. |
+| `docs/specs/NNN-feature/tasks.md` | Ordered checklist. Each task is small, testable and tagged with the AC it serves. |
+
+Rules:
+
+1. No code without an approved `spec.md` and `plan.md`.
+2. Work one task at a time, and tick it off in `tasks.md` when it's done.
+3. Every acceptance criterion has an automated test, or a written manual check where a test isn't practical.
+4. If the code needs to differ from the spec, stop and propose a spec change before continuing.
+5. Raw downloads and pipeline outputs live in `data/` and are never committed.
+
+## Layout (planned)
+
+- `pipeline/`: DuckDB SQL and TypeScript glue
+- `web/`: Next.js app
+- `data/`: local downloads and outputs (not committed)
+- `docs/`: brief, decisions, specs
+
+## Commands
+
+None yet. Spec 001 adds them, along with the test runner.
