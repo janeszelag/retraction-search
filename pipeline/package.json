@@ -7,6 +7,7 @@
     "check": "node src/check.js",
     "clean": "node src/clean.js",
     "download": "node src/download.js",
+    "load": "node src/load.js",
     "test": "vitest run"
   },
   "dependencies": {

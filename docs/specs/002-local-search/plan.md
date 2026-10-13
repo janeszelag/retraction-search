@@ -84,12 +84,12 @@ New and changed files:
 
 **Loading.** `npm run load`:
 
-1. Creates a collection named after the snapshot, such as `retractions_2026-10-09_bc5648dd`, with the schema below.
+1. Creates a collection named after the snapshot and the load time, such as `retractions_2026-10-09_bc5648dd_20261013T222801Z`, with the schema below. Loading the same snapshot again gives a fresh collection.
 2. Imports the search documents in batches. Typesense's import returns HTTP 200 even when documents fail, so the script reads every result line and stops on the first failure.
 3. Checks that the document count equals the snapshot's row count.
 4. Points the alias `retractions` at the new collection, then deletes collections older than the previous one.
 5. Writes the snapshot's data date and commit to a one-document `meta` collection, which pages read for the data date.
-6. Creates or reuses a search-only key limited to `documents:search` on those collections, and prints where it's stored.
+6. Creates or reuses a search-only key limited to `documents:search` on the alias, the snapshot collections and `meta`. A new key is saved to `.env.local` as `TYPESENSE_SEARCH_KEY`, and older keys of the same kind are deleted.
 
 Spec 003 reuses this script for the daily run.
 
