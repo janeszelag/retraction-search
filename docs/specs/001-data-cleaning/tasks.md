@@ -14,7 +14,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **4. Load and column check.** Write `sql/00_load.sql`, `src/columns.js` and the start of `src/clean.js`: load every column as text, compare the columns with the expected 20, and allow an extra column only if it's empty. (AC3)
   - Done when: tests show each broken fixture fails with the column named, and `sample.csv` loads.
 
-- [ ] **5. Cleaning: dates, identifiers and originals.** The first part of `sql/10_records.sql`: record ID, dates and years, DOIs, PubMed IDs and the `original` group. (AC2, AC4, AC6, AC7, AC8)
+- [x] **5. Cleaning: dates, identifiers and originals.** The first part of `sql/10_records.sql`: record ID, dates and years, DOIs, PubMed IDs and the `original` group. (AC2, AC4, AC6, AC7, AC8)
   - Done when: tests pass for one row per source row, unique IDs, parsed dates and years, decoded lowercase DOIs, placeholders becoming empty, and originals matching the source text.
 
 - [ ] **6. Cleaning: lists, subjects, notice type and flags.** The rest of `10_records.sql`: the seven list fields, subject codes and names, notice type, paywalled, `is_revision`, `has_editorial_staff_author` and notes. (AC9, AC10, AC11, AC12)

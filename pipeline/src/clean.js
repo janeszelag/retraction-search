@@ -37,6 +37,37 @@ export async function loadSource(connection, inputPath) {
   }
 }
 
+export class IntegrityError extends Error {}
+
+// Builds the `records` table from `source`, then checks that nothing was
+// lost or duplicated on the way (AC2).
+export async function cleanRecords(connection) {
+  await runSqlFile(connection, '10_records.sql');
+
+  const [counts] = await queryRows(
+    connection,
+    `SELECT
+       (SELECT CAST(count(*) AS INTEGER) FROM source) AS source_rows,
+       CAST(count(*) AS INTEGER) AS records,
+       CAST(count(DISTINCT record_id) AS INTEGER) AS distinct_ids,
+       CAST(count(*) FILTER (WHERE record_id IS NULL) AS INTEGER) AS missing_ids
+     FROM records`,
+  );
+  const problems = [];
+  if (counts.records !== counts.source_rows) {
+    problems.push(`${counts.records} records from ${counts.source_rows} source rows`);
+  }
+  if (counts.missing_ids > 0) {
+    problems.push(`${counts.missing_ids} records without a record ID`);
+  }
+  if (counts.distinct_ids !== counts.records - counts.missing_ids) {
+    problems.push('duplicate record IDs');
+  }
+  if (problems.length > 0) {
+    throw new IntegrityError(`Integrity check failed: ${problems.join('; ')}.`);
+  }
+}
+
 // Snapshot files are named retraction_watch-<data date>-<short sha>.csv,
 // so the newest sorts last.
 export async function findNewestSnapshot() {
@@ -54,8 +85,9 @@ async function main() {
   const inputPath = values.input ? path.resolve(invokedFrom, values.input) : await findNewestSnapshot();
   const connection = await openDatabase();
   await loadSource(connection, inputPath);
-  const [{ rows }] = await queryRows(connection, 'SELECT count(*)::INTEGER AS rows FROM source');
-  console.log(`Loaded ${relativeToRepo(inputPath)}: ${rows} rows, columns as expected.`);
+  await cleanRecords(connection);
+  const [{ rows }] = await queryRows(connection, 'SELECT count(*)::INTEGER AS rows FROM records');
+  console.log(`Cleaned ${relativeToRepo(inputPath)}: ${rows} records, integrity checks passed.`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
