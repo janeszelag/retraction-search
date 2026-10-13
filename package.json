@@ -1,0 +1,18 @@
+{
+  "name": "retraction-search",
+  "private": true,
+  "license": "MIT",
+  "description": "A faceted public search over the Retraction Watch database, rebuilt daily from the open CSV.",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "pipeline"
+  ],
+  "scripts": {
+    "check": "npm run check -w pipeline --",
+    "clean": "npm run clean -w pipeline --",
+    "download": "npm run download -w pipeline --",
+    "test": "npm test --workspaces --if-present"
+  }
+}

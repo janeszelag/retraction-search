@@ -1,0 +1,241 @@
+// Cleans one snapshot of the Retraction Watch CSV.
+// Usage: npm run clean [-- --input <file>]  (default: the newest file in data/raw)
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
+import { EXPECTED_COLUMNS } from './columns.js';
+import { openDatabase, queryRows, runSqlFile, sqlIdentifier, sqlString } from './duckdb.js';
+import { fileExists, sha256Of } from './files.js';
+import { cleanDir, rawDir, relativeToRepo } from './paths.js';
+import { measureDocuments, profileMarkdown, sizeReportMarkdown } from './reports.js';
+
+export class ColumnCheckError extends Error {}
+
+// Loads the CSV into the `source` table and checks its columns (AC3).
+// Extra columns are allowed only when completely empty, like the one the
+// header's trailing comma creates.
+export async function loadSource(connection, inputPath) {
+  await connection.run(`SET VARIABLE input_path = ${sqlString(inputPath)}`);
+  await runSqlFile(connection, '00_load.sql');
+
+  const columns = (await queryRows(connection, 'SELECT column_name FROM (DESCRIBE source)')).map(
+    (row) => row.column_name,
+  );
+  const problems = EXPECTED_COLUMNS.filter((name) => !columns.includes(name)).map(
+    (name) => `expected column "${name}" is missing`,
+  );
+  for (const name of columns.filter((column) => !EXPECTED_COLUMNS.includes(column))) {
+    const [{ filled }] = await queryRows(
+      connection,
+      `SELECT count(*)::INTEGER AS filled FROM source WHERE nullif(trim(${sqlIdentifier(name)}), '') IS NOT NULL`,
+    );
+    if (filled > 0) {
+      problems.push(`unexpected column "${name}" contains data`);
+    }
+  }
+  if (problems.length > 0) {
+    throw new ColumnCheckError(`Column check failed: ${problems.join('; ')}.`);
+  }
+}
+
+export class IntegrityError extends Error {}
+
+// Builds the `records` table from `source`, then checks its integrity.
+export async function cleanRecords(connection) {
+  await runSqlFile(connection, '10_records.sql');
+  await checkIntegrity(connection);
+}
+
+// Fails the run if records were lost or duplicated (AC2), if a record has no
+// notice type or more than one (AC12), or if splitting a list field lost or
+// invented entries (AC10).
+export async function checkIntegrity(connection) {
+  const [counts] = await queryRows(
+    connection,
+    `SELECT
+       (SELECT CAST(count(*) AS INTEGER) FROM source) AS source_rows,
+       CAST(count(*) AS INTEGER) AS records,
+       CAST(count(DISTINCT record_id) AS INTEGER) AS distinct_ids,
+       CAST(count(*) FILTER (WHERE record_id IS NULL) AS INTEGER) AS missing_ids,
+       CAST(count(*) FILTER (WHERE notice_type IS NULL OR contains(notice_type, ';')) AS INTEGER) AS bad_notice_types
+     FROM records`,
+  );
+  const problems = [];
+  if (counts.records !== counts.source_rows) {
+    problems.push(`${counts.records} records from ${counts.source_rows} source rows`);
+  }
+  if (counts.missing_ids > 0) {
+    problems.push(`${counts.missing_ids} records without a record ID`);
+  }
+  if (counts.distinct_ids !== counts.records - counts.missing_ids) {
+    problems.push('duplicate record IDs');
+  }
+  if (counts.bad_notice_types > 0) {
+    problems.push(`${counts.bad_notice_types} records without exactly one notice type`);
+  }
+  const lists = await queryRows(connection, 'SELECT field, entries, source_items FROM list_integrity');
+  for (const { field, entries, source_items: sourceItems } of lists) {
+    if (entries !== sourceItems) {
+      problems.push(`${field} has ${entries} list entries but ${sourceItems} items in the source text`);
+    }
+  }
+  if (problems.length > 0) {
+    throw new IntegrityError(`Integrity check failed: ${problems.join('; ')}.`);
+  }
+}
+
+// Builds the `documents` table from `records` (AC13).
+export async function buildDocuments(connection) {
+  await runSqlFile(connection, '20_search_documents.sql');
+}
+
+// One JSON line per document, in record ID order, with missing values left out.
+export async function documentLines(connection) {
+  const rows = await queryRows(
+    connection,
+    'SELECT CAST(to_json(documents) AS VARCHAR) AS json FROM documents ORDER BY record_id',
+  );
+  return rows.map(({ json }) => JSON.stringify(withoutNulls(JSON.parse(json))));
+}
+
+function withoutNulls(value) {
+  if (Array.isArray(value)) {
+    return value.map(withoutNulls);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, entry]) => entry !== null)
+        .map(([key, entry]) => [key, withoutNulls(entry)]),
+    );
+  }
+  return value;
+}
+
+// The input file, plus its manifest from npm run download when there is one.
+async function describeSnapshot(connection, inputPath) {
+  const manifestPath = inputPath.replace(/\.csv$/, '.json');
+  const manifest =
+    manifestPath !== inputPath && (await fileExists(manifestPath))
+      ? JSON.parse(await readFile(manifestPath, 'utf8'))
+      : null;
+  const [{ rows }] = await queryRows(connection, 'SELECT CAST(count(*) AS INTEGER) AS rows FROM source');
+  return {
+    file: path.basename(inputPath),
+    commit: manifest?.commit ?? null,
+    dataDate: manifest?.data_date ?? null,
+    rows,
+    bytes: (await stat(inputPath)).size,
+    sha256: await sha256Of(inputPath),
+    manifestSha256: manifest?.sha256 ?? null,
+  };
+}
+
+// The profile report as Markdown (AC1, AC6, AC7, AC10, AC11, AC12).
+export async function buildProfile(connection, inputPath) {
+  await runSqlFile(connection, '30_profile.sql');
+  return profileMarkdown({
+    snapshot: await describeSnapshot(connection, inputPath),
+    emptyValues: await queryRows(connection, 'SELECT source_column, empty FROM profile_empty_values'),
+    values: await queryRows(
+      connection,
+      'SELECT field, value, records FROM profile_values ORDER BY field, records DESC, value',
+    ),
+    review: await queryRows(
+      connection,
+      'SELECT issue, record_id, value FROM profile_review ORDER BY issue, record_id, value',
+    ),
+    listIntegrity: await queryRows(connection, 'SELECT field, entries, source_items FROM list_integrity ORDER BY field'),
+    flags: await queryRows(connection, 'SELECT flag, records FROM profile_flags ORDER BY position'),
+  });
+}
+
+// data/raw/retraction_watch-2026-10-09-bc5648dd.csv → data/clean/2026-10-09-bc5648dd
+export function outputDirFor(inputPath) {
+  const name = path.basename(inputPath, '.csv').replace(/^retraction_watch-/, '');
+  return path.join(cleanDir, name);
+}
+
+// Cleans one CSV and writes records.parquet, search-documents.jsonl, profile.md
+// and size-report.md. Everything is sorted by record ID and nothing records the
+// run time, so the same input always gives the same output (AC5).
+export async function runCleaning({ inputPath, outputDir = outputDirFor(inputPath) }) {
+  const connection = await openDatabase();
+  await loadSource(connection, inputPath);
+  await cleanRecords(connection);
+  await buildDocuments(connection);
+
+  // Outputs go to a temporary folder that replaces outputDir only once every
+  // file is written, so a failed run never leaves partial output (AC3).
+  const workDir = `${outputDir}.partial-${process.pid}`;
+  await rm(workDir, { recursive: true, force: true });
+  await mkdir(workDir, { recursive: true });
+  try {
+    await connection.run(
+      `COPY (SELECT * FROM records ORDER BY record_id) TO ${sqlString(path.join(workDir, 'records.parquet'))} (FORMAT parquet)`,
+    );
+    const lines = await documentLines(connection);
+    await writeFile(path.join(workDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
+    await writeFile(path.join(workDir, 'profile.md'), await buildProfile(connection, inputPath));
+    await writeFile(
+      path.join(workDir, 'size-report.md'),
+      sizeReportMarkdown({ file: path.basename(inputPath), ...measureDocuments(lines) }),
+    );
+    await replaceDirectory(workDir, outputDir);
+    return { outputDir, records: lines.length };
+  } catch (error) {
+    await rm(workDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+// Swaps a finished folder into place, putting the previous one back if the swap fails.
+async function replaceDirectory(from, to) {
+  const previous = `${to}.previous-${process.pid}`;
+  const hadPrevious = await fileExists(to);
+  if (hadPrevious) {
+    await rename(to, previous);
+  }
+  try {
+    await rename(from, to);
+  } catch (error) {
+    if (hadPrevious) {
+      await rename(previous, to);
+    }
+    throw error;
+  }
+  if (hadPrevious) {
+    await rm(previous, { recursive: true, force: true });
+  }
+}
+
+// Snapshot files are named retraction_watch-<data date>-<short sha>.csv,
+// so the newest sorts last.
+export async function findNewestSnapshot() {
+  const files = (await readdir(rawDir)).filter((file) => /^retraction_watch-.*\.csv$/.test(file)).sort();
+  if (files.length === 0) {
+    throw new Error(`No snapshots in ${relativeToRepo(rawDir)}. Run npm run download first.`);
+  }
+  return path.join(rawDir, files.at(-1));
+}
+
+async function main() {
+  const { values } = parseArgs({ options: { input: { type: 'string' } } });
+  // npm runs workspace scripts from pipeline/, but INIT_CWD is where the command was typed.
+  const invokedFrom = process.env.INIT_CWD ?? process.cwd();
+  const inputPath = values.input ? path.resolve(invokedFrom, values.input) : await findNewestSnapshot();
+  const started = performance.now();
+  const result = await runCleaning({ inputPath });
+  const seconds = ((performance.now() - started) / 1000).toFixed(1);
+  console.log(
+    `Cleaned ${relativeToRepo(inputPath)}: ${result.records} records in ${seconds} s, written to ${relativeToRepo(result.outputDir)}.`,
+  );
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}

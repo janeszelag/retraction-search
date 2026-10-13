@@ -8,13 +8,15 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 - **Attribution.** The data is CC0: the Retraction Watch database, distributed by Crossref at https://gitlab.com/crossref/retraction-watch-data. Every page credits Retraction Watch and links the source. Never imply affiliation with either.
 - **Author names are not identities.** Names aren't disambiguated. Label author matches as name matches, and don't build per-author counts, rankings or profiles.
 - **Report, don't allege.** Show what Retraction Watch recorded, and label reasons as Retraction Watch's classification. Keep the notice types (retraction, expression of concern, correction, reinstatement) visibly distinct.
+- **Keys stay on the server.** Browsers never receive a Typesense or LLM key. Every search goes through the website's server code, which also rate-limits each visitor.
 - **Verify external facts.** Prices, API behavior, data counts and other tools' features change. Check the live source before putting a fact in docs or code, note the date checked, and mark anything unchecked as unverified.
 
 ## Stack
 
-See [docs/decisions/001-languages.md](docs/decisions/001-languages.md).
+See decision records [001](docs/decisions/001-languages.md) (languages) and [002](docs/decisions/002-search-engine.md) (search).
 
 - Frontend: Next.js (React) written in TypeScript.
+- Search: Typesense 30.2 on Railway (Hobby plan, $50 hard limit), reached only through the website's server code.
 - Data transforms: SQL run by DuckDB, kept in `.sql` files.
 - Pipeline glue: JavaScript (ES modules) on Node 22, using `@duckdb/node-api`. No build step.
 - Python: only for exploration notebooks, or for a pipeline step that a decision record approves.
@@ -46,4 +48,14 @@ Rules:
 
 ## Commands
 
-None yet. Spec 001 adds them, along with the test runner.
+Run from the repository root:
+
+| Command | What it does |
+|---|---|
+| `npm install` | Installs dependencies |
+| `npm test` | Runs the pipeline tests (Vitest) on the committed fixtures; needs no network or full data |
+| `npm run download` | Saves the latest snapshot to `data/raw/`, pinned by its upstream commit (`-- --commit <sha>` for a specific one) |
+| `npm run clean` | Cleans the newest snapshot into `data/clean/<data date>-<short sha>/` (`-- --input <file>` for another) |
+| `npm run check` | Cleans the newest snapshot twice and checks the outputs (`-- --input <file>` for another) |
+
+The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.

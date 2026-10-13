@@ -18,7 +18,7 @@ CSV ─► load + column check ─► source (all text)
                                   │  sql/20_search_documents.sql
                                   ▼
                                documents ─► search-documents.jsonl
-                                  │  sql/30_profile.sql, sql/40_size_report.sql
+                                  │  sql/30_profile.sql, reports.js
                                   ▼
                                profile.md, size-report.md
 ```
@@ -36,7 +36,6 @@ pipeline/
     10_records.sql            the cleaning rules
     20_search_documents.sql   one search document per record
     30_profile.sql            queries behind the profile report
-    40_size_report.sql        queries behind the size report
   src/
     download.js               upstream commit lookup, download, manifest
     clean.js                  runs the SQL in order, writes outputs atomically
@@ -75,18 +74,18 @@ data/                         not committed
 |---|---|---|---|
 | `record_id` | integer | From Record ID | AC2 |
 | `title`, `journal`, `publisher` | text | Trimmed and never split; they can contain semicolons | AC9 |
-| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. In `countries`, "Unknown" stays a value. | AC9 |
+| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. In `authors`, `institutions` and `countries`, the placeholders "Unknown", "unavailable" and "Not available" (in any capitalization) become "Unknown". | AC9 |
 | `subjects` | list of (code, name) | Split like the other lists, then `(HSC) Medicine - Surgery` becomes code `HSC` and name `Medicine - Surgery`. A subject without a code gets an empty code and is listed in the profile. | AC9, AC11 |
 | `notice_type` | text | RetractionNature, which must be present | AC12 |
 | `notice_date`, `paper_date` | date | Parsed as month/day/year. A value that can't be parsed becomes empty and is listed in the profile. | AC6 |
 | `notice_year`, `paper_year` | integer | The year of each date | AC6 |
-| `notice_doi`, `paper_doi` | text | Trimmed, percent-decoded (`%3C` becomes `<`) and lowercased. Blank and "unavailable" in any capitalization become empty. DOIs not starting with "10." are listed in the profile. | AC7 |
+| `notice_doi`, `paper_doi` | text | Trimmed, percent-decoded (`%3C` becomes `<`) and lowercased, with stray leading "x" characters before "10." removed. Blank and "unavailable" in any capitalization become empty. DOIs whose source text doesn't start with "10." are listed in the profile. | AC7 |
 | `notice_pubmed_id`, `paper_pubmed_id` | integer | Blank and `0` become empty | AC8 |
 | `paywalled` | text | Yes, No or Unknown, as Retraction Watch recorded it | AC12 |
 | `is_revision` | yes/no | "Revision" appears in `article_types` | AC12 |
 | `has_editorial_staff_author` | yes/no | An author contains "editorial staff", in any capitalization | AC12 |
 | `notes` | text | Trimmed, empty when blank, never split | AC9 |
-| `original` | group of text fields | The source text of both dates, both DOIs and both PubMed IDs | AC4 |
+| `original` | group of text fields | The source text of both dates, both DOIs and both PubMed IDs, plus Author, Institution and Country for records where a placeholder was rewritten | AC4 |
 
 The table is sorted by `record_id`.
 
@@ -109,14 +108,15 @@ The documents are shaped for Typesense, the leading candidate. If decision recor
 1. **Snapshot:** commit, data date, rows, file size and checksum.
 2. **Empty values** in every source column (AC1).
 3. **Distinct values with counts** for every filter field (AC1): notice type, paywalled, reasons, subject categories, subjects, countries, article types, publishers (1,718 of them), and notice and paper years.
-4. **Review lists:** unparseable dates, notices dated before their paper and records dated 1 January 1970 (AC6), DOIs not starting with "10." (AC7), and subjects without a code (AC11).
+4. **Review lists:** unparseable dates, notices dated before their paper and records dated 1 January 1970 (AC6), DOIs whose source text doesn't start with "10." (AC7), and subjects without a code (AC11).
 5. **List integrity (AC10):** for each list field, the number of list entries next to the number of non-empty semicolon-separated items in the source text. If any pair differs, the run fails rather than just reporting it.
 6. **Flag counts:** revisions, editorial-staff authors and paywalled values (AC12).
 
 ## Size report (`size-report.md`, AC14)
 
+- Measured in `reports.js` on the JSON lines exactly as written, so the numbers are what the search engine will receive. (Measuring in SQL would count values the written file leaves out.)
 - The total size of `search-documents.jsonl` and the number of documents.
-- Bytes per field, summed over all documents and grouped into searchable, filter-only and stored-only fields (`original`, `notes`, `urls`). Decision record 002 uses this to estimate memory and disk.
+- Bytes per field, summed over all documents and grouped into searchable text, filters, identifiers and stored-only fields (`original`, `notes`, `urls`), plus the bytes taken by field names and punctuation. Decision record 002 uses this to estimate memory and disk.
 - The five largest documents, which show the worst case (one record has 88 authors).
 
 ## Writing outputs (AC3, AC5)
@@ -149,13 +149,14 @@ Package versions were checked on npm on 2026-10-12.
 
 ## Test approach
 
-- **Fixtures.** `sample.csv` holds about 30 real rows, picked by record ID so each can be traced back to the snapshot. Together they cover:
+- **Fixtures.** `sample.csv` holds 37 real rows, picked by record ID so each can be traced back to the snapshot. Together they cover:
   - trailing semicolons
   - DOIs that contain semicolons or percent-encoding
   - DOIs that are "unavailable" or blank, and the "x10." DOIs
   - PubMed IDs of `0`
   - "Unknown" country and Unknown paywalled
   - revisions and editorial-staff authors
+  - placeholder authors and institutions ("unknown", "Unavailable", "Not available")
   - the 1970 records and the notice dated before its paper
   - the record with 88 authors
   - each notice type
@@ -171,9 +172,9 @@ Package versions were checked on npm on 2026-10-12.
 | AC4 | Originals equal the source text for dates, DOIs and PubMed IDs |
 | AC5 | Two runs give identical JSON and Markdown files and the same Parquet content |
 | AC6 | Known rows get the right dates and years; the 1970 and notice-before-paper rows are listed |
-| AC7 | An old-style DOI is decoded and kept whole; "Unavailable" becomes empty; "x10." DOIs are listed |
+| AC7 | An old-style DOI is decoded and kept whole; "Unavailable" becomes empty; the "x10." DOIs lose their x's and are listed |
 | AC8 | PubMed IDs of `0` and blank become empty |
-| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; "Unknown" stays a country |
+| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; placeholder entries become "Unknown" |
 | AC10 | Entries equal source items for every list field, and a deliberately broken split fails the run |
 | AC11 | Codes and names split; the synthetic subject without a code is listed |
 | AC12 | Every record has one notice type; the flags are right on known rows |
@@ -186,7 +187,7 @@ Package versions were checked on npm on 2026-10-12.
 
 ## Trade-offs
 
-1. **Originals are kept only for values the cleaning rewrites** (dates, DOIs, PubMed IDs). Lists keep every entry in order, so their source text can be rebuilt by joining entries with "; ". Storing the list fields twice would add about 44 MB, with institutions the largest part (17 MB).
+1. **Originals are kept only for values the cleaning rewrites** (dates, DOIs, PubMed IDs). Lists keep every entry in order, so their source text can be rebuilt by joining entries with "; ". Storing the list fields twice would add about 44 MB, with institutions the largest part (17 MB). The exception is records where a placeholder was rewritten to "Unknown": their author, institution or country text is stored too, because it can't be rebuilt.
 2. **The search documents are shaped for Typesense before decision record 002 is written.** That keeps the size report realistic, and the mapping lives in one file.
 3. **JavaScript rather than TypeScript for the glue.** The logic lives in SQL and the glue is a few hundred lines, so the tests catch what type checks would. If types become worth having, `// @ts-check` with JSDoc comments adds checking without a build step.
 4. **Paywalled stays Yes / No / Unknown** rather than a yes/no flag, because Unknown is information.

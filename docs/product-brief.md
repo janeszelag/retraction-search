@@ -45,6 +45,7 @@ We believe researchers and journalists will use a faceted search of the full dat
 2. Get fluent with DuckDB and, optionally, Python data tools.
 3. Run a self-hosted search server, and later build one embeddings feature.
 4. Build natural-language filters, where an LLM turns a typed sentence into filters the user can check and edit.
+5. Write server-side Next.js code (server components and server functions), not just client components.
 
 ## Non-goals
 
@@ -122,12 +123,12 @@ Once the site is public, nothing depends on the owner's computer. Three hosted p
 | Piece | Where it runs | What it does | Cost control |
 |---|---|---|---|
 | Daily update | GitHub Actions, on a schedule | After Retraction Watch's daily update, starts a fresh machine, runs download → clean → load into the search server, then shuts down | Free for public repos. Without a payment method on GitHub, use beyond the free allowance is blocked, not charged (GitHub docs, checked 2026-10-12). |
-| Search server | Typesense on Railway, always on | Keeps the search index on a persistent disk and answers every search | Railway's hard spending limit: at the cap the service stops rather than billing more (to verify in decision record 002) |
-| Website | Next.js on Vercel | Rebuilds on every push to `main`. Browsers query the search server with a search-only key. | Free Hobby plan, which pauses at its limits (to verify in Phase 4) |
+| Search server | Typesense on Railway, always on | Keeps the search index on a persistent disk and answers every search | Railway's hard spending limit, set to $50 with an email alert at $10: at the cap, Railway takes the service offline rather than billing more. Worst case $50 a month (decision record 002). |
+| Website | Next.js on Vercel | Rebuilds on every push to `main`. Its server code sends searches to the search server, so browsers never see a search key, and it limits each visitor's searches. | Free Hobby plan, which pauses at its limits (to verify in Phase 4) |
 
 - If a daily run fails or is skipped, the site keeps serving the previous day's data, and GitHub emails whoever last edited the schedule.
 - In public repos, GitHub switches off scheduled jobs after 60 days without repository activity. Spec 003 has to handle that.
-- The admin key for loading data is an encrypted GitHub secret, never in the code. Natural-language searches (Phase 5) go through a server function on the website, which keeps the LLM key secret and applies the rate limit and cache.
+- The admin key for loading data is an encrypted GitHub secret, never in the code. Every search goes through the website's server code, which keeps the search key secret and applies a rate limit. Natural-language searches (Phase 5) add the LLM key and a cache there.
 - If the search index is lost, the next daily run rebuilds it from the CSV, so it needs no backups.
 
 ## Roadmap
