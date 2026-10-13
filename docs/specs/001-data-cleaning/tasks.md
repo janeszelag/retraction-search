@@ -1,6 +1,6 @@
 # Tasks 001: Data cleaning
 
-Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a time, and tick a task off once its "done when" check passes.
+Status: done, 2026-10-12. Decision record 002 is drafted for review. Follows [plan 001](plan.md). Work one task at a time, and tick a task off once its "done when" check passes.
 
 - [x] **1. Set up the workspace.** A root `package.json` with npm workspaces, and `pipeline/package.json` (ES modules) with `@duckdb/node-api` 1.5.6 and Vitest 5, plus the `test` script. The `download`, `clean` and `check` scripts arrive with the tasks that build them (2, 4 and 11). A first test opens DuckDB in memory and runs `SELECT 1`.
   - Done when: `npm install` and `npm test` pass from the repository root.
@@ -38,5 +38,5 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **12. End-to-end on a fresh clone.** Clone the repository into a temporary folder, then run `npm install`, `npm run download`, `npm run clean` and `npm run check`. Add the commands to `CLAUDE.md`. (AC15)
   - Done when: all four commands succeed in the fresh clone, and `CLAUDE.md` lists them.
 
-- [ ] **13. Decision record 002.** `docs/decisions/002-search-engine.md` covers how Typesense supports Goal 4, whether its facet counts are exact, memory and disk estimated from the size report, and Railway's current pricing, hard limit and worst-case monthly cost.
+- [x] **13. Decision record 002.** `docs/decisions/002-search-engine.md` covers how Typesense supports Goal 4, whether its facet counts are exact, memory and disk estimated from the size report, and Railway's current pricing, hard limit and worst-case monthly cost.
   - Done when: the record is drafted for review. That completes the spec, and spec 001 goes up as a pull request.
