@@ -1,12 +1,14 @@
 // Cleans one snapshot of the Retraction Watch CSV.
 // Usage: npm run clean [-- --input <file>]  (default: the newest file in data/raw)
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { EXPECTED_COLUMNS } from './columns.js';
 import { openDatabase, queryRows, runSqlFile, sqlIdentifier, sqlString } from './duckdb.js';
+import { fileExists, sha256Of } from './files.js';
 import { cleanDir, rawDir, relativeToRepo } from './paths.js';
+import { profileMarkdown } from './reports.js';
 
 export class ColumnCheckError extends Error {}
 
@@ -111,6 +113,44 @@ function withoutNulls(value) {
   return value;
 }
 
+// The input file, plus its manifest from npm run download when there is one.
+async function describeSnapshot(connection, inputPath) {
+  const manifestPath = inputPath.replace(/\.csv$/, '.json');
+  const manifest =
+    manifestPath !== inputPath && (await fileExists(manifestPath))
+      ? JSON.parse(await readFile(manifestPath, 'utf8'))
+      : null;
+  const [{ rows }] = await queryRows(connection, 'SELECT CAST(count(*) AS INTEGER) AS rows FROM source');
+  return {
+    file: path.basename(inputPath),
+    commit: manifest?.commit ?? null,
+    dataDate: manifest?.data_date ?? null,
+    rows,
+    bytes: (await stat(inputPath)).size,
+    sha256: await sha256Of(inputPath),
+    manifestSha256: manifest?.sha256 ?? null,
+  };
+}
+
+// The profile report as Markdown (AC1, AC6, AC7, AC10, AC11, AC12).
+export async function buildProfile(connection, inputPath) {
+  await runSqlFile(connection, '30_profile.sql');
+  return profileMarkdown({
+    snapshot: await describeSnapshot(connection, inputPath),
+    emptyValues: await queryRows(connection, 'SELECT source_column, empty FROM profile_empty_values'),
+    values: await queryRows(
+      connection,
+      'SELECT field, value, records FROM profile_values ORDER BY field, records DESC, value',
+    ),
+    review: await queryRows(
+      connection,
+      'SELECT issue, record_id, value FROM profile_review ORDER BY issue, record_id, value',
+    ),
+    listIntegrity: await queryRows(connection, 'SELECT field, entries, source_items FROM list_integrity ORDER BY field'),
+    flags: await queryRows(connection, 'SELECT flag, records FROM profile_flags ORDER BY position'),
+  });
+}
+
 // data/raw/retraction_watch-2026-10-09-bc5648dd.csv → data/clean/2026-10-09-bc5648dd
 export function outputDirFor(inputPath) {
   const name = path.basename(inputPath, '.csv').replace(/^retraction_watch-/, '');
@@ -129,6 +169,7 @@ export async function runCleaning({ inputPath, outputDir = outputDirFor(inputPat
   );
   const lines = await documentLines(connection);
   await writeFile(path.join(outputDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
+  await writeFile(path.join(outputDir, 'profile.md'), await buildProfile(connection, inputPath));
   return { outputDir, records: lines.length };
 }
 
@@ -155,7 +196,7 @@ async function main() {
   );
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;

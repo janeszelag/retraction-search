@@ -1,13 +1,13 @@
 // Downloads one snapshot of the Retraction Watch CSV, pinned by its upstream commit,
 // and writes a manifest next to it. Usage: npm run download [-- --commit <sha>]
-import { createHash } from 'node:crypto';
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createWriteStream } from 'node:fs';
 import { mkdir, open, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { fileExists, sha256Of } from './files.js';
 import { rawDir, relativeToRepo } from './paths.js';
 
 const SOURCE = 'https://gitlab.com/crossref/retraction-watch-data';
@@ -57,23 +57,6 @@ async function findUpstreamChecksum(commitSha) {
     throw new Error(`GitLab returned ${response.status} for ${url}`);
   }
   return response.headers.get('x-gitlab-content-sha256');
-}
-
-async function sha256Of(file) {
-  const hash = createHash('sha256');
-  for await (const chunk of createReadStream(file)) {
-    hash.update(chunk);
-  }
-  return hash.digest('hex');
-}
-
-async function fileExists(file) {
-  try {
-    await stat(file);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function readFirstLine(file) {
@@ -169,7 +152,7 @@ async function main() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;

@@ -23,7 +23,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **7. Search documents.** `sql/20_search_documents.sql` and the JSON-lines writer produce a text `id`, dates in Unix seconds, years, arrays, subject categories, subjects with their codes, and the `original` group, leaving missing values out. (AC13)
   - Done when: tests show every document has the expected fields and types, and no null values.
 
-- [ ] **8. Profile report.** `sql/30_profile.sql` and `src/reports.js` produce the report's six sections: snapshot details, empty values, values with counts for every filter field, review lists, list integrity and flag counts. (AC1, AC6, AC7, AC10, AC11, AC12)
+- [x] **8. Profile report.** `sql/30_profile.sql` and `src/reports.js` produce the report's six sections: snapshot details, empty values, values with counts for every filter field, review lists, list integrity and flag counts. (AC1, AC6, AC7, AC10, AC11, AC12)
   - Done when: tests find each section, and the fixture rows that need review are listed.
 
 - [ ] **9. Size report.** `sql/40_size_report.sql` gives the total size and document count, bytes per field grouped as searchable, filter-only and stored-only, and the five largest documents. (AC14)
