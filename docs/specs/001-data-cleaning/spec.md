@@ -24,6 +24,8 @@ Made 2026-10-12:
 - Search results show every field.
 - Institutions are searchable from the start, both on their own (like the official search's Affiliation field) and together with the other fields.
 - Search runs on a server. Typesense is the leading candidate, mainly for its built-in natural-language filters; decision record 002 confirms the engine and host.
+- Placeholder entries in author, institution and country lists ("Unknown", "unavailable", "Not available", in any capitalization) become one value, "Unknown".
+- Stray "x" characters at the start of a DOI are removed when what follows starts with "10.".
 
 ## Source data
 
@@ -38,15 +40,15 @@ Checked 2026-10-12 against the 2026-10-09 snapshot (upstream commit `bc5648dd`).
 | RetractionNature | Retraction 67,663; Expression of concern 3,731; Correction 1,543; Reinstatement 163 |
 | Paywalled | No 71,233; Yes 1,640; Unknown 227 |
 | Dates | `M/D/YYYY 0:00`, and all of them parse. They run from 1753 to 2026. 1,960 records give the paper and the notice the same date, and one has the notice dated before the paper. Six records, sections of one 1970 book, are dated 1 January 1970 for both; Crossref stores that notice date as timestamp 0, so it's almost certainly a placeholder. |
-| DOIs | Missing DOIs are blank, "unavailable" or "Unavailable": 3,426 unavailable and 2,523 blank for original papers, 4,186 and 484 for notices. None have URL prefixes. Old-style DOIs contain semicolons and percent-encoded characters (`%3C` for `<`). Two notice DOIs start with a stray "x" or "xx". |
+| DOIs | Missing DOIs are blank, "unavailable" or "Unavailable": 3,426 unavailable and 2,523 blank for original papers, 4,186 and 484 for notices. None have URL prefixes. Old-style DOIs contain semicolons and percent-encoded characters (`%3C` for `<`). Two notice DOIs start with a stray "x" or "xx". Three chapters of one book share a notice; one record has its DOI written cleanly, and the x's appear to keep each record's notice DOI unique. |
 | PubMed IDs | Missing IDs are blank or `0`. All others are numeric. |
 | List fields | Author, Country, Institution, Subject, Reason, ArticleType and URLS are semicolon-separated. Subject, Reason and ArticleType always end with a semicolon. Title, Journal, the DOIs and Notes can contain semicolons but aren't lists. |
 | Reason | 112 distinct values |
 | Subject | 130 distinct values, each starting with one of seven codes: BLS, HSC, B/T, PHY, SOC, ENV, HUM |
 | Country | 184 distinct values, plus 958 "Unknown" entries |
 | ArticleType | 26 distinct values. 279 records include "Revision". |
-| Author | 4.2 per record on average, up to 88. Seven records use an "Editorial Staff" placeholder, written in different ways ("Editorial Staff PLoS One", "Frontiers Editorial Staff"). |
-| Institution | 2.4 per record on average, up to 47. The largest field: 16.9 MB of the file's 66 MB of text. |
+| Author | 4.2 per record on average, up to 88. Seven records use an "Editorial Staff" placeholder, written in different ways ("Editorial Staff PLoS One", "Frontiers Editorial Staff"). 117 records list "Unknown" or "unknown" as the author. |
+| Institution | 2.4 per record on average, up to 47. The largest field: 16.9 MB of the file's 66 MB of text. 885 records hold a placeholder instead of an institution, written six ways: Unknown (405), unavailable (298), Unavailable (143), unknown (23), Not available (15), Not Available (1). |
 | Notes | Free text, filled in for 20,860 records. Some notes mark estimated dates ("HTML overwrite"). |
 
 The [data caveats](../../product-brief.md#data-caveats) in the product brief also apply.
@@ -69,9 +71,9 @@ Every criterion is checked against one pinned snapshot.
 **Field rules**
 
 - AC6: The retraction date and the original-paper date become real dates, each with a year for filtering. A value that can't be parsed becomes empty and is listed in the profile report. Records whose notice is dated before the paper are listed too, and so are records dated exactly 1 January 1970, a common placeholder for a missing date in software.
-- AC7: DOIs are lowercase, with percent-encoded characters decoded and no surrounding spaces. Blank values and "unavailable" in any capitalization become empty. DOIs that don't start with "10." are listed in the profile report.
+- AC7: DOIs are lowercase, with percent-encoded characters decoded and no surrounding spaces. Blank values and "unavailable" in any capitalization become empty. Stray "x" characters before "10." are removed. DOIs whose source text doesn't start with "10." are listed in the profile report.
 - AC8: PubMed IDs that are blank or `0` become empty.
-- AC9: Author, Country, Institution, Subject, Reason, ArticleType and URLS become lists. They're split on semicolons, entries are trimmed, empty entries are dropped, and author order is kept. Title, Journal, the DOIs and Notes are never split. In Country, "Unknown" stays a value, as Retraction Watch recorded it.
+- AC9: Author, Country, Institution, Subject, Reason, ArticleType and URLS become lists. They're split on semicolons, entries are trimmed, empty entries are dropped, and author order is kept. Title, Journal, the DOIs and Notes are never split. In Author, Institution and Country, the placeholders "Unknown", "unavailable" and "Not available", in any capitalization, become one value, "Unknown", so Retraction Watch's "we don't know" stays visible in a single spelling.
 - AC10: Splitting loses and invents nothing: for each list field, the number of list entries equals the number of non-empty semicolon-separated items in the raw text.
 - AC11: Each subject splits into its code and its name. Subjects without a code are listed in the profile report.
 - AC12: Every record has exactly one notice type and three flags: whether it's a revised version ("Revision" in its article types), whether an author is an "Editorial Staff" placeholder (in any of its forms), and whether its notice is paywalled (yes, no or unknown).

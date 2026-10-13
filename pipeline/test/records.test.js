@@ -29,7 +29,7 @@ describe('integrity (AC2)', () => {
       db,
       `SELECT CAST(count(*) AS INTEGER) AS records, CAST(count(DISTINCT record_id) AS INTEGER) AS ids FROM records`,
     );
-    expect(counts).toEqual({ records: 34, ids: 34 });
+    expect(counts).toEqual({ records: 37, ids: 37 });
   });
 });
 
@@ -93,9 +93,15 @@ describe('DOIs (AC7)', () => {
     expect(await record(id, 'paper_doi')).toEqual({ paper_doi: null });
   });
 
-  it('keeps notice DOIs with a stray "x" prefix, for the profile report to list', async () => {
-    expect(await record(70689, 'notice_doi')).toEqual({ notice_doi: 'x10.1007/978-3-030-00524-5_9' });
-    expect(await record(70690, 'notice_doi')).toEqual({ notice_doi: 'xx10.1007/978-3-030-00524-5_9' });
+  it('removes stray "x" characters before "10." and keeps the source text', async () => {
+    expect(await record(70689, 'notice_doi, original.notice_doi AS source_doi')).toEqual({
+      notice_doi: '10.1007/978-3-030-00524-5_9',
+      source_doi: 'x10.1007/978-3-030-00524-5_9',
+    });
+    expect(await record(70690, 'notice_doi, original.notice_doi AS source_doi')).toEqual({
+      notice_doi: '10.1007/978-3-030-00524-5_9',
+      source_doi: 'xx10.1007/978-3-030-00524-5_9',
+    });
   });
 });
 
@@ -180,6 +186,34 @@ describe('list fields (AC9)', () => {
 
   it('keeps "Unknown" as a country', async () => {
     expect(await record(1134, 'countries')).toEqual({ countries: ['Unknown'] });
+  });
+
+  it.each([
+    [1134, '"unavailable"'],
+    [34394, '"Not available"'],
+    [35062, '"Unavailable"'],
+  ])('turns the institution placeholder of record %i (%s) into "Unknown"', async (id) => {
+    expect(await record(id, 'institutions')).toEqual({ institutions: ['Unknown'] });
+  });
+
+  it('turns an author written "unknown" into "Unknown"', async () => {
+    expect(await record(35062, 'authors')).toEqual({ authors: ['Unknown'] });
+  });
+
+  it('changes only the placeholder when it sits next to a real institution', async () => {
+    expect(await record(9052, 'institutions')).toEqual({
+      institutions: ["Murdoch Children's Research Institute, Australia (via RW)", 'Unknown'],
+    });
+  });
+
+  it('keeps the source text where a placeholder was rewritten, and only there', async () => {
+    expect(
+      await record(35062, 'original.author AS author, original.institution AS institution, original.country AS country'),
+    ).toEqual({ author: 'unknown', institution: 'Unavailable', country: null });
+    expect(await record(2, 'original.author AS author, original.institution AS institution')).toEqual({
+      author: null,
+      institution: null,
+    });
   });
 
   it('gives an empty field an empty list', async () => {

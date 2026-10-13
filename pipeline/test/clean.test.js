@@ -11,7 +11,7 @@ describe('loading and the column check (AC3)', () => {
     await loadSource(db, fixture('sample.csv'));
 
     const [{ rows }] = await queryRows(db, 'SELECT count(*)::INTEGER AS rows FROM source');
-    expect(rows).toBe(34);
+    expect(rows).toBe(37);
   });
 
   it.each([

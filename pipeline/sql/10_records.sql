@@ -8,10 +8,12 @@ CREATE OR REPLACE MACRO parse_rw_date(value) AS
 
 -- AC7: DOIs are trimmed, percent-decoded (%3C becomes <) and lowercased.
 -- Blank and "unavailable" in any capitalization mean there's no DOI.
+-- Stray "x" characters before "10." are removed: Retraction Watch appears to
+-- add them to keep a notice DOI unique when several records share one notice.
 CREATE OR REPLACE MACRO clean_doi(value) AS
   CASE
     WHEN nullif(trim(value), '') IS NULL OR lower(trim(value)) = 'unavailable' THEN NULL
-    ELSE lower(url_decode(trim(value)))
+    ELSE regexp_replace(lower(url_decode(trim(value))), '^x+(10\.)', '\1')
   END;
 
 -- AC8: blank and 0 mean there's no PubMed ID.
@@ -25,6 +27,14 @@ CREATE OR REPLACE MACRO clean_pubmed_id(value) AS
 -- empty entries (such as after a trailing semicolon) are dropped, and order is kept.
 CREATE OR REPLACE MACRO split_list(value) AS
   [trim(entry) FOR entry IN string_split(coalesce(value, ''), ';') IF trim(entry) <> ''];
+
+-- AC9: author, institution and country lists write "we don't know" several ways
+-- ("unavailable", "Not available", "unknown"). Every spelling becomes "Unknown".
+CREATE OR REPLACE MACRO unknown_if_placeholder(entry) AS
+  CASE WHEN lower(entry) IN ('unknown', 'unavailable', 'not available') THEN 'Unknown' ELSE entry END;
+
+CREATE OR REPLACE MACRO split_list_with_unknown(value) AS
+  [unknown_if_placeholder(entry) FOR entry IN split_list(value)];
 
 -- AC11: "(HSC) Medicine - Surgery" becomes code HSC and name "Medicine - Surgery".
 -- A subject without a code gets a NULL code and is listed in the profile report.
@@ -40,10 +50,9 @@ SELECT
   nullif(trim(Title), '') AS title,
   nullif(trim(Journal), '') AS journal,
   nullif(trim(Publisher), '') AS publisher,
-  split_list(Author) AS authors,
-  split_list(Institution) AS institutions,
-  -- "Unknown" stays a country, as Retraction Watch recorded it.
-  split_list(Country) AS countries,
+  split_list_with_unknown(Author) AS authors,
+  split_list_with_unknown(Institution) AS institutions,
+  split_list_with_unknown(Country) AS countries,
   split_list(URLS) AS urls,
   split_list(ArticleType) AS article_types,
   split_list(Reason) AS reasons,
@@ -64,14 +73,18 @@ SELECT
   len([author FOR author IN authors IF author ILIKE '%editorial staff%']) > 0 AS has_editorial_staff_author,
   nullif(trim(Notes), '') AS notes,
   -- AC4: the source text of every value above that the cleaning rewrites.
-  -- List fields keep every entry in order, so their source text can be rebuilt.
+  -- List fields keep every entry in order, so their source text can be rebuilt,
+  -- except where a placeholder became "Unknown"; then the source text is kept too.
   {
     'notice_date': RetractionDate,
     'notice_doi': RetractionDOI,
     'notice_pubmed_id': RetractionPubMedID,
     'paper_date': OriginalPaperDate,
     'paper_doi': OriginalPaperDOI,
-    'paper_pubmed_id': OriginalPaperPubMedID
+    'paper_pubmed_id': OriginalPaperPubMedID,
+    'author': CASE WHEN split_list(Author) <> authors THEN Author END,
+    'institution': CASE WHEN split_list(Institution) <> institutions THEN Institution END,
+    'country': CASE WHEN split_list(Country) <> countries THEN Country END
   } AS original
 FROM source
 ORDER BY record_id;

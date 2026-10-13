@@ -1,6 +1,6 @@
 # Test fixtures
 
-`sample.csv` holds 34 real rows from the 2026-10-09 snapshot (upstream commit `bc5648dd`). They were copied line for line, so they keep the source file's exact format, including the header's trailing comma. The data is CC0: the Retraction Watch database, distributed by Crossref.
+`sample.csv` holds 37 real rows from the 2026-10-09 snapshot (upstream commit `bc5648dd`). They were copied line for line, so they keep the source file's exact format, including the header's trailing comma. The data is CC0: the Retraction Watch database, distributed by Crossref.
 
 | Record ID | Why it's here |
 |---|---|
@@ -21,20 +21,23 @@
 | 698 | Old-style DOI with a semicolon and percent-encoding |
 | 859 | Paywalled: Unknown |
 | 1086 | PubMed IDs of `0` |
-| 1134 | Country "Unknown" |
+| 1134 | Country "Unknown", and institution written "unavailable" |
 | 1511 | Title containing a semicolon |
 | 3804 | Revised version ("Revision" in article types) |
 | 4952 | PubMed IDs blank |
+| 9052 | A real institution followed by the placeholder "Unavailable" |
 | 12419, 22992 | The same paper DOI written in two capitalizations |
 | 18930 | The earliest dates: paper 1753, notice 1756 |
 | 28020 | Journal name containing a semicolon |
 | 34181 | Empty institution |
+| 34394 | Institution written "Not available" |
+| 35062 | Author written "unknown" and institution written "Unavailable" |
 | 41581 | 88 authors |
 | 43131 | Paper and notice dated 1 January 1970 |
 | 69326 | Notes containing semicolons ("HTML overwrite; …") |
 | 69493 | "Editorial Staff" author written "Editorial Staff PLoS One" |
 | 69833 | "Editorial Staff" author written "Frontiers Editorial Staff" |
-| 70689 | Notice DOI starting with a stray "x" |
+| 70689 | Notice DOI starting with a stray "x" (the clean form is shared with record 70687) |
 | 70690 | Notice DOI starting with a stray "xx" |
 | 73705 | Notice dated before the paper |
 
@@ -54,7 +57,7 @@ The other files are built from `sample.csv`:
 Run these from the repository root, after `npm run download -- --commit bc5648dd`:
 
 ```bash
-IDS="1 2 4 6 10 12 17 18 35 96 102 148 241 333 698 859 1086 1134 1511 3804 4952 12419 18930 22992 28020 34181 41581 43131 69326 69493 69833 70689 70690 73705"
+IDS="1 2 4 6 10 12 17 18 35 96 102 148 241 333 698 859 1086 1134 1511 3804 4952 9052 12419 18930 22992 28020 34181 34394 35062 41581 43131 69326 69493 69833 70689 70690 73705"
 awk -F, -v ids="$IDS" 'BEGIN { n = split(ids, a, " "); for (i = 1; i <= n; i++) keep[a[i]] = 1 } NR == 1 || ($1 in keep)' \
   data/raw/retraction_watch-2026-10-09-bc5648dd.csv > pipeline/test/fixtures/sample.csv
 ```
