@@ -5,7 +5,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **1. Set up the workspace.** A root `package.json` with npm workspaces, and `pipeline/package.json` (ES modules) with `@duckdb/node-api` 1.5.6 and Vitest 5, plus the `test` script. The `download`, `clean` and `check` scripts arrive with the tasks that build them (2, 4 and 11). A first test opens DuckDB in memory and runs `SELECT 1`.
   - Done when: `npm install` and `npm test` pass from the repository root.
 
-- [ ] **2. Download command.** `src/download.js` gets the latest commit from the GitLab API, downloads the file at that commit and writes a manifest with its SHA-256 checksum. It supports `--commit`, skips the download when the checksum already matches, and fails on an empty file or a wrong header. (AC15)
+- [x] **2. Download command.** `src/download.js` gets the latest commit from the GitLab API, downloads the file at that commit and writes a manifest with its SHA-256 checksum. It supports `--commit`, skips the download when the checksum already matches, and fails on an empty file or a wrong header. (AC15)
   - Done when: `npm run download` saves the latest snapshot and its manifest, a second run skips the download, and `-- --commit bc5648dd` fetches the 2026-10-09 file.
 
 - [ ] **3. Fixtures.** `test/fixtures/sample.csv` holds about 30 real rows chosen by record ID, and `README.md` explains why each one is there. Add the three broken files (missing, renamed, and extra column with data) and one synthetic row whose subject has no code. (Inputs for AC3 and AC6–AC13)

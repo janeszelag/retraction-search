@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "download": "node src/download.js",
     "test": "vitest run"
   },
   "dependencies": {
