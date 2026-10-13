@@ -14,9 +14,9 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 
 See [docs/decisions/001-languages.md](docs/decisions/001-languages.md).
 
-- Frontend: Next.js with TypeScript.
+- Frontend: Next.js (React) written in TypeScript.
 - Data transforms: SQL run by DuckDB, kept in `.sql` files.
-- Pipeline glue: TypeScript on Node 22, using `@duckdb/node-api`.
+- Pipeline glue: JavaScript (ES modules) on Node 22, using `@duckdb/node-api`. No build step.
 - Python: only for exploration notebooks, or for a pipeline step that a decision record approves.
 
 ## How we work: lightweight spec-driven development
@@ -39,7 +39,7 @@ Rules:
 
 ## Layout (planned)
 
-- `pipeline/`: DuckDB SQL and TypeScript glue
+- `pipeline/`: DuckDB SQL and JavaScript glue
 - `web/`: Next.js app
 - `data/`: local downloads and outputs (not committed)
 - `docs/`: brief, decisions, specs

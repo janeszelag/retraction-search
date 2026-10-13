@@ -37,7 +37,7 @@ Checked 2026-10-12 against the 2026-10-09 snapshot (upstream commit `bc5648dd`).
 |---|---|
 | RetractionNature | Retraction 67,663; Expression of concern 3,731; Correction 1,543; Reinstatement 163 |
 | Paywalled | No 71,233; Yes 1,640; Unknown 227 |
-| Dates | `M/D/YYYY 0:00`, and all of them parse. They run from 1753 to 2026. 1,960 records give the paper and the notice the same date, and one has the notice dated before the paper. |
+| Dates | `M/D/YYYY 0:00`, and all of them parse. They run from 1753 to 2026. 1,960 records give the paper and the notice the same date, and one has the notice dated before the paper. Six records, sections of one 1970 book, are dated 1 January 1970 for both; Crossref stores that notice date as timestamp 0, so it's almost certainly a placeholder. |
 | DOIs | Missing DOIs are blank, "unavailable" or "Unavailable": 3,426 unavailable and 2,523 blank for original papers, 4,186 and 484 for notices. None have URL prefixes. Old-style DOIs contain semicolons and percent-encoded characters (`%3C` for `<`). Two notice DOIs start with a stray "x" or "xx". |
 | PubMed IDs | Missing IDs are blank or `0`. All others are numeric. |
 | List fields | Author, Country, Institution, Subject, Reason, ArticleType and URLS are semicolon-separated. Subject, Reason and ArticleType always end with a semicolon. Title, Journal, the DOIs and Notes can contain semicolons but aren't lists. |
@@ -68,7 +68,7 @@ Every criterion is checked against one pinned snapshot.
 
 **Field rules**
 
-- AC6: The retraction date and the original-paper date become real dates, each with a year for filtering. A value that can't be parsed becomes empty and is listed in the profile report. Records whose notice is dated before the paper are listed too.
+- AC6: The retraction date and the original-paper date become real dates, each with a year for filtering. A value that can't be parsed becomes empty and is listed in the profile report. Records whose notice is dated before the paper are listed too, and so are records dated exactly 1 January 1970, a common placeholder for a missing date in software.
 - AC7: DOIs are lowercase, with percent-encoded characters decoded and no surrounding spaces. Blank values and "unavailable" in any capitalization become empty. DOIs that don't start with "10." are listed in the profile report.
 - AC8: PubMed IDs that are blank or `0` become empty.
 - AC9: Author, Country, Institution, Subject, Reason, ArticleType and URLS become lists. They're split on semicolons, entries are trimmed, empty entries are dropped, and author order is kept. Title, Journal, the DOIs and Notes are never split. In Country, "Unknown" stays a value, as Retraction Watch recorded it.
