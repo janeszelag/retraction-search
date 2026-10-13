@@ -1,6 +1,7 @@
 {
   "name": "retraction-search",
   "private": true,
+  "license": "MIT",
   "description": "A faceted public search over the Retraction Watch database, rebuilt daily from the open CSV.",
   "engines": {
     "node": ">=22"

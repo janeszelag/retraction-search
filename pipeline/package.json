@@ -1,6 +1,7 @@
 {
   "name": "pipeline",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "check": "node src/check.js",
