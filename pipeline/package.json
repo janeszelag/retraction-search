@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check": "node src/check.js",
     "clean": "node src/clean.js",
     "download": "node src/download.js",
     "test": "vitest run"

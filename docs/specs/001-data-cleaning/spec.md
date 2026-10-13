@@ -45,7 +45,7 @@ Checked 2026-10-12 against the 2026-10-09 snapshot (upstream commit `bc5648dd`).
 | List fields | Author, Country, Institution, Subject, Reason, ArticleType and URLS are semicolon-separated. Subject, Reason and ArticleType always end with a semicolon. Title, Journal, the DOIs and Notes can contain semicolons but aren't lists. |
 | Reason | 112 distinct values |
 | Subject | 130 distinct values, each starting with one of seven codes: BLS, HSC, B/T, PHY, SOC, ENV, HUM |
-| Country | 184 distinct values, plus 958 "Unknown" entries |
+| Country | 184 distinct values, including "Unknown" (958 records) |
 | ArticleType | 26 distinct values. 279 records include "Revision". |
 | Author | 4.2 per record on average, up to 88. Seven records use an "Editorial Staff" placeholder, written in different ways ("Editorial Staff PLoS One", "Frontiers Editorial Staff"). 117 records list "Unknown" or "unknown" as the author. |
 | Institution | 2.4 per record on average, up to 47. The largest field: 16.9 MB of the file's 66 MB of text. 885 records hold a placeholder instead of an institution, written six ways: Unknown (405), unavailable (298), Unavailable (143), unknown (23), Not available (15), Not Available (1). |

@@ -32,7 +32,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **10. Safe, repeatable output.** Write to a temporary folder and rename it on success, sort everything by record ID, and keep run times out of the files. (AC3, AC5)
   - Done when: tests show a failed run leaves no output folder, and two runs give identical JSON and Markdown files and the same Parquet content.
 
-- [ ] **11. Full-snapshot check.** `src/check.js` and `npm run check` repeat AC2, AC5, AC10 and the one-notice-type rule on the latest local snapshot, and time the run. (AC2, AC5, AC10, AC12, success metrics)
+- [x] **11. Full-snapshot check.** `src/check.js` and `npm run check` repeat AC2, AC5, AC10 and the one-notice-type rule on the latest local snapshot, and time the run. (AC2, AC5, AC10, AC12, success metrics)
   - Done when: `npm run check` passes on the 2026-10-09 snapshot in under a minute, and the profile report's numbers match the spec's "Source data" table or the differences are explained.
 
 - [ ] **12. End-to-end on a fresh clone.** Clone the repository into a temporary folder, then run `npm install`, `npm run download`, `npm run clean` and `npm run check`. Add the commands to `CLAUDE.md`. (AC15)
