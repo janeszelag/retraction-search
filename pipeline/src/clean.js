@@ -1,6 +1,6 @@
 // Cleans one snapshot of the Retraction Watch CSV.
 // Usage: npm run clean [-- --input <file>]  (default: the newest file in data/raw)
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -157,24 +157,57 @@ export function outputDirFor(inputPath) {
   return path.join(cleanDir, name);
 }
 
+// Cleans one CSV and writes records.parquet, search-documents.jsonl, profile.md
+// and size-report.md. Everything is sorted by record ID and nothing records the
+// run time, so the same input always gives the same output (AC5).
 export async function runCleaning({ inputPath, outputDir = outputDirFor(inputPath) }) {
   const connection = await openDatabase();
   await loadSource(connection, inputPath);
   await cleanRecords(connection);
   await buildDocuments(connection);
 
-  await mkdir(outputDir, { recursive: true });
-  await connection.run(
-    `COPY (SELECT * FROM records ORDER BY record_id) TO ${sqlString(path.join(outputDir, 'records.parquet'))} (FORMAT parquet)`,
-  );
-  const lines = await documentLines(connection);
-  await writeFile(path.join(outputDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
-  await writeFile(path.join(outputDir, 'profile.md'), await buildProfile(connection, inputPath));
-  await writeFile(
-    path.join(outputDir, 'size-report.md'),
-    sizeReportMarkdown({ file: path.basename(inputPath), ...measureDocuments(lines) }),
-  );
-  return { outputDir, records: lines.length };
+  // Outputs go to a temporary folder that replaces outputDir only once every
+  // file is written, so a failed run never leaves partial output (AC3).
+  const workDir = `${outputDir}.partial-${process.pid}`;
+  await rm(workDir, { recursive: true, force: true });
+  await mkdir(workDir, { recursive: true });
+  try {
+    await connection.run(
+      `COPY (SELECT * FROM records ORDER BY record_id) TO ${sqlString(path.join(workDir, 'records.parquet'))} (FORMAT parquet)`,
+    );
+    const lines = await documentLines(connection);
+    await writeFile(path.join(workDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
+    await writeFile(path.join(workDir, 'profile.md'), await buildProfile(connection, inputPath));
+    await writeFile(
+      path.join(workDir, 'size-report.md'),
+      sizeReportMarkdown({ file: path.basename(inputPath), ...measureDocuments(lines) }),
+    );
+    await replaceDirectory(workDir, outputDir);
+    return { outputDir, records: lines.length };
+  } catch (error) {
+    await rm(workDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+// Swaps a finished folder into place, putting the previous one back if the swap fails.
+async function replaceDirectory(from, to) {
+  const previous = `${to}.previous-${process.pid}`;
+  const hadPrevious = await fileExists(to);
+  if (hadPrevious) {
+    await rename(to, previous);
+  }
+  try {
+    await rename(from, to);
+  } catch (error) {
+    if (hadPrevious) {
+      await rename(previous, to);
+    }
+    throw error;
+  }
+  if (hadPrevious) {
+    await rm(previous, { recursive: true, force: true });
+  }
 }
 
 // Snapshot files are named retraction_watch-<data date>-<short sha>.csv,
