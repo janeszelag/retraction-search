@@ -46,4 +46,14 @@ Rules:
 
 ## Commands
 
-None yet. Spec 001 adds them, along with the test runner.
+Run from the repository root:
+
+| Command | What it does |
+|---|---|
+| `npm install` | Installs dependencies |
+| `npm test` | Runs the pipeline tests (Vitest) on the committed fixtures; needs no network or full data |
+| `npm run download` | Saves the latest snapshot to `data/raw/`, pinned by its upstream commit (`-- --commit <sha>` for a specific one) |
+| `npm run clean` | Cleans the newest snapshot into `data/clean/<data date>-<short sha>/` (`-- --input <file>` for another) |
+| `npm run check` | Cleans the newest snapshot twice and checks the outputs (`-- --input <file>` for another) |
+
+The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.

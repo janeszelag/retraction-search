@@ -35,7 +35,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **11. Full-snapshot check.** `src/check.js` and `npm run check` repeat AC2, AC5, AC10 and the one-notice-type rule on the latest local snapshot, and time the run. (AC2, AC5, AC10, AC12, success metrics)
   - Done when: `npm run check` passes on the 2026-10-09 snapshot in under a minute, and the profile report's numbers match the spec's "Source data" table or the differences are explained.
 
-- [ ] **12. End-to-end on a fresh clone.** Clone the repository into a temporary folder, then run `npm install`, `npm run download`, `npm run clean` and `npm run check`. Add the commands to `CLAUDE.md`. (AC15)
+- [x] **12. End-to-end on a fresh clone.** Clone the repository into a temporary folder, then run `npm install`, `npm run download`, `npm run clean` and `npm run check`. Add the commands to `CLAUDE.md`. (AC15)
   - Done when: all four commands succeed in the fresh clone, and `CLAUDE.md` lists them.
 
 - [ ] **13. Decision record 002.** `docs/decisions/002-search-engine.md` covers how Typesense supports Goal 4, whether its facet counts are exact, memory and disk estimated from the size report, and Railway's current pricing, hard limit and worst-case monthly cost.
