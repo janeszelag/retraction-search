@@ -1,6 +1,6 @@
 # 002: Typesense on Railway for search
 
-Status: proposed, 2026-10-12
+Status: accepted, 2026-10-12
 
 ## Context
 

@@ -13,9 +13,10 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 
 ## Stack
 
-See [docs/decisions/001-languages.md](docs/decisions/001-languages.md).
+See decision records [001](docs/decisions/001-languages.md) (languages) and [002](docs/decisions/002-search-engine.md) (search).
 
 - Frontend: Next.js (React) written in TypeScript.
+- Search: Typesense 30.2 on Railway (Hobby plan, $50 hard limit), reached only through the website's server code.
 - Data transforms: SQL run by DuckDB, kept in `.sql` files.
 - Pipeline glue: JavaScript (ES modules) on Node 22, using `@duckdb/node-api`. No build step.
 - Python: only for exploration notebooks, or for a pipeline step that a decision record approves.
