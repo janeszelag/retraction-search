@@ -26,7 +26,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **8. Profile report.** `sql/30_profile.sql` and `src/reports.js` produce the report's six sections: snapshot details, empty values, values with counts for every filter field, review lists, list integrity and flag counts. (AC1, AC6, AC7, AC10, AC11, AC12)
   - Done when: tests find each section, and the fixture rows that need review are listed.
 
-- [ ] **9. Size report.** `sql/40_size_report.sql` gives the total size and document count, bytes per field grouped as searchable, filter-only and stored-only, and the five largest documents. (AC14)
+- [x] **9. Size report.** `reports.js` measures the JSON lines exactly as written: the total size and document count, bytes per field grouped as searchable text, filters, identifiers and stored-only, and the five largest documents. (AC14)
   - Done when: a test finds the total and a line for every document field.
 
 - [ ] **10. Safe, repeatable output.** Write to a temporary folder and rename it on success, sort everything by record ID, and keep run times out of the files. (AC3, AC5)

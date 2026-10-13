@@ -18,7 +18,7 @@ CSV ─► load + column check ─► source (all text)
                                   │  sql/20_search_documents.sql
                                   ▼
                                documents ─► search-documents.jsonl
-                                  │  sql/30_profile.sql, sql/40_size_report.sql
+                                  │  sql/30_profile.sql, reports.js
                                   ▼
                                profile.md, size-report.md
 ```
@@ -36,7 +36,6 @@ pipeline/
     10_records.sql            the cleaning rules
     20_search_documents.sql   one search document per record
     30_profile.sql            queries behind the profile report
-    40_size_report.sql        queries behind the size report
   src/
     download.js               upstream commit lookup, download, manifest
     clean.js                  runs the SQL in order, writes outputs atomically
@@ -115,8 +114,9 @@ The documents are shaped for Typesense, the leading candidate. If decision recor
 
 ## Size report (`size-report.md`, AC14)
 
+- Measured in `reports.js` on the JSON lines exactly as written, so the numbers are what the search engine will receive. (Measuring in SQL would count values the written file leaves out.)
 - The total size of `search-documents.jsonl` and the number of documents.
-- Bytes per field, summed over all documents and grouped into searchable, filter-only and stored-only fields (`original`, `notes`, `urls`). Decision record 002 uses this to estimate memory and disk.
+- Bytes per field, summed over all documents and grouped into searchable text, filters, identifiers and stored-only fields (`original`, `notes`, `urls`), plus the bytes taken by field names and punctuation. Decision record 002 uses this to estimate memory and disk.
 - The five largest documents, which show the worst case (one record has 88 authors).
 
 ## Writing outputs (AC3, AC5)

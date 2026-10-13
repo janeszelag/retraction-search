@@ -41,6 +41,98 @@ function table(headers, rows) {
   ].join('\n');
 }
 
+// Field groups for the size report. Fields not listed land in "Other", so nothing is hidden.
+const SIZE_GROUPS = [
+  ['Searchable text', ['title', 'authors', 'institutions', 'journal', 'publisher']],
+  [
+    'Filters',
+    [
+      'countries',
+      'subject_categories',
+      'subjects',
+      'article_types',
+      'reasons',
+      'notice_type',
+      'paywalled',
+      'is_revision',
+      'has_editorial_staff_author',
+      'notice_date',
+      'notice_year',
+      'paper_date',
+      'paper_year',
+    ],
+  ],
+  ['Identifiers', ['id', 'record_id', 'notice_doi', 'notice_pubmed_id', 'paper_doi', 'paper_pubmed_id']],
+  ['Stored only', ['urls', 'notes', 'original']],
+];
+
+// Measures the JSON lines exactly as written (AC14).
+export function measureDocuments(lines) {
+  const fieldBytes = new Map();
+  const documentBytes = [];
+  let fileBytes = 0;
+  for (const line of lines) {
+    const bytes = Buffer.byteLength(line);
+    fileBytes += bytes + 1; // each line ends with a newline
+    const doc = JSON.parse(line);
+    documentBytes.push({ recordId: doc.record_id, bytes });
+    for (const [field, value] of Object.entries(doc)) {
+      fieldBytes.set(field, (fieldBytes.get(field) ?? 0) + Buffer.byteLength(JSON.stringify(value)));
+    }
+  }
+  const largest = documentBytes.sort((a, b) => b.bytes - a.bytes || a.recordId - b.recordId).slice(0, 5);
+  return { documents: lines.length, fileBytes, fieldBytes, largest };
+}
+
+const megabytes = (bytes) => `${(bytes / 1e6).toFixed(1)} MB`;
+const share = (part, whole) => `${((part / whole) * 100).toFixed(1)}%`;
+
+export function sizeReportMarkdown({ file, documents, fileBytes, fieldBytes, largest }) {
+  const grouped = SIZE_GROUPS.map(([group, fields]) => [group, fields.filter((field) => fieldBytes.has(field))]);
+  const listed = new Set(SIZE_GROUPS.flatMap(([, fields]) => fields));
+  const other = [...fieldBytes.keys()].filter((field) => !listed.has(field)).sort();
+  if (other.length > 0) {
+    grouped.push(['Other', other]);
+  }
+
+  const fieldRows = [];
+  for (const [group, fields] of grouped) {
+    const groupBytes = fields.reduce((sum, field) => sum + fieldBytes.get(field), 0);
+    fieldRows.push([`**${group}**`, '(all)', formatNumber(groupBytes), share(groupBytes, fileBytes)]);
+    for (const field of fields) {
+      fieldRows.push([group, field, formatNumber(fieldBytes.get(field)), share(fieldBytes.get(field), fileBytes)]);
+    }
+  }
+  const valueBytes = [...fieldBytes.values()].reduce((sum, bytes) => sum + bytes, 0);
+  fieldRows.push([
+    '**Field names and punctuation**',
+    '(all)',
+    formatNumber(fileBytes - valueBytes),
+    share(fileBytes - valueBytes, fileBytes),
+  ]);
+
+  return `${[
+    `# Size report: ${file}`,
+    'Written by `npm run clean`, for decision record 002 (AC14). Sizes are measured on `search-documents.jsonl` exactly as written.',
+    table(
+      ['Item', 'Value'],
+      [
+        ['Documents', formatNumber(documents)],
+        ['search-documents.jsonl', `${megabytes(fileBytes)} (${formatNumber(fileBytes)} bytes)`],
+        ['Average document', `${formatNumber(Math.round(fileBytes / Math.max(documents, 1)))} bytes`],
+      ],
+    ),
+    '## Bytes per field',
+    "Each field's total counts the JSON text of its values. Field names and punctuation are counted separately.",
+    table(['Group', 'Field', 'Bytes', 'Share of file'], fieldRows),
+    '## Largest documents',
+    table(
+      ['Record ID', 'Bytes'],
+      largest.map((doc) => [doc.recordId, formatNumber(doc.bytes)]),
+    ),
+  ].join('\n\n')}\n`;
+}
+
 export function profileMarkdown({ snapshot, emptyValues, values, review, listIntegrity, flags }) {
   const checksum =
     snapshot.manifestSha256 === null

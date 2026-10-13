@@ -8,7 +8,7 @@ import { EXPECTED_COLUMNS } from './columns.js';
 import { openDatabase, queryRows, runSqlFile, sqlIdentifier, sqlString } from './duckdb.js';
 import { fileExists, sha256Of } from './files.js';
 import { cleanDir, rawDir, relativeToRepo } from './paths.js';
-import { profileMarkdown } from './reports.js';
+import { measureDocuments, profileMarkdown, sizeReportMarkdown } from './reports.js';
 
 export class ColumnCheckError extends Error {}
 
@@ -170,6 +170,10 @@ export async function runCleaning({ inputPath, outputDir = outputDirFor(inputPat
   const lines = await documentLines(connection);
   await writeFile(path.join(outputDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
   await writeFile(path.join(outputDir, 'profile.md'), await buildProfile(connection, inputPath));
+  await writeFile(
+    path.join(outputDir, 'size-report.md'),
+    sizeReportMarkdown({ file: path.basename(inputPath), ...measureDocuments(lines) }),
+  );
   return { outputDir, records: lines.length };
 }
 
