@@ -1,12 +1,12 @@
 // Cleans one snapshot of the Retraction Watch CSV.
 // Usage: npm run clean [-- --input <file>]  (default: the newest file in data/raw)
-import { readdir } from 'node:fs/promises';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { EXPECTED_COLUMNS } from './columns.js';
 import { openDatabase, queryRows, runSqlFile, sqlIdentifier, sqlString } from './duckdb.js';
-import { rawDir, relativeToRepo } from './paths.js';
+import { cleanDir, rawDir, relativeToRepo } from './paths.js';
 
 export class ColumnCheckError extends Error {}
 
@@ -83,6 +83,55 @@ export async function checkIntegrity(connection) {
   }
 }
 
+// Builds the `documents` table from `records` (AC13).
+export async function buildDocuments(connection) {
+  await runSqlFile(connection, '20_search_documents.sql');
+}
+
+// One JSON line per document, in record ID order, with missing values left out.
+export async function documentLines(connection) {
+  const rows = await queryRows(
+    connection,
+    'SELECT CAST(to_json(documents) AS VARCHAR) AS json FROM documents ORDER BY record_id',
+  );
+  return rows.map(({ json }) => JSON.stringify(withoutNulls(JSON.parse(json))));
+}
+
+function withoutNulls(value) {
+  if (Array.isArray(value)) {
+    return value.map(withoutNulls);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, entry]) => entry !== null)
+        .map(([key, entry]) => [key, withoutNulls(entry)]),
+    );
+  }
+  return value;
+}
+
+// data/raw/retraction_watch-2026-10-09-bc5648dd.csv → data/clean/2026-10-09-bc5648dd
+export function outputDirFor(inputPath) {
+  const name = path.basename(inputPath, '.csv').replace(/^retraction_watch-/, '');
+  return path.join(cleanDir, name);
+}
+
+export async function runCleaning({ inputPath, outputDir = outputDirFor(inputPath) }) {
+  const connection = await openDatabase();
+  await loadSource(connection, inputPath);
+  await cleanRecords(connection);
+  await buildDocuments(connection);
+
+  await mkdir(outputDir, { recursive: true });
+  await connection.run(
+    `COPY (SELECT * FROM records ORDER BY record_id) TO ${sqlString(path.join(outputDir, 'records.parquet'))} (FORMAT parquet)`,
+  );
+  const lines = await documentLines(connection);
+  await writeFile(path.join(outputDir, 'search-documents.jsonl'), `${lines.join('\n')}\n`);
+  return { outputDir, records: lines.length };
+}
+
 // Snapshot files are named retraction_watch-<data date>-<short sha>.csv,
 // so the newest sorts last.
 export async function findNewestSnapshot() {
@@ -98,11 +147,12 @@ async function main() {
   // npm runs workspace scripts from pipeline/, but INIT_CWD is where the command was typed.
   const invokedFrom = process.env.INIT_CWD ?? process.cwd();
   const inputPath = values.input ? path.resolve(invokedFrom, values.input) : await findNewestSnapshot();
-  const connection = await openDatabase();
-  await loadSource(connection, inputPath);
-  await cleanRecords(connection);
-  const [{ rows }] = await queryRows(connection, 'SELECT count(*)::INTEGER AS rows FROM records');
-  console.log(`Cleaned ${relativeToRepo(inputPath)}: ${rows} records, integrity checks passed.`);
+  const started = performance.now();
+  const result = await runCleaning({ inputPath });
+  const seconds = ((performance.now() - started) / 1000).toFixed(1);
+  console.log(
+    `Cleaned ${relativeToRepo(inputPath)}: ${result.records} records in ${seconds} s, written to ${relativeToRepo(result.outputDir)}.`,
+  );
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
