@@ -18,7 +18,7 @@ Status: proposed, 2026-10-12
 - Natural-language search is built in: it turns a sentence into a query and filters, and returns the generated filters, which the site can show as editable tags. Providers are chosen in Phase 5's own decision record.
 - The schema indexes only the searchable and filter fields. Typesense keeps fields outside the schema on disk, not in memory, so `original`, `notes` and `urls` cost disk only.
 
-**Host: Railway, Hobby plan,** with a volume for Typesense's data, a hard usage limit of $10 (Railway's minimum), and an email alert below that.
+**Host: Railway, Hobby plan,** with a volume for Typesense's data, a hard usage limit of $50 (the owner's maximum), and an email alert at $10 so rising usage shows up early.
 
 **Keys:** browsers get a search-only key. The admin key used to load data lives in Railway's settings and as an encrypted GitHub secret.
 
@@ -44,7 +44,7 @@ These are estimates, to confirm against the first invoice.
 - **Disk:** under 1 GB, which is less than $0.15 a month.
 - **Data transfer:** at roughly 20 KB per search, 100,000 searches move about 2 GB, or $0.10.
 
-Expected total: around the $5 that Hobby includes. **Worst case: $10 a month.** The $5 plan fee covers the first $5 of usage, and Railway stops the service once usage reaches the $10 limit. A bug or a bot hammering the search costs downtime, not money.
+Expected total: around the $5 that Hobby includes. **Worst case: $50 a month.** The $5 plan fee covers the first $5 of usage, Railway emails at $10, and it stops the service once usage reaches the $50 limit. Past that point, a bug or a bot hammering the search costs downtime, not money.
 
 ## Alternatives considered
 
