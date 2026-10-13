@@ -8,6 +8,7 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 - **Attribution.** The data is CC0: the Retraction Watch database, distributed by Crossref at https://gitlab.com/crossref/retraction-watch-data. Every page credits Retraction Watch and links the source. Never imply affiliation with either.
 - **Author names are not identities.** Names aren't disambiguated. Label author matches as name matches, and don't build per-author counts, rankings or profiles.
 - **Report, don't allege.** Show what Retraction Watch recorded, and label reasons as Retraction Watch's classification. Keep the notice types (retraction, expression of concern, correction, reinstatement) visibly distinct.
+- **Keys stay on the server.** Browsers never receive a Typesense or LLM key. Every search goes through the website's server code, which also rate-limits each visitor.
 - **Verify external facts.** Prices, API behavior, data counts and other tools' features change. Check the live source before putting a fact in docs or code, note the date checked, and mark anything unchecked as unverified.
 
 ## Stack

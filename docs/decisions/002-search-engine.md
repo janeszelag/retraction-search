@@ -20,7 +20,7 @@ Status: proposed, 2026-10-12
 
 **Host: Railway, Hobby plan,** with a volume for Typesense's data, a hard usage limit of $50 (the owner's maximum), and an email alert at $10 so rising usage shows up early.
 
-**Keys:** browsers get a search-only key. The admin key used to load data lives in Railway's settings and as an encrypted GitHub secret.
+**Keys and traffic:** browsers never talk to Typesense. Every search goes through the website's own server code (Next.js on Vercel), which holds a search-only key and limits how many searches each visitor can make. The admin key used to load data lives in Railway's settings and as an encrypted GitHub secret.
 
 ## Checked facts (2026-10-12)
 
@@ -51,6 +51,7 @@ Expected total: around the $5 that Hobby includes. **Worst case: $50 a month.** 
 - **Meilisearch, self-hosted on Railway.** It fits the cost rule just as well. Typesense was chosen for its built-in natural-language filters and the per-field controls checked above. Meilisearch wasn't evaluated in depth.
 - **Typesense Cloud or Meilisearch Cloud.** The managed versions bill by usage, and the project notes found no spending cap for either (not rechecked today). Without a cap they fail the cost rule.
 - **A small VPS (Hetzner, DigitalOcean).** A fixed price, but data transfer beyond the allowance is billed with no cap (per the project notes), and there's more server administration. It could be a later learning project.
+- **Browsers calling Typesense directly with a search-only key.** The simplest setup, but anyone could copy the key from the page and flood the server. Rejected to keep risk down, and because server-side Next.js code is a learning goal.
 - **A SQL backend (DuckDB behind a small API).** Exact counts and Boolean search come easily, but there's no typo tolerance or built-in natural-language search. The owner preferred a search engine.
 - **Search in the browser.** Ruled out in spec 001: every field in the results and searchable institutions would mean a large download, and a server is a learning goal.
 
@@ -64,5 +65,6 @@ Expected total: around the $5 that Hobby includes. **Worst case: $50 a month.** 
 - **Spec 002 runs the same container image locally,** so your Mac needs Docker (Docker Desktop or similar).
 - **Spec 003 loads each day's documents into a new collection and then switches an alias to it,** so search never sees a half-loaded index. Memory briefly doubles during the switch, which costs little because RAM is billed by the minute.
 - **If the limit is reached,** search stays offline until the next billing cycle or until the limit is raised. If the volume were ever lost, the next daily run rebuilds the index from the CSV.
-- **If bots become a problem,** searches can go through the website's own server functions with a rate limit, instead of straight to Typesense.
+- **Typesense still needs a public address** so Vercel can reach it, but requests without the secret key are refused.
+- **A per-visitor rate limit needs somewhere to keep count,** because Vercel runs server code on many short-lived instances that don't share memory. Spec 002 picks an option that fits the cost rule.
 - **Natural-language filters (Phase 5) need their own decision record** for the model provider and its hard spending cap.
