@@ -8,7 +8,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **2. Download command.** `src/download.js` gets the latest commit from the GitLab API, downloads the file at that commit and writes a manifest with its SHA-256 checksum. It supports `--commit`, skips the download when the checksum already matches, and fails on an empty file or a wrong header. (AC15)
   - Done when: `npm run download` saves the latest snapshot and its manifest, a second run skips the download, and `-- --commit bc5648dd` fetches the 2026-10-09 file.
 
-- [ ] **3. Fixtures.** `test/fixtures/sample.csv` holds about 30 real rows chosen by record ID, and `README.md` explains why each one is there. Add the three broken files (missing, renamed, and extra column with data) and one synthetic row whose subject has no code. (Inputs for AC3 and AC6–AC13)
+- [x] **3. Fixtures.** `test/fixtures/sample.csv` holds about 30 real rows chosen by record ID, and `README.md` explains why each one is there. Add the three broken files (missing, renamed, and extra column with data) and one synthetic row whose subject has no code. (Inputs for AC3 and AC6–AC13)
   - Done when: every case in the plan's fixture list has at least one row, and the README names it.
 
 - [ ] **4. Load and column check.** Write `sql/00_load.sql`, `src/columns.js` and the start of `src/clean.js`: load every column as text, compare the columns with the expected 20, and allow an extra column only if it's empty. (AC3)
