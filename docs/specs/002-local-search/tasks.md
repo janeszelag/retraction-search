@@ -1,10 +1,10 @@
 # Tasks 002: Local search MVP
 
-Status: not started, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 **Local stack and data**
 
-- [ ] **1. Local stack.** `docker-compose.yml` runs `typesense/typesense:30.2` with its data in `data/typesense/`, and Redis at a pinned version. `.env.example` lists the variables, and `.env.local` stays out of git. A root `search:up` script starts both. (AC34)
+- [x] **1. Local stack.** `docker-compose.yml` runs `typesense/typesense:30.2` with its data in `data/typesense/`, and Redis at a pinned version (`redis:8.10.2-alpine`). `.env.example` lists the variables, and `.env.local` stays out of git. A root `search:up` script starts both. (AC34)
   - Done when: `npm run search:up` starts both containers, and Typesense's `/health` returns ok.
 
 - [ ] **2. Link counts in the search documents.** `pipeline/sql/20_search_documents.sql` adds `url_record_counts`: for each of a record's URLs, how many records list the same URL, ignoring http versus https and a trailing slash. (AC18a)

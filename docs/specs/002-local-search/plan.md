@@ -74,7 +74,7 @@ pipeline: npm run clean ──► search-documents.jsonl ──► npm run load 
 
 New and changed files:
 
-- `docker-compose.yml`: Typesense (`typesense/typesense:30.2`) with its data in `data/typesense/`, and Redis, at a version pinned at setup.
+- `docker-compose.yml`: Typesense (`typesense/typesense:30.2`) with its data in `data/typesense/`, and Redis (`redis:8.10.2-alpine`, the newest release on Docker Hub, checked 2026-10-13). Both listen only on 127.0.0.1. `npm run search:down` stops them.
 - `pipeline/src/load.js`: loads the newest cleaned snapshot into Typesense (below).
 - `pipeline/sql/20_search_documents.sql`: adds `url_record_counts` (below).
 - `web/`: the Next.js 16 app, in TypeScript with Tailwind CSS 4.

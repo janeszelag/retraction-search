@@ -1,0 +1,31 @@
+# The local search stack for spec 002: Typesense for search, Redis for
+# per-visitor rate-limit counters. Start it with `npm run search:up`, which
+# reads the keys from .env.local (copy .env.example to make one).
+name: retraction-search
+
+services:
+  typesense:
+    image: typesense/typesense:30.2
+    command: ["--data-dir", "/data", "--api-key", "${TYPESENSE_ADMIN_KEY:?Set TYPESENSE_ADMIN_KEY in .env.local}"]
+    ports:
+      - "127.0.0.1:8108:8108"
+    volumes:
+      - ./data/typesense:/data
+    # The image has no curl or wget, so the check asks /health over bash's /dev/tcp.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8108 && printf 'GET /health HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '\"ok\":true' <&3"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  redis:
+    image: redis:8.10.2-alpine
+    # Counters only live for a minute or an hour, so nothing is written to disk.
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15

@@ -13,6 +13,8 @@
     "check": "npm run check -w pipeline --",
     "clean": "npm run clean -w pipeline --",
     "download": "npm run download -w pipeline --",
+    "search:down": "docker compose --env-file .env.local down",
+    "search:up": "docker compose --env-file .env.local up --detach --wait",
     "test": "npm test --workspaces --if-present"
   }
 }
