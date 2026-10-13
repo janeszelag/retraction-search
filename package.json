@@ -1,0 +1,14 @@
+{
+  "name": "retraction-search",
+  "private": true,
+  "description": "A faceted public search over the Retraction Watch database, rebuilt daily from the open CSV.",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "pipeline"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces --if-present"
+  }
+}

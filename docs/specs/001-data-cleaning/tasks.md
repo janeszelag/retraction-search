@@ -1,8 +1,8 @@
 # Tasks 001: Data cleaning
 
-Status: not started, 2026-10-12. Follows [plan 001](plan.md). Work one task at a time, and tick a task off once its "done when" check passes.
+Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a time, and tick a task off once its "done when" check passes.
 
-- [ ] **1. Set up the workspace.** A root `package.json` with npm workspaces, and `pipeline/package.json` (ES modules) with `@duckdb/node-api` 1.5.6 and Vitest 5, plus scripts for `download`, `clean`, `check` and `test`. A first test opens DuckDB in memory and runs `SELECT 1`.
+- [x] **1. Set up the workspace.** A root `package.json` with npm workspaces, and `pipeline/package.json` (ES modules) with `@duckdb/node-api` 1.5.6 and Vitest 5, plus the `test` script. The `download`, `clean` and `check` scripts arrive with the tasks that build them (2, 4 and 11). A first test opens DuckDB in memory and runs `SELECT 1`.
   - Done when: `npm install` and `npm test` pass from the repository root.
 
 - [ ] **2. Download command.** `src/download.js` gets the latest commit from the GitLab API, downloads the file at that commit and writes a manifest with its SHA-256 checksum. It supports `--commit`, skips the download when the checksum already matches, and fails on an empty file or a wrong header. (AC15)

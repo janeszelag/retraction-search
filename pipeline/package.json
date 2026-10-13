@@ -1,0 +1,14 @@
+{
+  "name": "pipeline",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@duckdb/node-api": "1.5.6-r.1"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.4"
+  }
+}
