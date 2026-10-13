@@ -39,18 +39,24 @@ export async function loadSource(connection, inputPath) {
 
 export class IntegrityError extends Error {}
 
-// Builds the `records` table from `source`, then checks that nothing was
-// lost or duplicated on the way (AC2).
+// Builds the `records` table from `source`, then checks its integrity.
 export async function cleanRecords(connection) {
   await runSqlFile(connection, '10_records.sql');
+  await checkIntegrity(connection);
+}
 
+// Fails the run if records were lost or duplicated (AC2), if a record has no
+// notice type or more than one (AC12), or if splitting a list field lost or
+// invented entries (AC10).
+export async function checkIntegrity(connection) {
   const [counts] = await queryRows(
     connection,
     `SELECT
        (SELECT CAST(count(*) AS INTEGER) FROM source) AS source_rows,
        CAST(count(*) AS INTEGER) AS records,
        CAST(count(DISTINCT record_id) AS INTEGER) AS distinct_ids,
-       CAST(count(*) FILTER (WHERE record_id IS NULL) AS INTEGER) AS missing_ids
+       CAST(count(*) FILTER (WHERE record_id IS NULL) AS INTEGER) AS missing_ids,
+       CAST(count(*) FILTER (WHERE notice_type IS NULL OR contains(notice_type, ';')) AS INTEGER) AS bad_notice_types
      FROM records`,
   );
   const problems = [];
@@ -62,6 +68,15 @@ export async function cleanRecords(connection) {
   }
   if (counts.distinct_ids !== counts.records - counts.missing_ids) {
     problems.push('duplicate record IDs');
+  }
+  if (counts.bad_notice_types > 0) {
+    problems.push(`${counts.bad_notice_types} records without exactly one notice type`);
+  }
+  const lists = await queryRows(connection, 'SELECT field, entries, source_items FROM list_integrity');
+  for (const { field, entries, source_items: sourceItems } of lists) {
+    if (entries !== sourceItems) {
+      problems.push(`${field} has ${entries} list entries but ${sourceItems} items in the source text`);
+    }
   }
   if (problems.length > 0) {
     throw new IntegrityError(`Integrity check failed: ${problems.join('; ')}.`);

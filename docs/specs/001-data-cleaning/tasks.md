@@ -17,7 +17,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **5. Cleaning: dates, identifiers and originals.** The first part of `sql/10_records.sql`: record ID, dates and years, DOIs, PubMed IDs and the `original` group. (AC2, AC4, AC6, AC7, AC8)
   - Done when: tests pass for one row per source row, unique IDs, parsed dates and years, decoded lowercase DOIs, placeholders becoming empty, and originals matching the source text.
 
-- [ ] **6. Cleaning: lists, subjects, notice type and flags.** The rest of `10_records.sql`: the seven list fields, subject codes and names, notice type, paywalled, `is_revision`, `has_editorial_staff_author` and notes. (AC9, AC10, AC11, AC12)
+- [x] **6. Cleaning: lists, subjects, notice type and flags.** The rest of `10_records.sql`: the seven list fields, subject codes and names, notice type, paywalled, `is_revision`, `has_editorial_staff_author` and notes. (AC9, AC10, AC11, AC12)
   - Done when: tests pass for list splitting (trailing semicolons, titles and DOIs staying whole, "Unknown" kept), entry counts matching source items, a deliberately broken split failing the run, subject splitting, and the flags on known rows.
 
 - [ ] **7. Search documents.** `sql/20_search_documents.sql` and the JSON-lines writer produce a text `id`, dates in Unix seconds, years, arrays, subject categories, subjects with their codes, and the `original` group, leaving missing values out. (AC13)

@@ -21,9 +21,35 @@ CREATE OR REPLACE MACRO clean_pubmed_id(value) AS
     ELSE CAST(trim(value) AS INTEGER)
   END;
 
+-- AC9: splits a semicolon-separated field into a list. Entries are trimmed,
+-- empty entries (such as after a trailing semicolon) are dropped, and order is kept.
+CREATE OR REPLACE MACRO split_list(value) AS
+  [trim(entry) FOR entry IN string_split(coalesce(value, ''), ';') IF trim(entry) <> ''];
+
+-- AC11: "(HSC) Medicine - Surgery" becomes code HSC and name "Medicine - Surgery".
+-- A subject without a code gets a NULL code and is listed in the profile report.
+CREATE OR REPLACE MACRO parse_subject(subject) AS {
+  'code': nullif(regexp_extract(subject, '^\(([^)]*)\)', 1), ''),
+  'name': trim(regexp_replace(subject, '^\([^)]*\)', ''))
+};
+
 CREATE OR REPLACE TABLE records AS
 SELECT
   CAST("Record ID" AS INTEGER) AS record_id,
+  -- AC9: these can contain semicolons but aren't lists, so they're never split.
+  nullif(trim(Title), '') AS title,
+  nullif(trim(Journal), '') AS journal,
+  nullif(trim(Publisher), '') AS publisher,
+  split_list(Author) AS authors,
+  split_list(Institution) AS institutions,
+  -- "Unknown" stays a country, as Retraction Watch recorded it.
+  split_list(Country) AS countries,
+  split_list(URLS) AS urls,
+  split_list(ArticleType) AS article_types,
+  split_list(Reason) AS reasons,
+  [parse_subject(subject) FOR subject IN split_list(Subject)] AS subjects,
+  -- AC12: one notice type per record; clean.js checks it's always present.
+  nullif(trim(RetractionNature), '') AS notice_type,
   parse_rw_date(RetractionDate) AS notice_date,
   CAST(year(notice_date) AS INTEGER) AS notice_year,
   clean_doi(RetractionDOI) AS notice_doi,
@@ -32,7 +58,13 @@ SELECT
   CAST(year(paper_date) AS INTEGER) AS paper_year,
   clean_doi(OriginalPaperDOI) AS paper_doi,
   clean_pubmed_id(OriginalPaperPubMedID) AS paper_pubmed_id,
+  -- AC12: Yes, No or Unknown, as Retraction Watch recorded it.
+  nullif(trim(Paywalled), '') AS paywalled,
+  list_contains(article_types, 'Revision') AS is_revision,
+  len([author FOR author IN authors IF author ILIKE '%editorial staff%']) > 0 AS has_editorial_staff_author,
+  nullif(trim(Notes), '') AS notes,
   -- AC4: the source text of every value above that the cleaning rewrites.
+  -- List fields keep every entry in order, so their source text can be rebuilt.
   {
     'notice_date': RetractionDate,
     'notice_doi': RetractionDOI,
@@ -43,3 +75,44 @@ SELECT
   } AS original
 FROM source
 ORDER BY record_id;
+
+-- AC10: splitting loses and invents nothing. For each list field, the number of
+-- list entries must equal the number of non-empty semicolon-separated items in
+-- the source text, counted here independently with a regular expression.
+-- A view, so the check always reflects the current tables.
+CREATE OR REPLACE MACRO source_items(value) AS
+  len(regexp_extract_all(value, '[^;]*[^;\s][^;]*'));
+
+CREATE OR REPLACE VIEW list_integrity AS
+WITH entries AS (
+  SELECT
+    sum(len(authors)) AS authors,
+    sum(len(institutions)) AS institutions,
+    sum(len(countries)) AS countries,
+    sum(len(urls)) AS urls,
+    sum(len(article_types)) AS article_types,
+    sum(len(reasons)) AS reasons,
+    sum(len(subjects)) AS subjects
+  FROM records
+),
+items AS (
+  SELECT
+    sum(source_items(Author)) AS authors,
+    sum(source_items(Institution)) AS institutions,
+    sum(source_items(Country)) AS countries,
+    sum(source_items(URLS)) AS urls,
+    sum(source_items(ArticleType)) AS article_types,
+    sum(source_items(Reason)) AS reasons,
+    sum(source_items(Subject)) AS subjects
+  FROM source
+)
+SELECT field, CAST(coalesce(entry_count, 0) AS INTEGER) AS entries, CAST(coalesce(item_count, 0) AS INTEGER) AS source_items
+FROM (
+  SELECT 'authors' AS field, entries.authors AS entry_count, items.authors AS item_count FROM entries, items
+  UNION ALL SELECT 'institutions', entries.institutions, items.institutions FROM entries, items
+  UNION ALL SELECT 'countries', entries.countries, items.countries FROM entries, items
+  UNION ALL SELECT 'urls', entries.urls, items.urls FROM entries, items
+  UNION ALL SELECT 'article_types', entries.article_types, items.article_types FROM entries, items
+  UNION ALL SELECT 'reasons', entries.reasons, items.reasons FROM entries, items
+  UNION ALL SELECT 'subjects', entries.subjects, items.subjects FROM entries, items
+);
