@@ -1,0 +1,23 @@
+// The 20 columns of retraction_watch.csv, as documented in the upstream README.
+export const EXPECTED_COLUMNS = [
+  'Record ID',
+  'Title',
+  'Subject',
+  'Institution',
+  'Journal',
+  'Publisher',
+  'Country',
+  'Author',
+  'URLS',
+  'ArticleType',
+  'RetractionDate',
+  'RetractionDOI',
+  'RetractionPubMedID',
+  'OriginalPaperDate',
+  'OriginalPaperDOI',
+  'OriginalPaperPubMedID',
+  'RetractionNature',
+  'Reason',
+  'Paywalled',
+  'Notes',
+];

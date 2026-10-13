@@ -9,6 +9,7 @@
     "pipeline"
   ],
   "scripts": {
+    "clean": "npm run clean -w pipeline --",
     "download": "npm run download -w pipeline --",
     "test": "npm test --workspaces --if-present"
   }

@@ -11,7 +11,7 @@ Status: in progress, 2026-10-12. Follows [plan 001](plan.md). Work one task at a
 - [x] **3. Fixtures.** `test/fixtures/sample.csv` holds about 30 real rows chosen by record ID, and `README.md` explains why each one is there. Add the three broken files (missing, renamed, and extra column with data) and one synthetic row whose subject has no code. (Inputs for AC3 and AC6–AC13)
   - Done when: every case in the plan's fixture list has at least one row, and the README names it.
 
-- [ ] **4. Load and column check.** Write `sql/00_load.sql`, `src/columns.js` and the start of `src/clean.js`: load every column as text, compare the columns with the expected 20, and allow an extra column only if it's empty. (AC3)
+- [x] **4. Load and column check.** Write `sql/00_load.sql`, `src/columns.js` and the start of `src/clean.js`: load every column as text, compare the columns with the expected 20, and allow an extra column only if it's empty. (AC3)
   - Done when: tests show each broken fixture fails with the column named, and `sample.csv` loads.
 
 - [ ] **5. Cleaning: dates, identifiers and originals.** The first part of `sql/10_records.sql`: record ID, dates and years, DOIs, PubMed IDs and the `original` group. (AC2, AC4, AC6, AC7, AC8)
