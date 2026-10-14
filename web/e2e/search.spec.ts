@@ -160,6 +160,21 @@ test.describe('at 375 pixels wide (AC31)', () => {
   });
 });
 
+test('after typing a search, the results are announced and one skip link away (AC32)', async ({ page }) => {
+  await page.goto('/');
+  await tabUntil(page, () => document.activeElement?.getAttribute('type') === 'search');
+  await page.keyboard.type('neuron');
+  await expect(page).toHaveURL(/q=neuron/);
+  // One short sentence for screen readers, outside the part marked busy while loading.
+  await expect(page.locator('main > p[role="status"]')).toHaveText(/^[\d,]+ retractions, page 1 of [\d,]+\.$/);
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to results' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('main#results')).toBeFocused();
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => Boolean(document.activeElement?.closest('main')))).toBe(true);
+});
+
 test('search and filters work from the keyboard alone (AC32)', async ({ page }) => {
   await page.goto('/');
   // Tab to the search box, type, and wait for the results.

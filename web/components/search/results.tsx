@@ -91,7 +91,7 @@ export function Results({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div aria-live="polite" className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5">
         <h1 className="text-[30px] leading-[1.2] font-extrabold tracking-[-0.015em] tabular-nums">{totalPhrase(result.totals)}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
           {summary.parts.map((part) =>
@@ -125,7 +125,7 @@ export function Results({
           </div>
         )}
         {result.closeSpellings && (
-          <p role="status" className={ui.note}>
+          <p className={ui.note}>
             No exact matches for “{query.q}” with these filters. Showing close spellings, highlighted.
           </p>
         )}

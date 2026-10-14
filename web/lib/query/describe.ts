@@ -252,6 +252,25 @@ export function totalPhrase(totals: Record<string, number>): string {
   return bits.length > 0 ? joinList(bits, 'and') : 'No matching records';
 }
 
+// The one sentence a screen reader hears when the results change (AC32):
+// "271 retractions, page 2 of 14." It's short, so it's heard before any other
+// speech, such as the search box's typing echo, cuts in.
+export function resultsAnnouncement({
+  totals,
+  page,
+  pageCount,
+  closeSpellings,
+}: {
+  totals: Record<string, number>;
+  page: number;
+  pageCount: number;
+  closeSpellings: boolean;
+}): string {
+  const total = totalPhrase(totals);
+  const found = closeSpellings ? `No exact matches. Close spellings: ${total}` : total;
+  return pageCount > 1 ? `${found}, page ${formatNumber(page)} of ${formatNumber(pageCount)}.` : `${found}.`;
+}
+
 // ISSNs checked 2026-10-13: the database's in Retraction Watch's user guide,
 // the blog's in the ISSN portal.
 export const DATABASE_ISSN = '2692-4579';

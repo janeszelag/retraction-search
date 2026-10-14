@@ -7,7 +7,7 @@ import { SearchHeader } from '@/components/search/search-header';
 import { Unavailable } from '@/components/search/unavailable';
 import { ui } from '@/components/ui';
 import { DEFAULT_NOTICE_TYPE, FILTER_KEYS, type Query } from '@/lib/query/types';
-import { describeQuery } from '@/lib/query/describe';
+import { describeQuery, resultsAnnouncement } from '@/lib/query/describe';
 import { parseQuery, queryHref } from '@/lib/query/url';
 import { siteOrigin } from '@/lib/server/origin';
 import { checkLimit } from '@/lib/server/rate-limit';
@@ -41,6 +41,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const lastYear = meta ? Number(meta.dataDate.slice(0, 4)) : new Date().getUTCFullYear();
   // Identifier lookups ignore the filters, so they're not offered.
   const filters = result?.status === 'ok' && !result.lookup ? <FilterSidebar query={query} counts={result.counts} lastYear={lastYear} /> : null;
+  // Over the limit, the notice is an alert and speaks for itself.
+  const announcement =
+    result?.status === 'ok' ? resultsAnnouncement(result) : limit.status === 'limited' ? '' : 'Search is unavailable right now.';
 
   return (
     <PendingProvider>
@@ -49,7 +52,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <aside className={`${ui.sideCol} hidden cols:block`} aria-label="Filters">
           {filters}
         </aside>
-        <main className={`${ui.mainCol} flex flex-col gap-3.5`}>
+        {/* "Skip to results" in the header lands here (AC32). */}
+        <main id="results" tabIndex={-1} className={`${ui.mainCol} flex flex-col gap-3.5 focus:outline-none`}>
+          {/* What screen readers hear when the results change. It stays outside the part
+              marked busy while a search loads, and the same element across searches, so
+              each change is announced (AC32). */}
+          <p role="status" aria-atomic="true" className="sr-only">
+            {announcement}
+          </p>
           {filters && <FilterDrawer active={activeFilters(query)}>{filters}</FilterDrawer>}
           {limit.status === 'limited' ? (
             <SearchLimitReached retryAfter={limit.retryAfter} sentence={describeQuery(query).sentence} retryHref={href} />

@@ -134,6 +134,11 @@ export function SearchControls({ query }: { query: Query }) {
         ))}
       </Form>
 
+      {/* The filter column comes before the results, so keyboard users can jump past it (AC32). Shown when it has focus. */}
+      <a href="#results" className={`${ui.link} sr-only self-start text-[13px] focus:not-sr-only`}>
+        Skip to results
+      </a>
+
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
         <button
           type="button"

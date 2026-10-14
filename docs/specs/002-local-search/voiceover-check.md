@@ -17,20 +17,21 @@ Each step lists what VoiceOver should say. Record a pass or fail and anything co
 |---|---|---|
 | 1 | Load the start page. Open the rotor's headings list. | The page title "Retraction search", and headings including the total ("67,384 retractions" on the 2026-10-09 snapshot), "Filters" and each filter's name. |
 | 2 | Tab to the search box. | "Search, search text field", with its placeholder about titles, author names, journals and publishers. |
-| 3 | Type `neuron` and wait a moment. | The results update without moving focus out of the search box. Reading the total heading gives the new number of retractions. |
-| 4 | Move to the summary under the total. | The summary chips, each read with its text, and each chip's remove button read as "Remove" and the chip's text. |
-| 5 | Tab into the Filters column to the Notice type values. | Each value read as a link with its name, its count and its state, such as "Retraction, 271 records, selected" and "Expression of concern, 20 records". The exclude control is separate: "Exclude Expression of concern". |
-| 6 | Activate "Expression of concern". | The page updates; the total heading now names both notice types. The notice-type labels in results are read as words ("Retraction", "Expression of concern"), not only colors. |
-| 7 | Tab to a Reason caveat's "Read more" link. | "Read more, link". Its note before it is reachable with VO-Right Arrow ("Retraction Watch's classification…"). |
-| 8 | Tab to a year filter's "from" field and type `2015`. | "Notice year from, edit text". The results update after a pause. |
-| 9 | In the first result, Tab to "All fields" and activate it. | "All fields, button, collapsed", then "Fewer fields, button, expanded"; the extra fields follow it in reading order. |
-| 10 | Tab to an author name in a result and activate it. | "Show records that list the name …, link". On the new results, the yellow note is read: "Name matches only. These records list the name as written…". |
-| 11 | Go back (Command-[ ), then open the first result's title link. | The record page's title heading. The page has no search box. "Back to results, button" is there. |
-| 12 | Activate "Copy link to this record". | "Link copied." |
-| 13 | Activate "Back to results". | The results return, at the same place in the list. |
-| 14 | Tab to "Download CSV" and activate it. | A status message ("Preparing the file…", then "Downloaded retraction-search-….csv."), without a stream of size updates. |
-| 15 | Tab to "Cite this search" and activate it. | "Cite this search, button, expanded", then the citation text and a "Copy" button. |
-| 16 | At a narrow window (or 375 px in Safari's Responsive Design Mode), activate "Filters". | A dialog named "Filters"; focus moves into it; Escape closes it and returns focus to the button. |
+| 3 | Type `neuron` and wait a moment. | Once the results update, one sentence with the new total and page, such as "271 retractions, page 1 of 14." Focus stays in the search box. |
+| 4 | Press Tab, then activate the link with VO-Space. | "Skip to results, link". After it, the next Tab goes to the first control in the results, the summary's first remove button, not into the filters. |
+| 5 | Move through the summary under the total. | The summary chips, each read with its text, and each chip's remove button read as "Remove" and the chip's text. |
+| 6 | Open the rotor's landmarks list and choose Filters, then Tab to the Notice type values. | Each value read as a link with its name, its count and its state, such as "Retraction, 271 records, selected" and "Expression of concern, 20 records". The exclude control is separate: "Exclude Expression of concern". |
+| 7 | Activate "Expression of concern". | One sentence with the new totals, such as "271 retractions and 20 expressions of concern, page 1 of 15." The notice-type labels in results are read as words ("Retraction", "Expression of concern"), not only colors. |
+| 8 | Tab to a Reason caveat's "Read more" link. | "Read more, link". Its note before it is reachable with VO-Right Arrow ("Retraction Watch's classification…"). |
+| 9 | Tab to a year filter's "from" field and type `2015`. | "Notice year from, edit text". After a pause, one sentence with the new total. |
+| 10 | In the first result, Tab to "All fields" and activate it. | "All fields, button, collapsed", then "Fewer fields, button, expanded"; the extra fields follow it in reading order. |
+| 11 | Tab to an author name in a result and activate it. | "Show records that list the name …, link". On the new results, the yellow note is read: "Name matches only. These records list the name as written…". |
+| 12 | Go back (Command-[ ), then open the first result's title link. | The record page's title heading. The page has no search box. "Back to results, button" is there. |
+| 13 | Activate "Copy link to this record". | "Link copied." |
+| 14 | Activate "Back to results". | The results return, at the same place in the list. |
+| 15 | Tab to "Download CSV" and activate it. | A status message ("Preparing the file…", then "Downloaded retraction-search-….csv."), without a stream of size updates. |
+| 16 | Tab to "Cite this search" and activate it. | "Cite this search, button, expanded", then the citation text and a "Copy" button. |
+| 17 | At a narrow window (or 375 px in Safari's Responsive Design Mode), activate "Filters". | A dialog named "Filters"; focus moves into it; Escape closes it and returns focus to the button. |
 
 ## Results
 

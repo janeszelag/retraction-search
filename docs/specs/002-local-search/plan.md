@@ -217,6 +217,8 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 
 **Filter links** are `<Link prefetch={false} scroll={false}>`. A clicked value shows as selected straight away, and the old results dim until the new ones arrive. Next.js 16's API for showing link status gets checked at setup.
 
+**Screen readers and the keyboard (AC32).** When the results change, screen readers hear one short sentence from a status message, such as "271 retractions, page 1 of 14.", or that the results are close spellings. It sits outside the part of the page marked busy while a search loads, and the results' heading and summary aren't a live region, so nothing else is announced over it. (In the VoiceOver check on 2026-10-14, the summary's new "matching" chip cut off the total.) The filter column comes before the results in the page, so a "Skip to results" link follows the search box, shown when it has focus; it moves focus to the results column.
+
 **Server-only code** lives in `web/lib/server/`, which imports `server-only` so it can't end up in browser code. The search key is read there from the environment and never passed to a component (AC27).
 
 ## Rate limits and failures
