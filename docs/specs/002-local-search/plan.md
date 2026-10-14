@@ -176,7 +176,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 | Options | `is_revision:=false`, `has_editorial_staff_author:=false` |
 | Field term (all its words, anywhere in the field) | `institutions:University of Toronto` |
 | Excluded field term | ``(institutions:! university || institutions:! of || institutions:! toronto)``, which keeps records missing any of the words |
-| Selected author names (each must be listed, ignoring capitals and accents) | ``authors:=`Maria Example` && authors:=`Jun Sample` `` (spike S8) |
+| Selected author names (each must be listed, ignoring capitals, accents and punctuation) | ``authors:=`Maria Example` && authors:=`Jun Sample` `` (spike S8) |
 | Identifier lookup | ``notice_doi:=`x` || paper_doi:=`x` ``, ignoring every other clause |
 
 **Search text** uses `q` over `title,authors,institutions,journal,publisher`, settled by spike S6:
@@ -320,6 +320,7 @@ Word pairs fail on generic phrases because one affiliation string often names se
 
 - **AC12** (2026-10-13): an identifier lookup ignores the filters and says so. Otherwise the DOI of an expression of concern finds nothing under the retractions-only default.
 - **AC13** (2026-10-13, after spike S6): near-identical names stay apart while the search has exact matches. When the filters leave no exact match and the page falls back to close spellings, it says so.
+- **AC14** (2026-10-13): author matches ignore capitals and accents, the owner's call, and also punctuation, which Typesense drops when indexing. Punctuation is dropped rather than read as a space: "Ana Ma-Smith" matches "Ana Masmith" but not "Ana Ma Smith".
 
 ## Commands (AC34)
 

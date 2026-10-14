@@ -116,8 +116,9 @@ export function Results({
         {query.authorNames.length > 0 && (
           <div role="note" className="rounded-md border border-[#e3c164] bg-[#fff5d9] px-3.5 py-2.5 text-[13.5px] leading-[1.45] text-[#4a3300]">
             <p>
-              {/* The design said "exactly as written"; AC14 now ignores capitals and accents. */}
-              <strong className="font-bold">Name matches only.</strong> These records list the name as written, ignoring capitals and accents.
+              {/* The design said "exactly as written"; AC14 now ignores capitals, accents and punctuation. */}
+              <strong className="font-bold">Name matches only.</strong> These records list the name as written, ignoring capitals, accents and
+              punctuation.
               Different people can share a name, and the same person may appear under other spellings or with initials.
             </p>
           </div>
