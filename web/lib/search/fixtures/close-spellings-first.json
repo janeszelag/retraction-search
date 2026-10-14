@@ -1,0 +1,2271 @@
+{
+ "search": "q=iraq&country=Serbia",
+ "typos": "fallback",
+ "results": [
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 10,
+       "highlighted": "Compromised Peer Review",
+       "value": "Compromised Peer Review"
+      },
+      {
+       "count": 7,
+       "highlighted": "Duplication of/in Article",
+       "value": "Duplication of/in Article"
+      },
+      {
+       "count": 7,
+       "highlighted": "Concerns/Issues about Authorship/Affiliation",
+       "value": "Concerns/Issues about Authorship/Affiliation"
+      },
+      {
+       "count": 6,
+       "highlighted": "Plagiarism of/in Article",
+       "value": "Plagiarism of/in Article"
+      },
+      {
+       "count": 3,
+       "highlighted": "Euphemisms for Plagiarism",
+       "value": "Euphemisms for Plagiarism"
+      },
+      {
+       "count": 2,
+       "highlighted": "Objections by Author(s)",
+       "value": "Objections by Author(s)"
+      },
+      {
+       "count": 2,
+       "highlighted": "Concerns/Issues about Data",
+       "value": "Concerns/Issues about Data"
+      },
+      {
+       "count": 2,
+       "highlighted": "Investigation by Journal/Publisher",
+       "value": "Investigation by Journal/Publisher"
+      },
+      {
+       "count": 2,
+       "highlighted": "Date of Article and/or Notice Unknown",
+       "value": "Date of Article and/or Notice Unknown"
+      },
+      {
+       "count": 1,
+       "highlighted": "Plagiarism of Text",
+       "value": "Plagiarism of Text"
+      },
+      {
+       "count": 1,
+       "highlighted": "Duplication of Text",
+       "value": "Duplication of Text"
+      },
+      {
+       "count": 1,
+       "highlighted": "False/Forged Authorship",
+       "value": "False/Forged Authorship"
+      },
+      {
+       "count": 1,
+       "highlighted": "Euphemisms for Duplication",
+       "value": "Euphemisms for Duplication"
+      },
+      {
+       "count": 1,
+       "highlighted": "Investigation by Third Party",
+       "value": "Investigation by Third Party"
+      },
+      {
+       "count": 1,
+       "highlighted": "Ethical Violations by Author",
+       "value": "Ethical Violations by Author"
+      },
+      {
+       "count": 1,
+       "highlighted": "Upgrade/Update of Prior Notice(s)",
+       "value": "Upgrade/Update of Prior Notice(s)"
+      },
+      {
+       "count": 1,
+       "highlighted": "Unreliable Results and/or Conclusions",
+       "value": "Unreliable Results and/or Conclusions"
+      },
+      {
+       "count": 1,
+       "highlighted": "Concerns/Issues about Referencing/Attributions",
+       "value": "Concerns/Issues about Referencing/Attributions"
+      }
+     ],
+     "field_name": "reasons",
+     "sampled": false,
+     "stats": {
+      "total_values": 18
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 11,
+       "highlighted": "B/T: Computer Science",
+       "value": "B/T: Computer Science"
+      },
+      {
+       "count": 5,
+       "highlighted": "PHY: Energy",
+       "value": "PHY: Energy"
+      },
+      {
+       "count": 4,
+       "highlighted": "B/T: Technology",
+       "value": "B/T: Technology"
+      },
+      {
+       "count": 4,
+       "highlighted": "PHY: Engineering - Structural",
+       "value": "PHY: Engineering - Structural"
+      },
+      {
+       "count": 4,
+       "highlighted": "PHY: Engineering - Mechanical",
+       "value": "PHY: Engineering - Mechanical"
+      },
+      {
+       "count": 3,
+       "highlighted": "PHY: Engineering - Electrical",
+       "value": "PHY: Engineering - Electrical"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Physics",
+       "value": "PHY: Physics"
+      },
+      {
+       "count": 1,
+       "highlighted": "BLS: Microbiology",
+       "value": "BLS: Microbiology"
+      },
+      {
+       "count": 1,
+       "highlighted": "B/T: Data Science",
+       "value": "B/T: Data Science"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Nanotechnology",
+       "value": "PHY: Nanotechnology"
+      },
+      {
+       "count": 1,
+       "highlighted": "B/T: Urban Planning",
+       "value": "B/T: Urban Planning"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Materials Science",
+       "value": "PHY: Materials Science"
+      },
+      {
+       "count": 1,
+       "highlighted": "BLS: Anatomy/Physiology",
+       "value": "BLS: Anatomy/Physiology"
+      },
+      {
+       "count": 1,
+       "highlighted": "B/T: Business - Economics",
+       "value": "B/T: Business - Economics"
+      },
+      {
+       "count": 1,
+       "highlighted": "ENV: Environmental Sciences",
+       "value": "ENV: Environmental Sciences"
+      }
+     ],
+     "field_name": "subjects",
+     "sampled": false,
+     "stats": {
+      "total_values": 15
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 13,
+       "highlighted": "B/T",
+       "value": "B/T"
+      },
+      {
+       "count": 11,
+       "highlighted": "PHY",
+       "value": "PHY"
+      },
+      {
+       "count": 1,
+       "highlighted": "ENV",
+       "value": "ENV"
+      },
+      {
+       "count": 1,
+       "highlighted": "BLS",
+       "value": "BLS"
+      }
+     ],
+     "field_name": "subject_categories",
+     "sampled": false,
+     "stats": {
+      "total_values": 4
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 17,
+       "highlighted": "Research Article",
+       "value": "Research Article"
+      },
+      {
+       "count": 1,
+       "highlighted": "Review Article",
+       "value": "Review Article"
+      }
+     ],
+     "field_name": "article_types",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "No",
+       "value": "No"
+      }
+     ],
+     "field_name": "paywalled",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 5,
+       "highlighted": "2019",
+       "value": "2019"
+      },
+      {
+       "count": 4,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 3,
+       "highlighted": "2020",
+       "value": "2020"
+      },
+      {
+       "count": 3,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 1,
+       "highlighted": "2023",
+       "value": "2023"
+      },
+      {
+       "count": 1,
+       "highlighted": "2022",
+       "value": "2022"
+      },
+      {
+       "count": 1,
+       "highlighted": "2014",
+       "value": "2014"
+      }
+     ],
+     "field_name": "notice_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2018.7222222222222,
+      "max": 2023,
+      "min": 2014,
+      "sum": 36337,
+      "total_values": 7
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 10,
+       "highlighted": "2014",
+       "value": "2014"
+      },
+      {
+       "count": 4,
+       "highlighted": "2015",
+       "value": "2015"
+      },
+      {
+       "count": 1,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 1,
+       "highlighted": "2020",
+       "value": "2020"
+      },
+      {
+       "count": 1,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 1,
+       "highlighted": "2016",
+       "value": "2016"
+      }
+     ],
+     "field_name": "paper_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2015.2222222222222,
+      "max": 2021,
+      "min": 2014,
+      "sum": 36274,
+      "total_values": 6
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "false",
+       "value": "false"
+      }
+     ],
+     "field_name": "has_editorial_staff_author",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 18,
+   "hits": [
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9",
+       "Lee Specimen 10"
+      ],
+      "countries": [
+       "China",
+       "Iran",
+       "Saudi Arabia",
+       "Serbia",
+       "Tunisia",
+       "Vietnam"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "70583",
+      "institutions": [
+       "School of Mechatronic Engineering, Xi’an Technological University, Xi’an, 710021, China",
+       "Department of Civil Engineering, Central Tehran Branch, Islamic Azad University, Tehran, Iran",
+       "Ghateh Gostar Novin Company, Tabriz, Iran",
+       "Faculty of Natural Sciences, University of Prishtina, Kosovska Mitrovica, Serbia",
+       "Faculty of Technical Sciences, University of Prishtina, Kosovska Mitrovica, Serbia",
+       "Department of Civil Engineering, College of Engineering, Prince Sattam Bin Abdulaziz University, Al-Kharj, 11942, Saudi Arabia",
+       "Civil Engineering Laboratory, Ecole Nationale D’Ingénieurs deTunis (ENIT), B.P. 37, Le belvédère1002, Tunis, Tunisia",
+       "Faculty Information Technology, Alfa BK University, Belgrade, Serbia",
+       "Institute of Research and Development, Duy Tan University, Da Nang, 550000, Vietnam",
+       "Faculty of Humanities and Social Sciences, Duy Tan University, Da Nang, 550000, Vietnam",
+       "MBA School, Henan University of Economics and Law, Henan, 450046, China"
+      ],
+      "is_revision": false,
+      "journal": "Environment, Development and Sustainability",
+      "notice_date": 1699401600,
+      "notice_doi": "10.1007/s10668-023-04086-z",
+      "notice_type": "Retraction",
+      "notice_year": 2023,
+      "original": {
+       "notice_date": "11/8/2023 0:00",
+       "notice_doi": "10.1007/s10668-023-04086-z",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/12/2021 0:00",
+       "paper_doi": "10.1007/s10668-021-01382-4",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1618185600,
+      "paper_doi": "10.1007/s10668-021-01382-4",
+      "paper_year": 2021,
+      "paywalled": "No",
+      "publisher": "Springer - Nature Publishing Group",
+      "reasons": [
+       "Compromised Peer Review",
+       "Concerns/Issues about Authorship/Affiliation",
+       "Concerns/Issues about Referencing/Attributions",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party"
+      ],
+      "record_id": 70583,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Energy",
+       "PHY: Engineering - Structural"
+      ],
+      "title": "Analyzing the energy performance of buildings by neuro-fuzzy logic based on different factors",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Review Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9",
+       "Lee Specimen 10",
+       "Sam Instance 11"
+      ],
+      "countries": [
+       "India",
+       "Iran",
+       "Poland",
+       "Portugal",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "37789",
+      "institutions": [
+       "Student Research Committee, School of Medicine, Bam University of Medical Sciences, Bam, Iran",
+       "Department of Biology and Ecology, Faculty of Science and Mathematics, University of Niš, Niš, Serbia",
+       "Department of Food Gastronomy and Food Hygiene, Warsaw University of Life Sciences (WULS), Warszawa, Poland",
+       "Phytochemistry Research Center, Shahid Beheshti University of Medical Sciences, Tehran, Iran",
+       "Department of Zoology, Annamalai University, Annamalai Nagar, India Chidambaram",
+       "LEPABE - Department of Chemical Engineering, Faculty of Engineering, University of Porto, Porto, Portugal",
+       "Faculty of Medicine, University of Porto, Alameda Prof. Hernâni Monteiro, Porto, Portugal",
+       "Institute for Research and Innovation in Health (i3S), University of Porto, Porto, Portugal"
+      ],
+      "is_revision": false,
+      "journal": "Critical Reviews in Food Science and Nutrition",
+      "notice_date": 1655683200,
+      "notice_doi": "10.1080/10408398.2022.2078104",
+      "notice_pubmed_id": 35724325,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "notice_date": "6/20/2022 0:00",
+       "notice_doi": "10.1080/10408398.2022.2078104",
+       "notice_pubmed_id": "35724325",
+       "paper_date": "5/13/2020 0:00",
+       "paper_doi": "10.1080/10408398.2020.1760202",
+       "paper_pubmed_id": "32400169"
+      },
+      "paper_date": 1589328000,
+      "paper_doi": "10.1080/10408398.2020.1760202",
+      "paper_pubmed_id": 32400169,
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Taylor and Francis",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 37789,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Anatomy/Physiology",
+       "BLS: Microbiology"
+      ],
+      "title": "Human microbiome and homeostasis: Insights into the key role of prebiotics, probiotics, and symbiotics",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "23545",
+      "institutions": [
+       "Department of Civil Engineering, University of Malaya, 50603, Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603, Kuala Lumpur, Malaysia",
+       "Chalous Branch, Department of Computer Science, Islamic Azad University (IAU), P.O. Box 46615-397, Chalous, Iran",
+       "Department for Mechatronics and Control, Faculty of Mechanical Engineering, University of Niš, Aleksandra Medvedeva 14, 18000, Nis, Serbia",
+       "Department of Civil Engineering, Semnan University, Semnan, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Natural Hazards",
+      "notice_date": 1590364800,
+      "notice_doi": "10.1007/s11069-020-03924-x",
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "notice_date": "5/25/2020 0:00",
+       "notice_doi": "10.1007/s11069-020-03924-x",
+       "notice_pubmed_id": "0",
+       "paper_date": "3/22/2014 0:00",
+       "paper_doi": "10.1007/s11069-014-1145-0",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1395446400,
+      "paper_doi": "10.1007/s11069-014-1145-0",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "False/Forged Authorship"
+      ],
+      "record_id": 23545,
+      "subject_categories": [
+       "B/T"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "B/T: Technology"
+      ],
+      "title": "Adaptive neuro-fuzzy prediction of the optimum parameters of protective spur dike",
+      "url_record_counts": [
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "23165",
+      "institutions": [
+       "Department for Mechatronics and Control, Faculty of Mechanical Engineering, University of Niš, Aleksandra Medvedeva 14, 18000 Nis, Serbia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), 46615-397 Chalous, Mazandaran, Iran",
+       "Department of Civil Engineering, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Bulletin of Earthquake Engineering",
+      "notice_date": 1585612800,
+      "notice_doi": "10.1007/s10518-020-00824-0",
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "notice_date": "3/31/2020 0:00",
+       "notice_doi": "10.1007/s10518-020-00824-0",
+       "notice_pubmed_id": "0",
+       "paper_date": "8/3/2014 0:00",
+       "paper_doi": "10.1007/s10518-014-9656-3",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1407024000,
+      "paper_doi": "10.1007/s10518-014-9656-3",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Duplication of/in Article",
+       "Compromised Peer Review"
+      ],
+      "record_id": 23165,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Engineering - Structural"
+      ],
+      "title": "Soft computing methodologies for estimation of bridge girder forces with perforations under tsunami wave loading",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "22840",
+      "institutions": [
+       "Department of Architecture, Faculty of Art, Architecture and Urban Planning, Najafabad Branch, Islamic Azad University, 8514143131, Najafabad, Isfahan, Iran",
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, 50603, Kuala Lumpur, Malaysia",
+       "Institute of Ocean and Earth Sciences, University of Malaya, 50603, Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603, Kuala Lumpur, Malaysia",
+       "Department of Water Engineering, Soil and Water College, University of Zabol, Zabol, IR, Iran",
+       "Faculty of Mechanical Engineering, University of Kashan, Kashan, Iran",
+       "Faculty of Mechanical Engineering, Department for Mechatronics and Control, University of Niš, Aleksandra Medvedeva 14, 18000, Niš, Serbia",
+       "Department of Civil Engineering, Razi University, Kermanshah, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Theoretical and Applied Climatology",
+      "notice_date": 1583712000,
+      "notice_doi": "10.1007/s00704-020-03150-2",
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "notice_date": "3/9/2020 0:00",
+       "notice_doi": "10.1007/s00704-020-03150-2",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/28/2015 0:00",
+       "paper_doi": "10.1007/s00704-015-1462-6",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1430179200,
+      "paper_doi": "10.1007/s00704-015-1462-6",
+      "paper_year": 2015,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Compromised Peer Review"
+      ],
+      "record_id": 22840,
+      "subject_categories": [
+       "B/T"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "B/T: Urban Planning"
+      ],
+      "title": "Modelling thermal comfort of visitors at urban squares in hot and arid climate using NN-ARX soft computing method",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "21609",
+      "institutions": [
+       "Department of Civil Engineering, Birjand University of Technology, Birjand, Iran",
+       "Department of Civil Engineering, University of Malaya, Kuala Lumpur, Malaysia",
+       "UTM CRC, Institute for Smart Infrastructure and Innovative Construction, UTM, Johor Bahru, Malaysia",
+       "University of Nis, Pedagogical Faculty in Vranje, Vranje, Serbia"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Intelligent Manufacturing",
+      "notice_date": 1573516800,
+      "notice_doi": "10.1007/s10845-019-01493-w",
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "notice_date": "11/12/2019 0:00",
+       "notice_doi": "10.1007/s10845-019-01493-w",
+       "notice_pubmed_id": "0",
+       "paper_date": "3/6/2017 0:00",
+       "paper_doi": "10.1007/s10845-017-1306-6",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1488758400,
+      "paper_doi": "10.1007/s10845-017-1306-6",
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 21609,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Engineering - Structural"
+      ],
+      "title": "Analysis of influential factors for predicting the shear strength of a V-shaped angle shear connector in composite beams using an adaptive neuro-fuzzy technique",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "21681",
+      "institutions": [
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "Deparment for Mechatronics and Control, Faculty of Mechanical Engineering, University of Nis, Nis, Serbia",
+       "Department of Civil Engineering, University of Guilan, Rash, Iran",
+       "Department of Civil Engineering, Semnan University, Semnan, Iran",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), Chalous, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Coastal Conservation",
+      "notice_date": 1573171200,
+      "notice_doi": "10.1007/s11852-014-0357-5",
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "notice_date": "11/8/2019 0:00",
+       "notice_doi": "10.1007/s11852-014-0357-5",
+       "notice_pubmed_id": "0",
+       "paper_date": "12/2/2014 0:00",
+       "paper_doi": "10.1007/s11852-014-0357-5",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1417478400,
+      "paper_doi": "10.1007/s11852-014-0357-5",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Date of Article and/or Notice Unknown",
+       "Duplication of/in Article",
+       "Compromised Peer Review"
+      ],
+      "record_id": 21681,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Engineering - Structural"
+      ],
+      "title": "Adaptive neuro-fuzzy estimation of the influence of slot on local scour at bridge pier groups",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "20532",
+      "institutions": [
+       "Deparment for Mechatronics and Control, Faculty of Mechanical EngineeringUniversity of Nis, Nis, Serbia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "Department of Civil Engineering, Faculty of Engineering, Kuala Lumpur, Malaysia",
+       "Department of Computer Science, Islamic Azad University, Chalous Branch, Chalous Iran"
+      ],
+      "is_revision": false,
+      "journal": "Stochastic Environmental Research and Risk Assessment",
+      "notice_date": 1559088000,
+      "notice_doi": "10.1007/s00477-019-01675-1",
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "notice_date": "5/29/2019 0:00",
+       "notice_doi": "10.1007/s00477-019-01675-1",
+       "notice_pubmed_id": "0",
+       "paper_date": "5/17/2014 0:00",
+       "paper_doi": "10.1007/s00477-014-0901-8",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1400284800,
+      "paper_doi": "10.1007/s00477-014-0901-8",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Compromised Peer Review",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 20532,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Energy",
+       "PHY: Engineering - Electrical"
+      ],
+      "title": "Adaptive neuro-fuzzy evaluation of wind farm power production as function of wind speed and direction",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "20356",
+      "institutions": [
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), Chalous, Mazandaran, Iran",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "University of Nis, Faculty of Mechanical Engineering, Deparment for Mechatronics and Control, Nis, Serbia",
+       "Institute of Ocean and Earth Sciences (IOES), University of Malaya, Kuala Lumpur, Malaysia",
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "PLoS One",
+      "notice_date": 1555977600,
+      "notice_doi": "10.1371/journal.pone.0215801",
+      "notice_pubmed_id": 31013313,
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "notice_date": "4/23/2019 0:00",
+       "notice_doi": "10.1371/journal.pone.0215801",
+       "notice_pubmed_id": "31013313",
+       "paper_date": "7/30/2014 0:00",
+       "paper_doi": "10.1371/journal.pone.0103414",
+       "paper_pubmed_id": "25075621"
+      },
+      "paper_date": 1406678400,
+      "paper_doi": "10.1371/journal.pone.0103414",
+      "paper_pubmed_id": 25075621,
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "PLoS",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 20356,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Energy",
+       "PHY: Engineering - Mechanical"
+      ],
+      "title": "Adaptive Neuro-Fuzzy Methodology for Noise Assessment of Wind Turbine",
+      "url_record_counts": [
+       1
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "Croatia",
+       "Iran",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "19940",
+      "institutions": [
+       "Department of Biotechnology, University of Rijeka, Rijeka, Croatia",
+       "University of Nis, Faculty of Economics, Nis, Serbia",
+       "Young Researchers and Elites Club, Hamedan Branch, Islamic Azad University, Hamedan, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Quality & Quantity",
+      "notice_date": 1549497600,
+      "notice_doi": "10.1007/s11135-019-00843-3",
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "notice_date": "2/7/2019 0:00",
+       "notice_doi": "10.1007/s11135-019-00843-3",
+       "notice_pubmed_id": "0",
+       "paper_date": "3/29/2016 0:00",
+       "paper_doi": "10.1007/s11135-016-0337-y",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1459209600,
+      "paper_doi": "10.1007/s11135-016-0337-y",
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Duplication of/in Article",
+       "Compromised Peer Review"
+      ],
+      "record_id": 19940,
+      "subject_categories": [
+       "B/T"
+      ],
+      "subjects": [
+       "B/T: Business - Economics",
+       "B/T: Technology"
+      ],
+      "title": "Prediction of economic growth by extreme learning approach based on science and technology transfer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8"
+      ],
+      "countries": [
+       "Chile",
+       "India",
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "19639",
+      "institutions": [
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "Faculty of Mechanical Engineering, University of Kashan, Kashan, Iran",
+       "Department for Mechatronics and Control, Faculty of Mechanical Engineering, University of Nis, Nis, Serbia",
+       "Technical University Federico Santa Maria, Valparaíso, Chile",
+       "Industrial Engineering Department, Yazd University, Yazd, Iran",
+       "Department of Civil and Environmental Engineering, ITM University, Gurgaon, India",
+       "Department of Mechanical Engineering, School of Engineering, Australian College of Kuwait, Safat, Kuwait"
+      ],
+      "is_revision": false,
+      "journal": "Climate Dynamics",
+      "notice_date": 1543449600,
+      "notice_doi": "10.1007/s00382-018-4550-3",
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "11/29/2018 0:00",
+       "notice_doi": "10.1007/s00382-018-4550-3",
+       "notice_pubmed_id": "0",
+       "paper_date": "6/2/2015 0:00",
+       "paper_doi": "10.1007/s00382-015-2682-2",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1433203200,
+      "paper_doi": "10.1007/s00382-015-2682-2",
+      "paper_year": 2015,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Compromised Peer Review",
+       "Objections by Author(s)",
+       "Upgrade/Update of Prior Notice(s)"
+      ],
+      "record_id": 19639,
+      "subject_categories": [
+       "B/T",
+       "ENV"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "ENV: Environmental Sciences"
+      ],
+      "title": "Application of extreme learning machine for estimation of wind speed distribution",
+      "url_record_counts": [
+       5,
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/",
+       "https://retractionwatch.com/2020/01/02/example-post-2/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "19558",
+      "institutions": [
+       "Faculty of Mechanical Engineering, Department for Mechatronics and Control, University of Nis, Nis, Serbia",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), Chalous, Iran",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "Department of Information System, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "Computer Engineering Department, Islamic Azad University of Karaj, Karaj, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Applied Intelligence",
+      "notice_date": 1542585600,
+      "notice_doi": "10.1007/s10489-018-1367-z",
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "11/19/2018 0:00",
+       "notice_doi": "10.1007/s10489-018-1367-z",
+       "notice_pubmed_id": "0",
+       "paper_date": "8/19/2014 0:00",
+       "paper_doi": "10.1007/s10489-014-0574-5",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1408406400,
+      "paper_doi": "10.1007/s10489-014-0574-5",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Springer",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Concerns/Issues about Data",
+       "Duplication of/in Article"
+      ],
+      "record_id": 19558,
+      "subject_categories": [
+       "B/T"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "B/T: Technology"
+      ],
+      "title": "Support vector regression methodology for prediction of input displacement of adaptive compliant robotic gripper",
+      "url_record_counts": [
+       5,
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/",
+       "https://retractionwatch.com/2020/01/02/example-post-2/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Kuwait",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "17412",
+      "institutions": [
+       "Information Science Department, College of Computing Sciences and Engineering, Kuwait University, Kuwait",
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, Kuala Lumpur, Malaysia",
+       "University of Niš, Faculty of Mechanical Engineering, Deparment for Mechatronics and Control, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Civil Engineering, University of Razi, Kermanshah, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Flow Measurement and Instrumentation",
+      "notice_date": 1525219200,
+      "notice_doi": "10.1016/j.flowmeasinst.2018.03.017",
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "5/2/2018 0:00",
+       "notice_doi": "10.1016/j.flowmeasinst.2018.03.017",
+       "notice_pubmed_id": "0",
+       "paper_date": "10/10/2015 0:00",
+       "paper_doi": "10.1016/j.flowmeasinst.2015.04.002",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1444435200,
+      "paper_doi": "10.1016/j.flowmeasinst.2015.04.002",
+      "paper_year": 2015,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Compromised Peer Review"
+      ],
+      "record_id": 17412,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Energy",
+       "PHY: Engineering - Mechanical"
+      ],
+      "title": "Estimation of wind turbine wake effect by adaptive neuro-fuzzy approach",
+      "url_record_counts": [
+       6,
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/",
+       "https://retractionwatch.com/2020/01/02/example-post-2/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "16575",
+      "institutions": [
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), 46615-397 Chalous, Mazandaran, Iran",
+       "University of Niš, Faculty of Mechanical Engineering, Department for Mechatronics and Control, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Information System, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Software Engineering, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Energy Conversion and Management",
+      "notice_date": 1518480000,
+      "notice_doi": "10.1016/j.enconman.2018.02.020",
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "2/13/2018 0:00",
+       "notice_doi": "10.1016/j.enconman.2018.02.020",
+       "notice_pubmed_id": "0",
+       "paper_date": "3/18/2014 0:00",
+       "paper_doi": "10.1016/j.enconman.2014.02.055",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1395100800,
+      "paper_doi": "10.1016/j.enconman.2014.02.055",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Duplication of/in Article"
+      ],
+      "record_id": 16575,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Energy"
+      ],
+      "title": "Wind turbine power coefficient estimation by soft computing methodologies: Comparative study",
+      "url_record_counts": [
+       6,
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/",
+       "https://retractionwatch.com/2020/01/02/example-post-2/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "17410",
+      "institutions": [
+       "University of Niš, Faculty of Mechanical Engineering, Deparment for Mechatronics and Control, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), 46615-397 Chalous, Mazandaran, Iran",
+       "Department of Information System, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of History, Faculty of Arts and Social Sciences Building, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Infrared Physics & Technology",
+      "notice_date": 1514246400,
+      "notice_doi": "10.1016/j.infrared.2017.12.006",
+      "notice_type": "Retraction",
+      "notice_year": 2017,
+      "original": {
+       "notice_date": "12/26/2017 0:00",
+       "notice_doi": "10.1016/j.infrared.2017.12.006",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/23/2014 0:00",
+       "paper_doi": "10.1016/j.infrared.2014.04.005",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1398211200,
+      "paper_doi": "10.1016/j.infrared.2014.04.005",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Compromised Peer Review",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 17410,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Engineering - Electrical",
+       "PHY: Engineering - Mechanical"
+      ],
+      "title": "Evaluation of modulation transfer function of optical lens system by support vector regression methodologies - A comparative study",
+      "url_record_counts": [
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "16670",
+      "institutions": [
+       "University of Niš, Faculty of Mechanical Engineering, Department for Mechatronics and Control, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), 46615-397, Chalous, Mazandaran, Iran",
+       "Department of Software Engineering, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Civil Engineering, Faculty of Engineering, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Infrared Physics & Technology",
+      "notice_date": 1510790400,
+      "notice_doi": "10.1016/j.infrared.2017.11.012",
+      "notice_type": "Retraction",
+      "notice_year": 2017,
+      "original": {
+       "notice_date": "11/16/2017 0:00",
+       "notice_doi": "10.1016/j.infrared.2017.11.012",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/8/2014 0:00",
+       "paper_doi": "10.1016/j.infrared.2014.03.011",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1396915200,
+      "paper_doi": "10.1016/j.infrared.2014.03.011",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Duplication of/in Article",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 16670,
+      "subject_categories": [
+       "B/T"
+      ],
+      "subjects": [
+       "B/T: Data Science"
+      ],
+      "title": "Adaptive neuro-fuzzy prediction of modulation transfer function of optical lens system",
+      "url_record_counts": [
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "8099",
+      "institutions": [
+       "University of Niš, Faculty of Mechanical Engineering, Department of Mechatronics, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Software Engineering, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer Science, Islamic Azad University, Chalous Branch, Chalous 46615-397, Iran",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Advances in Mechanical Engineering",
+      "notice_date": 1495411200,
+      "notice_doi": "10.1177/1687814017710527",
+      "notice_type": "Retraction",
+      "notice_year": 2017,
+      "original": {
+       "notice_date": "5/22/2017 0:00",
+       "notice_doi": "10.1177/1687814017710527",
+       "notice_pubmed_id": "0",
+       "paper_date": "2/12/2015 0:00",
+       "paper_doi": "10.1155/2014/145648",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1423699200,
+      "paper_doi": "10.1155/2014/145648",
+      "paper_year": 2015,
+      "paywalled": "No",
+      "publisher": "SAGE Publications",
+      "reasons": [
+       "Duplication of/in Article",
+       "Euphemisms for Duplication",
+       "Euphemisms for Plagiarism",
+       "Plagiarism of/in Article"
+      ],
+      "record_id": 8099,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "B/T: Technology",
+       "PHY: Engineering - Electrical",
+       "PHY: Engineering - Mechanical"
+      ],
+      "title": "Kinetostatic Analysis of Passively Adaptive Robotic Finger with Distributed Compliance",
+      "url_record_counts": [
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Iran",
+       "Malaysia",
+       "Serbia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "7237",
+      "institutions": [
+       "Photonics Research Centre, Department of Physics, Faculty of Science, University of Malaya, 50603 Kuala Lumpur, Malaysia",
+       "Department of Computer Science, Chalous Branch, Islamic Azad University (IAU), 46615-397 Chalous, Mazandaran, Iran",
+       "University of Niš, Faculty of Mechanical Engineering, Deparment for Mechatronics and Control, Aleksandra Medvedeva 14, 18000 Niš, Serbia",
+       "Department of Computer System and Technology, Faculty of Computer Science and Information Technology, University of Malaya, 50603 Kuala Lumpur, Malaysia"
+      ],
+      "is_revision": false,
+      "journal": "Physica E: Low-dimensional Systems and Nanostructures",
+      "notice_date": 1409529600,
+      "notice_doi": "10.1016/j.physe.2019.04.006",
+      "notice_type": "Retraction",
+      "notice_year": 2014,
+      "original": {
+       "notice_date": "9/1/2014 0:00",
+       "notice_doi": "10.1016/j.physe.2019.04.006",
+       "notice_pubmed_id": "0",
+       "paper_date": "6/19/2014 0:00",
+       "paper_doi": "10.1016/j.physe.2014.06.003",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1403136000,
+      "paper_doi": "10.1016/j.physe.2014.06.003",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Date of Article and/or Notice Unknown",
+       "Duplication of Text",
+       "Ethical Violations by Author",
+       "Compromised Peer Review",
+       "Investigation by Journal/Publisher",
+       "Objections by Author(s)",
+       "Plagiarism of Text"
+      ],
+      "record_id": 7237,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Materials Science",
+       "PHY: Nanotechnology",
+       "PHY: Physics"
+      ],
+      "title": "Investigation of plasmonic studies on morphology of deposited silver thin films having different thicknesses by soft computing methodologies—A comparative study",
+      "url_record_counts": [
+       4,
+       27
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/",
+       "https://retractionwatch.com/2020/01/02/example-post-2/"
+      ]
+     },
+     "highlight": {}
+    }
+   ],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 2,
+       "highlighted": "Infrared Physics & Technology",
+       "value": "Infrared Physics & Technology"
+      },
+      {
+       "count": 1,
+       "highlighted": "PLoS One",
+       "value": "PLoS One"
+      },
+      {
+       "count": 1,
+       "highlighted": "Natural Hazards",
+       "value": "Natural Hazards"
+      },
+      {
+       "count": 1,
+       "highlighted": "Climate Dynamics",
+       "value": "Climate Dynamics"
+      },
+      {
+       "count": 1,
+       "highlighted": "Quality & Quantity",
+       "value": "Quality & Quantity"
+      },
+      {
+       "count": 1,
+       "highlighted": "Applied Intelligence",
+       "value": "Applied Intelligence"
+      },
+      {
+       "count": 1,
+       "highlighted": "Journal of Coastal Conservation",
+       "value": "Journal of Coastal Conservation"
+      },
+      {
+       "count": 1,
+       "highlighted": "Energy Conversion and Management",
+       "value": "Energy Conversion and Management"
+      },
+      {
+       "count": 1,
+       "highlighted": "Bulletin of Earthquake Engineering",
+       "value": "Bulletin of Earthquake Engineering"
+      },
+      {
+       "count": 1,
+       "highlighted": "Advances in Mechanical Engineering",
+       "value": "Advances in Mechanical Engineering"
+      },
+      {
+       "count": 1,
+       "highlighted": "Theoretical and Applied Climatology",
+       "value": "Theoretical and Applied Climatology"
+      },
+      {
+       "count": 1,
+       "highlighted": "Journal of Intelligent Manufacturing",
+       "value": "Journal of Intelligent Manufacturing"
+      },
+      {
+       "count": 1,
+       "highlighted": "Flow Measurement and Instrumentation",
+       "value": "Flow Measurement and Instrumentation"
+      },
+      {
+       "count": 1,
+       "highlighted": "Environment, Development and Sustainability",
+       "value": "Environment, Development and Sustainability"
+      },
+      {
+       "count": 1,
+       "highlighted": "Critical Reviews in Food Science and Nutrition",
+       "value": "Critical Reviews in Food Science and Nutrition"
+      },
+      {
+       "count": 1,
+       "highlighted": "Stochastic Environmental Research and Risk Assessment",
+       "value": "Stochastic Environmental Research and Risk Assessment"
+      },
+      {
+       "count": 1,
+       "highlighted": "Physica E: Low-dimensional Systems and Nanostructures",
+       "value": "Physica E: Low-dimensional Systems and Nanostructures"
+      }
+     ],
+     "field_name": "journal",
+     "sampled": false,
+     "stats": {
+      "total_values": 17
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 9,
+       "highlighted": "Springer",
+       "value": "Springer"
+      },
+      {
+       "count": 5,
+       "highlighted": "Elsevier",
+       "value": "Elsevier"
+      },
+      {
+       "count": 1,
+       "highlighted": "PLoS",
+       "value": "PLoS"
+      },
+      {
+       "count": 1,
+       "highlighted": "SAGE Publications",
+       "value": "SAGE Publications"
+      },
+      {
+       "count": 1,
+       "highlighted": "Taylor and Francis",
+       "value": "Taylor and Francis"
+      },
+      {
+       "count": 1,
+       "highlighted": "Springer - Nature Publishing Group",
+       "value": "Springer - Nature Publishing Group"
+      }
+     ],
+     "field_name": "publisher",
+     "sampled": false,
+     "stats": {
+      "total_values": 6
+     }
+    }
+   ],
+   "found": 18,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      },
+      {
+       "count": 6,
+       "highlighted": "Expression of concern",
+       "value": "Expression of concern"
+      },
+      {
+       "count": 1,
+       "highlighted": "Correction",
+       "value": "Correction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 3
+     }
+    }
+   ],
+   "found": 25,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 905,
+       "highlighted": "Iraq",
+       "value": "Iraq"
+      },
+      {
+       "count": 224,
+       "highlighted": "India",
+       "value": "India"
+      },
+      {
+       "count": 173,
+       "highlighted": "Saudi Arabia",
+       "value": "Saudi Arabia"
+      },
+      {
+       "count": 126,
+       "highlighted": "Iran",
+       "value": "Iran"
+      },
+      {
+       "count": 102,
+       "highlighted": "China",
+       "value": "China"
+      },
+      {
+       "count": 74,
+       "highlighted": "Malaysia",
+       "value": "Malaysia"
+      },
+      {
+       "count": 52,
+       "highlighted": "Egypt",
+       "value": "Egypt"
+      },
+      {
+       "count": 45,
+       "highlighted": "Pakistan",
+       "value": "Pakistan"
+      },
+      {
+       "count": 35,
+       "highlighted": "Turkey",
+       "value": "Turkey"
+      },
+      {
+       "count": 35,
+       "highlighted": "Poland",
+       "value": "Poland"
+      },
+      {
+       "count": 34,
+       "highlighted": "United Arab Emirates",
+       "value": "United Arab Emirates"
+      },
+      {
+       "count": 33,
+       "highlighted": "Ethiopia",
+       "value": "Ethiopia"
+      },
+      {
+       "count": 31,
+       "highlighted": "Russia",
+       "value": "Russia"
+      },
+      {
+       "count": 31,
+       "highlighted": "United States",
+       "value": "United States"
+      },
+      {
+       "count": 30,
+       "highlighted": "Jordan",
+       "value": "Jordan"
+      },
+      {
+       "count": 29,
+       "highlighted": "Uzbekistan",
+       "value": "Uzbekistan"
+      },
+      {
+       "count": 25,
+       "highlighted": "Taiwan",
+       "value": "Taiwan"
+      },
+      {
+       "count": 23,
+       "highlighted": "Indonesia",
+       "value": "Indonesia"
+      },
+      {
+       "count": 21,
+       "highlighted": "Germany",
+       "value": "Germany"
+      },
+      {
+       "count": 20,
+       "highlighted": "Australia",
+       "value": "Australia"
+      },
+      {
+       "count": 18,
+       "highlighted": "Thailand",
+       "value": "Thailand"
+      },
+      {
+       "count": 17,
+       "highlighted": "Bangladesh",
+       "value": "Bangladesh"
+      },
+      {
+       "count": 16,
+       "highlighted": "Vietnam",
+       "value": "Vietnam"
+      },
+      {
+       "count": 16,
+       "highlighted": "United Kingdom",
+       "value": "United Kingdom"
+      },
+      {
+       "count": 13,
+       "highlighted": "Peru",
+       "value": "Peru"
+      },
+      {
+       "count": 13,
+       "highlighted": "Yemen",
+       "value": "Yemen"
+      },
+      {
+       "count": 13,
+       "highlighted": "Spain",
+       "value": "Spain"
+      },
+      {
+       "count": 13,
+       "highlighted": "Tunisia",
+       "value": "Tunisia"
+      },
+      {
+       "count": 13,
+       "highlighted": "Hungary",
+       "value": "Hungary"
+      },
+      {
+       "count": 12,
+       "highlighted": "Oman",
+       "value": "Oman"
+      },
+      {
+       "count": 10,
+       "highlighted": "Qatar",
+       "value": "Qatar"
+      },
+      {
+       "count": 10,
+       "highlighted": "Romania",
+       "value": "Romania"
+      },
+      {
+       "count": 10,
+       "highlighted": "Belarus",
+       "value": "Belarus"
+      },
+      {
+       "count": 9,
+       "highlighted": "Nigeria",
+       "value": "Nigeria"
+      },
+      {
+       "count": 9,
+       "highlighted": "South Korea",
+       "value": "South Korea"
+      },
+      {
+       "count": 8,
+       "highlighted": "Sudan",
+       "value": "Sudan"
+      },
+      {
+       "count": 8,
+       "highlighted": "South Africa",
+       "value": "South Africa"
+      },
+      {
+       "count": 7,
+       "highlighted": "Ghana",
+       "value": "Ghana"
+      },
+      {
+       "count": 7,
+       "highlighted": "Canada",
+       "value": "Canada"
+      },
+      {
+       "count": 6,
+       "highlighted": "Brazil",
+       "value": "Brazil"
+      },
+      {
+       "count": 6,
+       "highlighted": "Ecuador",
+       "value": "Ecuador"
+      },
+      {
+       "count": 6,
+       "highlighted": "Colombia",
+       "value": "Colombia"
+      },
+      {
+       "count": 6,
+       "highlighted": "Azerbaijan",
+       "value": "Azerbaijan"
+      },
+      {
+       "count": 5,
+       "highlighted": "Japan",
+       "value": "Japan"
+      },
+      {
+       "count": 5,
+       "highlighted": "Italy",
+       "value": "Italy"
+      },
+      {
+       "count": 5,
+       "highlighted": "Algeria",
+       "value": "Algeria"
+      },
+      {
+       "count": 5,
+       "highlighted": "Kazakhstan",
+       "value": "Kazakhstan"
+      },
+      {
+       "count": 4,
+       "highlighted": "Norway",
+       "value": "Norway"
+      },
+      {
+       "count": 4,
+       "highlighted": "Kuwait",
+       "value": "Kuwait"
+      },
+      {
+       "count": 4,
+       "highlighted": "Lebanon",
+       "value": "Lebanon"
+      },
+      {
+       "count": 4,
+       "highlighted": "Afghanistan",
+       "value": "Afghanistan"
+      },
+      {
+       "count": 3,
+       "highlighted": "Sweden",
+       "value": "Sweden"
+      },
+      {
+       "count": 3,
+       "highlighted": "France",
+       "value": "France"
+      },
+      {
+       "count": 3,
+       "highlighted": "Argentina",
+       "value": "Argentina"
+      },
+      {
+       "count": 3,
+       "highlighted": "Philippines",
+       "value": "Philippines"
+      },
+      {
+       "count": 3,
+       "highlighted": "Netherlands",
+       "value": "Netherlands"
+      },
+      {
+       "count": 3,
+       "highlighted": "Czech Republic",
+       "value": "Czech Republic"
+      },
+      {
+       "count": 2,
+       "highlighted": "Nepal",
+       "value": "Nepal"
+      },
+      {
+       "count": 2,
+       "highlighted": "Kenya",
+       "value": "Kenya"
+      },
+      {
+       "count": 2,
+       "highlighted": "Unknown",
+       "value": "Unknown"
+      },
+      {
+       "count": 2,
+       "highlighted": "Ireland",
+       "value": "Ireland"
+      },
+      {
+       "count": 2,
+       "highlighted": "Bahrain",
+       "value": "Bahrain"
+      },
+      {
+       "count": 2,
+       "highlighted": "Austria",
+       "value": "Austria"
+      },
+      {
+       "count": 2,
+       "highlighted": "Portugal",
+       "value": "Portugal"
+      },
+      {
+       "count": 2,
+       "highlighted": "Palestine",
+       "value": "Palestine"
+      },
+      {
+       "count": 2,
+       "highlighted": "Switzerland",
+       "value": "Switzerland"
+      },
+      {
+       "count": 2,
+       "highlighted": "Myanmar (formerly Burma)",
+       "value": "Myanmar (formerly Burma)"
+      },
+      {
+       "count": 1,
+       "highlighted": "Fiji",
+       "value": "Fiji"
+      },
+      {
+       "count": 1,
+       "highlighted": "Syria",
+       "value": "Syria"
+      },
+      {
+       "count": 1,
+       "highlighted": "Malta",
+       "value": "Malta"
+      },
+      {
+       "count": 1,
+       "highlighted": "Libya",
+       "value": "Libya"
+      },
+      {
+       "count": 1,
+       "highlighted": "Chile",
+       "value": "Chile"
+      },
+      {
+       "count": 1,
+       "highlighted": "Greece",
+       "value": "Greece"
+      },
+      {
+       "count": 1,
+       "highlighted": "Cyprus",
+       "value": "Cyprus"
+      },
+      {
+       "count": 1,
+       "highlighted": "Belize",
+       "value": "Belize"
+      },
+      {
+       "count": 1,
+       "highlighted": "Ukraine",
+       "value": "Ukraine"
+      },
+      {
+       "count": 1,
+       "highlighted": "Morocco",
+       "value": "Morocco"
+      },
+      {
+       "count": 1,
+       "highlighted": "Iceland",
+       "value": "Iceland"
+      },
+      {
+       "count": 1,
+       "highlighted": "Albania",
+       "value": "Albania"
+      },
+      {
+       "count": 1,
+       "highlighted": "Slovakia",
+       "value": "Slovakia"
+      },
+      {
+       "count": 1,
+       "highlighted": "Sri Lanka",
+       "value": "Sri Lanka"
+      },
+      {
+       "count": 1,
+       "highlighted": "Singapore",
+       "value": "Singapore"
+      },
+      {
+       "count": 1,
+       "highlighted": "Sint Maarten",
+       "value": "Sint Maarten"
+      }
+     ],
+     "field_name": "countries",
+     "sampled": false,
+     "stats": {
+      "total_values": 83
+     }
+    }
+   ],
+   "found": 926,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "false",
+       "value": "false"
+      }
+     ],
+     "field_name": "is_revision",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 18,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [],
+   "found": 0,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  }
+ ]
+}

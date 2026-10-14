@@ -84,7 +84,7 @@ New and changed files:
 - `pipeline/sql/10_records.sql`: merges journal and publisher spellings, and fixes backticks in author names (below).
 - `pipeline/sql/20_search_documents.sql`: adds `url_record_counts` (below).
 - `web/`: the Next.js 16.4 app, with React 19.3, Tailwind CSS 4.3, TypeScript 7.0 and Vitest 5 (versions checked on npm 2026-10-13). Next.js type-checks with TypeScript 7's `tsc` command, because TypeScript 7 has no JavaScript compiler API (Next.js TypeScript docs, checked 2026-10-13). The theme in `web/app/globals.css` holds the prototype's exact colors, and a test checks that every label's text meets WCAG AA contrast.
-- `.env.local` (not committed): the Typesense admin key (used only by `load`), the site's read-only key, the Redis URL and the salt for hashing visitors.
+- `.env.local` (not committed): the Typesense admin key (used only by `load`), the site's read-only key, the Redis URL and the salt for hashing visitors. One file serves Docker, the pipeline and the site: the site's npm scripts run Next.js through `web/scripts/next.mjs`, which loads it first. Loading it before Next.js starts matters, because Next.js resets `process.env` to its own starting values when it reloads env files. A host that sets variables itself has no `.env.local`.
 
 ## Data in Typesense
 

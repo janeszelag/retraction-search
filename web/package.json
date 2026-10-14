@@ -4,9 +4,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "start": "next start",
+    "build": "node scripts/next.mjs build",
+    "dev": "node scripts/next.mjs dev",
+    "start": "node scripts/next.mjs start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
