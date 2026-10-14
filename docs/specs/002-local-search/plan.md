@@ -17,13 +17,13 @@ Chosen from three interactive prototypes built on the 2026-10-09 snapshot: the l
 - Subject groups show Retraction Watch's names with their codes, such as "Basic Life Sciences (BLS)". The names come from its user guide's "Appendix A: Fields", checked 2026-10-13.
 - The results column: the total by notice type, the query summary as removable chips, a toolbar (sort, Cite this search, Download CSV), the results and pagination.
 - Below 820 px wide, the sidebar folds behind a Filters button and the header stacks.
-- The header reads "Data as of October 9, 2026", with the month spelled out. Result lines use AP abbreviations to save space.
+- The header shows the site name, "Retraction search", with "Search the Retraction Watch Database · Data as of October 9, 2026" beneath it, the month spelled out. Result lines use AP abbreviations to save space.
 - The footer reads, in three lines on a light gray background:
   1. "Data from the Retraction Watch Database, released under CC0 and distributed by Crossref at gitlab.com/crossref/retraction-watch-data. Snapshot of October 9, 2026 (commit `bc5648dd`), 73,100 records." The database name links to Retraction Watch's user guide, and the address to the GitLab repository.
   2. "Not affiliated with Retraction Watch or Crossref. Reasons are Retraction Watch’s classification. Author names are matched as names, not identified people."
   3. "About this data · Missing retraction? Tell Retraction Watch · Problem with this site? Open an issue on GitHub". "Tell Retraction Watch" links to the user guide.
 
-  So it separates "Missing retraction? Tell Retraction Watch" from "Problem with this site? Open an issue on GitHub". The issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
+  The GitHub issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
 
 **Filters**
 
