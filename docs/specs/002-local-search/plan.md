@@ -148,18 +148,21 @@ Values are the values in the data, so URLs stay readable. Unknown parameters are
 
 **One request for results and every count.** Typesense's `multi_search` sends up to 50 searches in one HTTP request. The body holds:
 
-- the main search: every clause, the page of results and the counts for filters that have no selection or are set to "all"
+- the main search: every clause, the page of results, the counts for small filters that have no selection or are set to "all", and the count by notice type for the total (AC17)
+- the top 40 journals and publishers, when those filters have no selection. Typesense's `max_facet_values` applies to a whole search (a per-field limit is rejected, checked 2026-10-13), so long filters get a search of their own.
 - one more search per "any" filter that has a selection: every clause except that filter's own, no results, counts for that field only (AC4)
 - the same for the two year filters and the two options, so their counts ignore their own setting
+- for selected journals or publishers, one search limited to the selected values, so each has its count even outside the top 40 (AC6)
 - with search text, a count of exact matches (`num_typos` 0, no results), which shows whether the results came only from close spellings
 
-That's at most about a dozen searches.
+That's at most 17 searches. Every clause comes from `toTypesense`, which strips backticks from values, since a backtick would end the literal and no value in the data holds one.
 
 **Mapping to Typesense filters.** Values are written as backtick literals, so commas and parentheses inside values are safe.
 
 | Query part | `filter_by` |
 |---|---|
 | Any of several values | ``reasons:=[`A`, `B`]`` |
+| Subject categories and subjects | ``(subject_categories:=[`BLS`] || subjects:=[`HSC: Medicine - Oncology`])`` |
 | All of several values | ``reasons:=`A` && reasons:=`B` `` |
 | Excluded values | ``reasons:!=[`C`]`` |
 | Year range | `notice_year:>=2015 && notice_year:<=2020` |
