@@ -6,7 +6,7 @@ import { formatNumber } from '@/lib/format/numbers';
 import { issueUrl } from '@/lib/links';
 import { citation, describeQuery, totalPhrase } from '@/lib/query/describe';
 import { SORTS, effectiveSort, type Query, type Sort } from '@/lib/query/types';
-import { queryHref, serializeQuery } from '@/lib/query/url';
+import { exportHref, queryHref, serializeQuery } from '@/lib/query/url';
 import type { SearchOk } from '@/lib/search/types';
 import { ResultItem } from './result-item';
 import { SortSelect } from './sort-select';
@@ -137,6 +137,7 @@ export function Results({
           <SortSelect value={result.lookup ? 'newest' : effectiveSort(query)} hrefs={sortHrefs} hasText={Boolean(query.q) && !result.lookup} />
         }
         citation={dataDate ? citation({ query, totals: result.totals, dataDate, url: searchUrl }) : ''}
+        downloadHref={result.found > 0 ? exportHref(query) : undefined}
       />
 
       {result.found === 0 && <NoResults query={query} searchUrl={searchUrl} dataDate={dataDate} />}

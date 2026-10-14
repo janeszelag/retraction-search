@@ -210,6 +210,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 - tooltips (Radix Tooltip)
 - the sort menu and the field-search menus (Radix Select): the owner prefers them to the browser's built-in list, and Radix keeps the keyboard and screen-reader behavior
 - the copy-citation button
+- "Download CSV": a link to `/api/export` that, with JavaScript, fetches the file and saves it from the page. A failure, or the download limit (task 19), then shows as a notice on the page instead of replacing it, as in the prototype's states. The file is held in the browser's memory until it's saved: 64 MB for the whole default view.
 - "Copy link to this record" on record pages
 - "Back to results" on record pages, shown only when the previous page was a search on this site (a same-site referrer on the search page). It calls the browser's back, so the results and scroll position come back as they were.
 
@@ -232,8 +233,9 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 
 `/api/export` takes the same URL parameters as the search page.
 
-- **Filters only:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks. The site's key has `documents:export` for this (spike S4).
-- **With search text or field terms:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives. In spike S4 the largest text search (65,691 records) took 14.6 s this way.
+- **Without search text:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks. Field terms, author names and identifier lookups are filters, so they go this way too (spike S4). The site's key has `documents:export` for this. The endpoint can't sort, so these files come in record ID order.
+- **With search text:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives, in the page's order. In spike S4 the largest text search (65,691 records) took 14.6 s this way. When the page shows close spellings, the download pages with typos on for every search too, so it holds the same records.
+- **Checks:** before sending anything, the handler reads the data date and the total, so an unreachable Typesense still gets HTTP 503. Once the file has started, it can't change its status. So if it ends with a different number of records than the total, or a record twice, the handler breaks off the stream and the browser reports a failed download rather than saving a short file.
 - **Format:**
   - UTF-8 with a byte-order mark, so spreadsheet apps keep non-English characters.
   - A header row, and one column per field shown on record pages.

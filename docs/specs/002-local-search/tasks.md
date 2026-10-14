@@ -105,7 +105,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tas
 - [x] **17. Cite this search.** The citation panel and its copy button. (AC24)
   - Done when: the citation for the brief's example matches the one from task 7 and copies to the clipboard.
 
-- [ ] **18. CSV download.** `app/api/export/route.ts`:
+- [x] **18. CSV download.** `app/api/export/route.ts`:
   - streams Typesense's export endpoint with the site's key when there's no search text, and pages 250 at a time otherwise
   - writes UTF-8 with a byte-order mark, one column per record-page field, and list fields joined with "; "
   - names the file with the data date

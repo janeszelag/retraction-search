@@ -221,3 +221,9 @@ export function queryHref(query: Query): string {
   const search = serializeQuery(query);
   return search ? `/?${search}` : '/';
 }
+
+// The CSV download for a query's results: every page, so the page number is left out.
+export function exportHref(query: Query): string {
+  const search = serializeQuery({ ...query, page: 1 });
+  return search ? `/api/export?${search}` : '/api/export';
+}

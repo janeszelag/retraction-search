@@ -7,7 +7,7 @@ import { onlyCloseSpellings, parseFacetValues, parseMeta, parseRecord, parseSear
 import type { Meta, ResultRecord, SearchResult, ValueCount } from '../search/types';
 import { typesenseClient, type TypesenseClient } from './typesense';
 
-function logFailure(what: string, error: unknown) {
+export function logFailure(what: string, error: unknown) {
   console.error(`${what} failed: ${error instanceof Error ? error.message : String(error)}`);
 }
 
