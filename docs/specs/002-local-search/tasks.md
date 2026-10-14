@@ -19,7 +19,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC25, AC34)
   - Done when: unit tests cover the schema and the reading of import results, and `npm run load` loads the 2026-10-09 snapshot with 73,100 documents. A second run switches the alias to a fresh collection.
 
-- [ ] **4. Spikes S2–S8.** Run each spike from the plan against the loaded snapshot, and write the result into the plan's spike list:
+- [x] **4. Spikes S2–S8.** Run each spike from the plan against the loaded snapshot, and write the result into the plan's spike list:
   - S2, exact counts
   - S3, deep paging
   - S4, export
@@ -30,6 +30,17 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 
   (AC4, AC8, AC13, AC14, AC20, AC23, AC27, AC30)
   - Done when: every spike has a recorded result, and any that fail have a spec change proposed and agreed.
+
+- [ ] **4a. Keys for exact matches.** `pipeline/sql/20_search_documents.sql` adds `author_keys` (one per entry in `authors`), `journal_key` and `publisher_key`: the first 16 hexadecimal characters of each exact name's SHA-256 hash. The load's schema indexes them for filters. (AC4, AC14, AC30; plan change P2)
+  - Done when: a fixture test shows the keys line up with the names and equal Node's SHA-256 of the same text. After a load, filtering on the key of each of the 13 journal names that differ only in capitals or accents gives its DuckDB count.
+
+- [ ] **4b. Load: full names, value check and the site's key.** `npm run load`:
+  - stores in `meta` the full name of each journal and publisher value that Typesense cut short, and stops if two names share a cut value
+  - stops if two values of reasons, subjects, countries or article types differ only in capitals or accents
+  - creates the site's key with `documents:search` and `documents:export` on `retractions` and `meta`, and deletes older keys from the load
+
+  (AC6, AC23, AC27, AC30; plan changes P1, P2, P5)
+  - Done when: unit tests cover the cut-name map and the value check, and the 2026-10-09 snapshot loads with 135 full names in `meta`. The new key can export through the alias but can't list collections.
 
 **Query logic (unit-tested, no network)**
 
@@ -42,7 +53,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 - [ ] **7. Summary, totals and citation text.** `describeQuery` returns the summary's parts, each with the query that removing it gives, and the sentence. Also the total by notice type and the citation line. (AC15, AC17, AC24)
   - Done when: tests cover the spec's example sentence, every filter and option, field terms ("the words …"), author names ("listing the author name …"), identifier lookups, mixed notice-type totals, and both ISSNs in the citation.
 
-- [ ] **8. Typesense mapping.** `toTypesense(query)` builds the `multi_search` body: the main search, one counts search per "any" filter with a selection, and searches for the year and option counts. It also covers field terms and exclusions, exact author names, identifier lookups that ignore the filters, sort orders, paging and per-field typo settings. (AC4, AC5, AC8, AC10, AC11, AC12, AC14, AC19, AC20)
+- [ ] **8. Typesense mapping.** `toTypesense(query)` builds the `multi_search` body: the main search, one counts search per "any" filter with a selection, and searches for the year and option counts. It also covers field terms and exclusions, exact author, journal and publisher names through their keys, identifier lookups that ignore the filters, sort orders with the `record_id` tie-breaker, and paging. Searches with text set `num_typos` 2,1,1,2,1 and `drop_tokens_threshold` 0, and add the exact-match count. A second form of the body turns typos on for every search. (AC4, AC5, AC8, AC10, AC11, AC12, AC13, AC14, AC19, AC20)
   - Done when: tests check the body for each case in the plan's mapping table, including values with commas and parentheses.
 
 - [ ] **9. Reason groups and dates.** One module maps reasons to their color groups by the plan's rules. One formats dates in AP style, plus the "as published" form. (AC9, AC18)
@@ -50,10 +61,10 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 
 **Pages and server code**
 
-- [ ] **10. Server search and failure state.** `web/lib/server/` (importing `server-only`): the Typesense client using the search key from the environment, `runSearch`, and parsing results, counts and highlights into the page's data. An unreachable Typesense gives a "search unavailable" result instead of an error. (AC13, AC27, AC29)
-  - Done when: tests with recorded Typesense responses parse correctly, highlights become text and marks without HTML, and an unreachable server returns the unavailable result.
+- [ ] **10. Server search and failure state.** `web/lib/server/` (importing `server-only`): the Typesense client using the search key from the environment, `runSearch`, and parsing results, counts and highlights into the page's data. It swaps cut journal and publisher values for their full names from `meta`. When the exact-match count is 0 but close spellings matched, it reruns the request with typos on for every search and marks the result as close spellings. An unreachable Typesense gives a "search unavailable" result instead of an error. (AC6, AC13, AC27, AC29)
+  - Done when: tests with recorded Typesense responses parse correctly, highlights become text and marks without HTML, a close-spellings response triggers the second request, and an unreachable server returns the unavailable result.
 
-- [ ] **11. Search page: results.** `app/page.tsx` renders the header (search box above the results), the total by notice type, the summary chips, the toolbar, the results, pagination and sort, plus the no-results state with its "remove one part" options. (AC1, AC2, AC15, AC16, AC17, AC19, AC20, AC21)
+- [ ] **11. Search page: results.** `app/page.tsx` renders the header (search box above the results), the total by notice type, the summary chips, the toolbar, the results, pagination and sort, plus the no-results state with its "remove one part" options and the close-spellings notice. (AC1, AC2, AC13, AC15, AC16, AC17, AC19, AC20, AC21)
   - Done when: against the local stack, the default page shows 67,384 retractions, a shared URL opens with its results in the first load, and paging reaches the last page.
 
 - [ ] **12. Search page: filters.** The sidebar in the plan's order, built as links that keep the scroll position and don't prefetch:
@@ -67,11 +78,11 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC31)
   - Done when: every filter works against the local stack, counts follow the plan's rules, and the drawer works at 375 px.
 
-- [ ] **13. Value search for long filters.** `app/api/facet-values/route.ts` uses Typesense's `facet_query` for the publisher and journal filters, and the filter's search box calls it. (AC6)
+- [ ] **13. Value search for long filters.** `app/api/facet-values/route.ts` uses Typesense's `facet_query` for the publisher and journal filters, with cut values swapped for their full names, and the filter's search box calls it. (AC6)
   - Done when: typing part of any of the 1,718 publishers or 8,778 journals finds it.
 
 - [ ] **14. Search box and field search.** Client components update the URL after a 300 ms pause. Field-search rows have the helper text and "Add a row". DOI and PubMed ID lookups say that filters don't apply. (AC10, AC11, AC12)
-  - Done when: a misspelled title word still finds the record, a two-row field search matches the plan, and pasting the DOI of an expression of concern finds it under the default filters.
+  - Done when: a misspelled title word still finds the record, a two-row field search matches the plan, and pasting the DOI of an expression of concern finds it under the default filters. A search whose filters leave no exact match shows the close-spellings notice, with counts that agree with the results.
 
 - [ ] **15. Result details.** In each result:
   - the first ten author names, plus any further down that matched, and "Show all N names"
@@ -95,7 +106,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   - Done when: the citation for the brief's example matches the one from task 7 and copies to the clipboard.
 
 - [ ] **18. CSV download.** `app/api/export/route.ts`:
-  - streams Typesense's export endpoint when there's no search text, and pages 250 at a time otherwise
+  - streams Typesense's export endpoint with the site's key when there's no search text, and pages 250 at a time otherwise
   - writes UTF-8 with a byte-order mark, one column per record-page field, and list fields joined with "; "
   - names the file with the data date
 
@@ -117,8 +128,8 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 
 - [ ] **21. Search check against DuckDB.** `npm run check:search` runs a fixed set of queries against the local stack and DuckDB on the same snapshot. It compares totals and every filter count, and covers:
   - deep paging, and years before 1970
-  - Toronto and Torino, and identifier lookups
-  - exact author names, and the export round trip
+  - the twelve name pairs from spike S6 in both directions, the close-spellings fallback, and identifier lookups
+  - exact author, journal and publisher names, including ones that differ only in capitals or accents, and the export round trip
 
   (AC4, AC6, AC8, AC12, AC13, AC14, AC20, AC23, AC30)
   - Done when: the command passes on the 2026-10-09 snapshot.

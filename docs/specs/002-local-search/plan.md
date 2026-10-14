@@ -76,9 +76,9 @@ New and changed files:
 
 - `docker-compose.yml`: Typesense (`typesense/typesense:30.2`) with its data in `data/typesense/`, and Redis (`redis:8.10.2-alpine`, the newest release on Docker Hub, checked 2026-10-13). Both listen only on 127.0.0.1. `npm run search:down` stops them.
 - `pipeline/src/load.js`: loads the newest cleaned snapshot into Typesense (below).
-- `pipeline/sql/20_search_documents.sql`: adds `url_record_counts` (below).
+- `pipeline/sql/20_search_documents.sql`: adds `url_record_counts` and the keys for exact matches (below).
 - `web/`: the Next.js 16 app, in TypeScript with Tailwind CSS 4.
-- `.env.local` (not committed): the Typesense admin key (used only by `load`), the search-only key, the Redis URL and the salt for hashing visitors.
+- `.env.local` (not committed): the Typesense admin key (used only by `load`), the site's read-only key, the Redis URL and the salt for hashing visitors.
 
 ## Data in Typesense
 
@@ -86,10 +86,10 @@ New and changed files:
 
 1. Creates a collection named after the snapshot and the load time, such as `retractions_2026-10-09_bc5648dd_20261013T222801Z`, with the schema below. Loading the same snapshot again gives a fresh collection.
 2. Imports the search documents in batches. Typesense's import returns HTTP 200 even when documents fail, so the script reads every result line and stops on the first failure.
-3. Checks that the document count equals the snapshot's row count.
+3. Checks that the document count equals the snapshot's row count. It also stops if two values of a filter field without keys (reasons, subjects, countries, article types) differ only in capitals or accents, because Typesense's exact filters would merge them (spike S8).
 4. Points the alias `retractions` at the new collection, then deletes collections older than the previous one.
-5. Writes the snapshot's data date and commit to a one-document `meta` collection, which pages read for the data date.
-6. Creates or reuses a search-only key limited to `documents:search` on the alias, the snapshot collections and `meta`. A new key is saved to `.env.local` as `TYPESENSE_SEARCH_KEY`, and older keys of the same kind are deleted.
+5. Writes the snapshot's data date and commit to a one-document `meta` collection, which pages read for the data date. The same document maps each journal and publisher value that Typesense cut at 255 bytes to its full name (spike S2). The load stops if two names share a cut value, since their counts would merge.
+6. Creates or reuses the site's key, limited to `documents:search` and `documents:export` on `retractions` and `meta` (spikes S4 and S5). Both actions only read. A new key is saved to `.env.local` as `TYPESENSE_SEARCH_KEY`, and older keys from the load are deleted.
 
 Spec 003 reuses this script for the daily run.
 
@@ -99,7 +99,9 @@ Spec 003 reuses this script for the daily run.
 |---|---|---|
 | `title` | string | search |
 | `authors`, `institutions` | string[] | search |
-| `journal`, `publisher` | string | search and filters |
+| `journal`, `publisher` | string | search and filter counts |
+| `author_keys` | string[] | exact author-name filters |
+| `journal_key`, `publisher_key` | string | exact journal and publisher filters |
 | `notice_type`, `paywalled` | string | filters |
 | `reasons`, `subjects`, `subject_categories`, `countries`, `article_types` | string[] | filters |
 | `is_revision`, `has_editorial_staff_author` | bool | filters |
@@ -110,7 +112,10 @@ Spec 003 reuses this script for the daily run.
 | `record_id` | int32 | record pages |
 | `urls`, `url_record_counts`, `notes`, `original` | not indexed | shown on results and record pages |
 
-**Pipeline addition.** `url_record_counts` gives, for each of a record's URLs, how many records list the same URL, ignoring http versus https and a trailing slash (AC18a). Computing this in SQL keeps it a single pass over the snapshot instead of an extra query per page.
+**Pipeline additions.**
+
+- `url_record_counts` gives, for each of a record's URLs, how many records list the same URL, ignoring http versus https and a trailing slash (AC18a). Computing this in SQL keeps it a single pass over the snapshot instead of an extra query per page.
+- `author_keys` (one per entry in `authors`), `journal_key` and `publisher_key` are the first 16 hexadecimal characters of the SHA-256 hash of each exact name. Typesense's exact filters ignore capitals and accents and can't hold a backtick (spike S8), so selected names filter on their keys instead. URLs still hold the names, and the server computes the same keys.
 
 ## The query
 
@@ -138,6 +143,7 @@ URL parameters follow the prototype:
 - the main search: every clause, the page of results and the counts for filters that have no selection or are set to "all"
 - one more search per "any" filter that has a selection: every clause except that filter's own, no results, counts for that field only (AC4)
 - the same for the two year filters and the two options, so their counts ignore their own setting
+- with search text, a count of exact matches (`num_typos` 0, no results), which shows whether the results came only from close spellings
 
 That's at most about a dozen searches.
 
@@ -145,21 +151,26 @@ That's at most about a dozen searches.
 
 | Query part | `filter_by` |
 |---|---|
-| Any of several values | ``reasons:=[`A`, `B`]`` |
+| Any of several values | ``reasons:=[`A`, `B`]``; journals and publishers use their keys: ``journal_key:=[`k1`, `k2`]`` |
 | All of several values | ``reasons:=`A` && reasons:=`B` `` |
 | Excluded values | ``reasons:!=[`C`]`` |
 | Year range | `notice_year:>=2015 && notice_year:<=2020` |
 | Options | `is_revision:=false`, `has_editorial_staff_author:=false` |
 | Field term (all its words, anywhere in the field) | `institutions:University of Toronto` |
 | Excluded field term | ``(institutions:! university || institutions:! of || institutions:! toronto)``, which keeps records missing any of the words |
-| Selected author names (each must be listed exactly) | ``authors:=`Maria Example` && authors:=`Jun Sample` `` (spike S8) |
+| Selected author names (each must be listed exactly) | ``author_keys:=`k1` && author_keys:=`k2` ``, the keys of the exact names (spike S8) |
 | Identifier lookup | ``notice_doi:=`x` || paper_doi:=`x` ``, ignoring every other clause |
 
-**Search text** uses `q` over `title,authors,institutions,journal,publisher`, with typo tolerance set per field (`num_typos`). Institutions and authors get fewer allowed typos, settled by spike S6.
+**Search text** uses `q` over `title,authors,institutions,journal,publisher`, settled by spike S6:
 
-**Sorting:** relevance is `_text_match:desc,notice_date:desc`; the date orders sort on `notice_date` or `paper_date`.
+- `num_typos` 2,1,1,2,1: two typos in titles and journals, one in author names, institutions and publishers.
+- `drop_tokens_threshold` 0, so a search never quietly drops words.
+- Typesense's default fallback: other spellings are tried only when a search has no exact match.
+- When the exact-match count is 0 but close spellings match, the page says so, for example "No exact matches for 'iraq' with these filters. Showing close spellings, highlighted." The server then reruns the request with typos on for every search (a very high `typo_tokens_threshold`), so that the results and counts agree. Only this case costs a second request.
 
-**Filter counts:** small filters (notice type, reason, subject, country, article type, paywalled) return every value in one go. Publisher and journal return their top values, and their search box asks `/api/facet-values`, which uses Typesense's `facet_query`.
+**Sorting:** relevance is `_text_match:desc,notice_date:desc,record_id:desc`; the date orders sort on `notice_date` or `paper_date`, then `record_id`. The tie-breaker keeps pages from overlapping (spike S3).
+
+**Filter counts:** small filters (notice type, reason, subject, country, article type, paywalled) return every value in one go. Publisher and journal return their top values, and their search box asks `/api/facet-values`, which uses Typesense's `facet_query`. Journal and publisher values that Typesense cut at 255 bytes are swapped for their full names from `meta` before they're shown or linked.
 
 **Highlighting** uses Typesense's highlight output for title and authors, with marker strings that the page splits into text and `<mark>` elements. No returned HTML is inserted directly.
 
@@ -168,7 +179,7 @@ That's at most about a dozen searches.
 | Path | What it does |
 |---|---|
 | `app/page.tsx` | Server component. Parses the URL, checks the rate limit, runs the `multi_search`, renders everything. |
-| `app/record/[id]/page.tsx` | Fetches one record with a search filtered by `record_id`, because a search-only key can't fetch documents directly. Shows every field, with the original values next to the cleaned ones. The URL is always just `/record/<id>`, so links to a record never carry a search. The header has the site name and data date but no search box. |
+| `app/record/[id]/page.tsx` | Fetches one record with a search filtered by `record_id`, because the site's key can't fetch documents directly. Shows every field, with the original values next to the cleaned ones. The URL is always just `/record/<id>`, so links to a record never carry a search. The header has the site name and data date but no search box. |
 | `app/about/page.tsx` | The data source, license, caveats, how counts work, and how to report a missing retraction (AC26). |
 | `app/api/facet-values/route.ts` | Value search for long filters. |
 | `app/api/export/route.ts` | The CSV download (below). |
@@ -202,8 +213,8 @@ That's at most about a dozen searches.
 
 `/api/export` takes the same URL parameters as the search page.
 
-- **Filters only:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks.
-- **With search text or field terms:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives. Spike S4 times this for the largest case.
+- **Filters only:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks. The site's key has `documents:export` for this (spike S4).
+- **With search text or field terms:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives. In spike S4 the largest text search (65,691 records) took 14.6 s this way.
 - **Format:**
   - UTF-8 with a byte-order mark, so spreadsheet apps keep non-English characters.
   - A header row, and one column per field shown on record pages.
@@ -216,7 +227,7 @@ That's at most about a dozen searches.
 |---|---|---|
 | Query parsing, serializing, summary, citation, Typesense mapping, reason groups, date format | Vitest unit tests in `web/`, no network | AC2, AC4, AC5, AC11, AC12, AC15, AC16, AC17, AC19, AC24 |
 | Counts against DuckDB | `npm run check:search`: a fixed set of queries run against the local stack and against DuckDB on the same snapshot, comparing totals and every filter count | AC4, AC6, AC8, AC30 |
-| Search behavior on real data | The same script: deep paging to the last page, years before 1970, the Toronto/Torino pair in both directions, identifier lookups, export round trip | AC8, AC12, AC13, AC20, AC23 |
+| Search behavior on real data | The same script: deep paging to the last page, years before 1970, the twelve name pairs from spike S6 in both directions, the close-spellings fallback, identifier lookups, export round trip | AC8, AC12, AC13, AC20, AC23 |
 | Pages | Playwright on the local stack, with axe on the start, results, no-results and record pages, plus keyboard-only runs | AC1–3, AC7, AC9, AC10, AC14, AC18, AC18a, AC18b, AC21, AC22, AC25, AC26, AC31, AC32 |
 | Failures | Playwright with Typesense stopped and with the rate limit set low | AC28, AC29 |
 | No key in the browser | A test that builds the app, then searches the built browser files, page HTML and responses for the key | AC27 |
@@ -249,9 +260,9 @@ Each is a short experiment against the local stack before the matching tasks sta
 - **S7, dates before 1970 (AC8). Run 2026-10-13: passes.** Sorting by paper date or notice date, either way, gives the same first 250 records as DuckDB, starting with record 18930 (paper 1753, notice 1756). The 49 papers from before 1970 fall in 22 years, with the same count per year as DuckDB, and the 7 notices dated before 1970 filter correctly.
 - **S8, exact author names (AC14). Run 2026-10-13: exact filters ignore capitalization and accents, and can't hold a backtick.** ``authors:=`…` `` matches whole list entries: a name that starts a longer listed name doesn't match the longer one. But it ignores capitalization and accents. Of the 21 names tested, 5 matched more records than DuckDB: 8 extra records listed the name in different capitals and 1 with a different accent. On the snapshot, 1,945 author names fall into 967 groups that differ only in that way. Every exact filter behaves the same: 13 journal names in 6 groups and one pair of publishers differ only in capitals or accents, and filtering on one returns them all (one journal's facet count is 4, but filtering on it returns 62). Six author names contain a backtick, which ends a backtick literal early. Neither a backslash nor leaving out the backticks helped, and those filters match unrelated records. See proposed change P2.
 
-## Changes proposed from spikes S2–S8
+## Changes agreed from spikes S2–S8
 
-Proposed 2026-10-13, awaiting the owner. Task 4 stays open until they're agreed.
+Agreed with the owner on 2026-10-13. The sections above describe them as built.
 
 - **P1, full names for cut facet values (S2).** `npm run load` compares Typesense's journal and publisher facet values with the documents. It stores the full name for each value Typesense cut short in the `meta` document (135 on the 2026-10-09 snapshot), and the site shows and links the full name. The load fails if two names share a cut value, since their counts would merge.
 - **P2, hashed keys for exact matches (S8).** The pipeline adds `author_keys` (one per entry in `authors`), `journal_key` and `publisher_key`: the first 16 hexadecimal characters of the SHA-256 hash of the exact name. Selected author names, journals and publishers filter on the keys, which keeps capitals, accents and backticks exact. URLs still hold the names, and the server computes the keys. Facet counts still come from the name fields, which keep capitals. The keys add 16 bytes per author entry (310,603 entries), about 5 MB before index overhead; the load measures it. A check on each snapshot flags any other filter field (reasons, subjects, countries, article types) whose values start to differ only in capitals or accents.
@@ -289,6 +300,7 @@ Word pairs fail on generic phrases because one affiliation string often names se
 ## Spec changes agreed
 
 - **AC12** (2026-10-13): an identifier lookup ignores the filters and says so. Otherwise the DOI of an expression of concern finds nothing under the retractions-only default.
+- **AC13** (2026-10-13, after spike S6): near-identical names stay apart while the search has exact matches. When the filters leave no exact match and the page falls back to close spellings, it says so.
 
 ## Commands (AC34)
 
