@@ -19,6 +19,8 @@ export interface ReasonGroup {
   // Tailwind classes for the background, text and border, written out in full
   // so Tailwind finds them.
   classes: string;
+  // The small square beside a reason in the filter.
+  dotClass: string;
 }
 
 type Rule = { startsWith: string } | { contains: string };
@@ -30,35 +32,41 @@ const GROUPS: Record<ReasonGroupId, ReasonGroup> = {
     id: 'investigations',
     name: 'Investigations',
     classes: 'bg-reason-investigations text-reason-investigations-ink border-reason-investigations-line',
+    dotClass: 'bg-reason-investigations-line',
   },
   notice: {
     id: 'notice',
     name: 'Notice and status',
     classes: 'bg-reason-notice text-reason-notice-ink border-reason-notice-line',
+    dotClass: 'bg-reason-notice-line',
   },
-  data: { id: 'data', name: 'Data and results', classes: 'bg-reason-data text-reason-data-ink border-reason-data-line' },
-  images: { id: 'images', name: 'Images', classes: 'bg-reason-images text-reason-images-ink border-reason-images-line' },
+  data: { id: 'data', name: 'Data and results', classes: 'bg-reason-data text-reason-data-ink border-reason-data-line', dotClass: 'bg-reason-data-line' },
+  images: { id: 'images', name: 'Images', classes: 'bg-reason-images text-reason-images-ink border-reason-images-line', dotClass: 'bg-reason-images-line' },
   plagiarism: {
     id: 'plagiarism',
     name: 'Plagiarism, duplication and text',
     classes: 'bg-reason-plagiarism text-reason-plagiarism-ink border-reason-plagiarism-line',
+    dotClass: 'bg-reason-plagiarism-line',
   },
   review: {
     id: 'review',
     name: 'Peer review and publishing',
     classes: 'bg-reason-review text-reason-review-ink border-reason-review-line',
+    dotClass: 'bg-reason-review-line',
   },
   ethics: {
     id: 'ethics',
     name: 'Ethics, conduct and legal',
     classes: 'bg-reason-ethics text-reason-ethics-ink border-reason-ethics-line',
+    dotClass: 'bg-reason-ethics-line',
   },
   authorship: {
     id: 'authorship',
     name: 'Authorship and approval',
     classes: 'bg-reason-authorship text-reason-authorship-ink border-reason-authorship-line',
+    dotClass: 'bg-reason-authorship-line',
   },
-  other: { id: 'other', name: 'Other', classes: 'bg-reason-other text-reason-other-ink border-reason-other-line' },
+  other: { id: 'other', name: 'Other', classes: 'bg-reason-other text-reason-other-ink border-reason-other-line', dotClass: 'bg-reason-other-line' },
 };
 
 // The plan's table, in order: the first group with a matching rule wins.

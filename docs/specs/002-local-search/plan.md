@@ -30,7 +30,9 @@ Chosen from three interactive prototypes built on the 2026-10-09 snapshot: the l
 - Each value is a row: a checkbox to include it, its count, and a small minus icon to exclude it (faint until hover on devices with a mouse).
 - List filters with two or more included values show an "any / all" switch.
 - Subject categories open with an arrow to show their subjects. Long filters have a search box and "Show all".
-- Each filter carries its data caveat as a short note.
+- Each filter carries its data caveat as a short note, in the prototype's words, ending with a "Read more" link to the About page (AC9): `/about#notice-types`, `#reasons`, `#countries`, `#paywalled` and `#dates`. The paper-year note adds "Dates below the year are approximate.", which the prototype left out but AC9 asks of both year filters.
+- Each value's link is labeled for screen readers with the value, its count and its state, such as "Retraction, 67,384 records, selected" (AC32).
+- On phones, "Filters" (with the number of choices that differ from the defaults) opens a Radix dialog holding the same sidebar, with "Show results" to close it. The prototype toggled the sidebar in place instead; the plan's dialog keeps keyboard focus while it's open.
 - Year filters show a bar per year, which can be clicked to select that year, plus "from" and "to" inputs.
 
 **Results**

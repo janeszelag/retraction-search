@@ -67,7 +67,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 - [x] **11. Search page: results.** `app/page.tsx` renders the header (search box above the results), the total by notice type, the summary chips, the toolbar, the results, pagination and sort, plus the no-results state with its "remove one part" options and the close-spellings notice. (AC1, AC2, AC13, AC15, AC16, AC17, AC19, AC20, AC21)
   - Done when: against the local stack, the default page shows 67,384 retractions, a shared URL opens with its results in the first load, and paging reaches the last page.
 
-- [ ] **12. Search page: filters.** The sidebar in the plan's order, built as links that keep the scroll position and don't prefetch:
+- [x] **12. Search page: filters.** The sidebar in the plan's order, built as links that keep the scroll position and don't prefetch:
   - value rows that include or exclude, and the any/all switch
   - subject groups that open to show their subjects
   - year bars and inputs, and the two options

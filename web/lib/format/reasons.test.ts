@@ -27,6 +27,7 @@ describe('reason groups (AC9, AC18)', () => {
   it('gives every group its theme classes', () => {
     for (const group of REASON_GROUPS) {
       expect(group.classes).toBe(`bg-reason-${group.id} text-reason-${group.id}-ink border-reason-${group.id}-line`);
+      expect(group.dotClass).toBe(`bg-reason-${group.id}-line`);
     }
   });
 });
