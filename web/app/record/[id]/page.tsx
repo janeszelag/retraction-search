@@ -29,17 +29,26 @@ const loadRecord = cache((id: number) => getRecord(id));
 
 type Props = { params: Promise<{ id: string }> };
 
+// Record IDs are positive whole numbers.
+const RECORD_ID = /^[1-9]\d{0,9}$/;
+
 async function recordId(params: Props['params']): Promise<number> {
   const { id } = await params;
-  if (!/^[1-9]\d{0,9}$/.test(id)) {
+  if (!RECORD_ID.test(id)) {
     notFound();
   }
   return Number(id);
 }
 
+// The not-found file can't set the title, so a missing record's comes from here.
+// This doesn't call notFound(): the page does.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const result = await loadRecord(await recordId(params));
-  return { title: result.status === 'ok' ? `${result.record.title} · Retraction search` : 'Retraction search' };
+  const { id } = await params;
+  const result = RECORD_ID.test(id) ? await loadRecord(Number(id)) : { status: 'not-found' as const };
+  if (result.status === 'ok') {
+    return { title: `${result.record.title} · Retraction search` };
+  }
+  return { title: result.status === 'not-found' ? 'No record with this ID · Retraction search' : 'Retraction search' };
 }
 
 const sectionTitle = 'text-lg font-[750]';
