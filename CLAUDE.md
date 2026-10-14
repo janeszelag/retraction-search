@@ -62,5 +62,8 @@ Run from the repository root:
 | `npm run search:down` | Stops them |
 | `npm run load` | Loads the newest cleaned snapshot into Typesense (`-- --input <folder>` for another) and saves the site's key to `.env.local` |
 | `npm run web` | Starts the site at http://localhost:3000 |
+| `npm run check:search` | Compares the site's searches, counts and download with DuckDB on the loaded snapshot; needs the local stack |
+| `npm run test:e2e` | Builds the site and runs the browser tests (Playwright, with axe) in the installed Google Chrome; needs the local stack |
+| `npm run check:speed` | Builds the site, times the server response for a fixed set of searches and runs Lighthouse's mobile test; needs the local stack |
 
 The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.
