@@ -30,6 +30,9 @@ function recorded(...fixtures: Fixture[]) {
     async meta() {
       return metaDocument as Record<string, unknown>;
     },
+    async exportDocuments() {
+      throw new Error('the page never exports');
+    },
   };
   return { client, asked };
 }
@@ -135,6 +138,9 @@ describe('failures (AC29)', () => {
       multiSearch: async () => {
         throw new SearchUnavailableError("Typesense can't be reached");
       },
+      exportDocuments: async () => {
+        throw new SearchUnavailableError("Typesense can't be reached");
+      },
       meta: async () => {
         throw new SearchUnavailableError("Typesense can't be reached");
       },
@@ -204,6 +210,9 @@ describe('value search (AC6)', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
     const client: TypesenseClient = {
       multiSearch: async () => {
+        throw new SearchUnavailableError('down');
+      },
+      exportDocuments: async () => {
         throw new SearchUnavailableError('down');
       },
       meta: async () => metaDocument as Record<string, unknown>,

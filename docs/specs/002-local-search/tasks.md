@@ -134,7 +134,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tas
   (AC4, AC6, AC8, AC12, AC13, AC14, AC20, AC23, AC30)
   - Done when: the command passes on the 2026-10-09 snapshot.
 
-- [ ] **22. Browser tests.** Playwright on the local stack:
+- [x] **22. Browser tests.** Playwright on the local stack:
   - the main flows, plus axe on the start, results, no-results and record pages
   - keyboard-only runs, and 375 px width
   - Typesense stopped, a low rate limit, and a test that no key appears in built files, page HTML or responses

@@ -19,6 +19,10 @@
     "search:down": "docker compose --env-file .env.local down",
     "search:up": "docker compose --env-file .env.local up --detach --wait",
     "test": "npm test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e -w web",
     "web": "npm run dev -w web"
+  },
+  "overrides": {
+    "playwright-core": "1.63.0"
   }
 }

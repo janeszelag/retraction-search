@@ -256,7 +256,8 @@ function RecordBody({ record }: { record: Extract<Awaited<ReturnType<typeof getR
                   href={queryHref(addAuthorName(base, name))}
                   title="Show records that list this name"
                   aria-label={`Show records that list the name ${name}`}
-                  className={nameLink}
+                  // A list, not a sentence, so each name is a 24px target (WCAG 2.2, 2.5.8).
+                  className={`${nameLink} inline-block py-[3px]`}
                   prefetch={false}
                 >
                   {name}
