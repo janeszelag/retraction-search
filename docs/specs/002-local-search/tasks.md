@@ -94,7 +94,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC14, AC18, AC18a, AC18b)
   - Done when: searching for the surname of record 7962's 11th author shows that name after "…" with "Show all 14 names". The name link gives the same count as a DuckDB query for that name ignoring capitals and accents, with the warning. A batch post shows "Linked from 10,855 records".
 
-- [ ] **16. Record page.** `app/record/[id]/page.tsx`:
+- [x] **16. Record page.** `app/record/[id]/page.tsx`:
   - every field, the "as published" values, Retraction Watch coverage, and author name links
   - "Copy link to this record", and no search box
   - "Back to results" only when the visitor came from a search on this site

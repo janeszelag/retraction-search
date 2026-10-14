@@ -1,10 +1,10 @@
 // Runs a search for a page (spec 002, task 10). Server-only, like the client it uses.
 import 'server-only';
 import { cache } from 'react';
-import { toExactValueSearch, toFacetValueSearch, toTypesense } from '../query/typesense';
+import { COLLECTION, toExactValueSearch, toFacetValueSearch, toTypesense } from '../query/typesense';
 import type { Query } from '../query/types';
-import { onlyCloseSpellings, parseFacetValues, parseMeta, parseSearch } from '../search/parse';
-import type { Meta, SearchResult, ValueCount } from '../search/types';
+import { onlyCloseSpellings, parseFacetValues, parseMeta, parseRecord, parseSearch } from '../search/parse';
+import type { Meta, ResultRecord, SearchResult, ValueCount } from '../search/types';
 import { typesenseClient, type TypesenseClient } from './typesense';
 
 function logFailure(what: string, error: unknown) {
@@ -65,6 +65,25 @@ export async function runFacetValueSearch(
     return { status: 'ok', values: [...exactValues, ...values.filter((entry) => !exactValues.some((other) => other.value === entry.value))] };
   } catch (error) {
     logFailure('Value search', error);
+    return { status: 'unavailable' };
+  }
+}
+
+// One record for its page. The site's key can search but not fetch documents,
+// so the record is found by a search filtered to its ID (plan 002, "Pages").
+export async function getRecord(
+  id: number,
+  client: TypesenseClient = typesenseClient,
+): Promise<{ status: 'ok'; record: ResultRecord } | { status: 'not-found' } | { status: 'unavailable' }> {
+  try {
+    const [result] = await client.multiSearch([{ collection: COLLECTION, q: '*', filter_by: `record_id:=${id}`, per_page: 1 }]);
+    if (result?.error) {
+      throw new Error(result.error);
+    }
+    const hit = result?.hits?.[0];
+    return hit ? { status: 'ok', record: parseRecord(hit) } : { status: 'not-found' };
+  } catch (error) {
+    logFailure('Reading a record', error);
     return { status: 'unavailable' };
   }
 }

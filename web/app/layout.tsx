@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, Public_Sans } from 'next/font/google';
 import { connection } from 'next/server';
+import { NavigationMemory } from '@/components/navigation-memory';
 import { SiteFooter } from '@/components/site-footer';
 import { formatDataDate } from '@/lib/format/dates';
 import { issueUrl } from '@/lib/links';
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${publicSans.variable} ${plexMono.variable}`}>
       <body className="flex min-h-screen flex-col">
+        <NavigationMemory />
         <div className="flex-1">{children}</div>
         <Footer />
       </body>
