@@ -4,11 +4,17 @@ import { buildDocuments, cleanRecords, documentLines, loadSource } from '../src/
 import { openDatabase } from '../src/duckdb.js';
 import {
   ImportError,
+  ValueCheckError,
+  checkValues,
   collectionName,
   collectionSchema,
   collectionsToDelete,
+  cutFacetValue,
+  cutNames,
   describeSnapshotDir,
   readImportResults,
+  unexpectedFacetValues,
+  valuesDifferingInCaseOrAccents,
   withEnvValue,
 } from '../src/load.js';
 
@@ -124,6 +130,75 @@ describe('import results', () => {
 
   it('fails when a result line is missing', () => {
     expect(() => readImportResults('{"success":true,"id":"1"}', 2)).toThrow('Import returned 1 results for 2 documents.');
+  });
+});
+
+describe('facet values cut at 255 bytes (spike S2)', () => {
+  const bytes = (value) => Buffer.byteLength(value);
+
+  it('keeps values of up to 255 bytes whole', () => {
+    expect(cutFacetValue('a'.repeat(255))).toBe('a'.repeat(255));
+  });
+
+  it('cuts longer values to 255 bytes, ending on a whole character', () => {
+    expect(cutFacetValue('a'.repeat(300))).toBe('a'.repeat(255));
+    // Cyrillic letters take two bytes each, so 128 of them would be 256 bytes.
+    const cyrillic = 'Ж'.repeat(200);
+    expect(cutFacetValue(cyrillic)).toBe('Ж'.repeat(127));
+    expect(bytes(cutFacetValue(`a${cyrillic}`))).toBe(255);
+  });
+
+  it('maps each cut value to its full name', () => {
+    const long = `Journal of ${'Long Names '.repeat(30)}`;
+    expect(cutNames('journal', ['Short', long])).toEqual({ [cutFacetValue(long)]: long });
+  });
+
+  it('fails when two names share their first 255 bytes', () => {
+    const start = 'x'.repeat(255);
+    expect(() => cutNames('journal', [`${start} A`, `${start} B`])).toThrow(ValueCheckError);
+    // A name that is exactly another's cut value merges too.
+    expect(() => cutNames('publisher', [start, `${start} B`])).toThrow(/Two publisher values share their first 255 bytes/);
+  });
+
+  it('finds facet values the load did not expect', () => {
+    const long = 'y'.repeat(300);
+    const cut = cutNames('journal', ['A', long]);
+    expect(unexpectedFacetValues(['A', 'y'.repeat(255)], ['A', long], cut)).toEqual([]);
+    // Typesense cut differently than expected: the returned value is unknown and the expected one is missing.
+    expect(unexpectedFacetValues(['A', 'y'.repeat(250)], ['A', long], cut)).toEqual(['y'.repeat(250), 'y'.repeat(255)]);
+  });
+});
+
+describe('filter values that differ only in capitals or accents (spike S8)', () => {
+  it('groups them', () => {
+    expect(valuesDifferingInCaseOrAccents('countries', ['Peru', 'Perú', 'China', 'china', 'India'])).toEqual([
+      'countries: "Peru", "Perú"',
+      'countries: "China", "china"',
+    ]);
+    expect(valuesDifferingInCaseOrAccents('reasons', ['Error in Data', 'Error in Text'])).toEqual([]);
+  });
+
+  it('stops the load when a field without keys has them', () => {
+    const values = {
+      journal: new Set(['J']),
+      publisher: new Set(['P']),
+      notice_type: new Set(['Retraction']),
+      paywalled: new Set(['No']),
+      reasons: new Set(['Error in Data', 'Error in data']),
+      subjects: new Set(),
+      subject_categories: new Set(),
+      countries: new Set(['China']),
+      article_types: new Set(),
+    };
+    expect(() => checkValues(values)).toThrow('reasons: "Error in Data", "Error in data"');
+    values.reasons = new Set(['Error in Data']);
+    expect(checkValues(values)).toEqual({ journal: {}, publisher: {} });
+  });
+
+  it('passes the fixture documents', () => {
+    const fields = ['journal', 'publisher', 'notice_type', 'paywalled', 'reasons', 'subjects', 'subject_categories', 'countries', 'article_types'];
+    const values = Object.fromEntries(fields.map((field) => [field, new Set(documents.flatMap((doc) => [doc[field]].flat()))]));
+    expect(() => checkValues(values)).not.toThrow();
   });
 });
 
