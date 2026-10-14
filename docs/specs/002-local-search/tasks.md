@@ -47,7 +47,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 - [x] **5. Web workspace.** `web/` with Next.js 16, TypeScript, Tailwind CSS 4 and Vitest, added to the npm workspaces. The theme holds the design values from the plan: typefaces, grays, accent, notice-type colors and reason-group colors. A root `web` script starts the site. (AC34)
   - Done when: `npm run web` serves a placeholder page, and `npm test` runs the web and pipeline tests together.
 
-- [ ] **6. Parse and serialize the query.** `web/lib/query/`: the `Query` type, `parseQuery` and `serializeQuery`, with the plan's URL parameters. (AC2, AC16)
+- [x] **6. Parse and serialize the query.** `web/lib/query/`: the `Query` type, `parseQuery` and `serializeQuery`, with the plan's URL parameters. (AC2, AC16)
   - Done when: tests show every part of a query survives a round trip, unknown parameters are ignored, and the default query serializes to no parameters.
 
 - [ ] **7. Summary, totals and citation text.** `describeQuery` returns the summary's parts, each with the query that removing it gives, and the sentence. Also the total by notice type and the citation line. (AC15, AC17, AC24)

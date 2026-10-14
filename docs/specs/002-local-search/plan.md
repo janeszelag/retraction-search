@@ -137,11 +137,14 @@ URL parameters follow the prototype:
 - `q`
 - `in_title`, `not_in_author` and so on, with `in_<field>_match=all`
 - `author_name`, repeated for each selected name
-- `type` (absent means retractions only; `type=all` means every type)
-- `reason`, `not_reason`, `reason_match=all`, and the same for each filter
-- `notice_from`, `notice_to`, `paper_from`, `paper_to`
+- `type` (absent means retractions only; `type=all` means every type). Once the URL names a type, with `type` or `not_type`, the default no longer applies.
+- `reason`, `not_reason`, `reason_match=all`, and the same for `subject`, `country`, `article_type`, `journal`, `publisher` and `paywalled`. Only the list fields (reason, subject, country, article type) can match all. A `subject` value is either a category code (`BLS`) or a subject with its code (`BLS: Neuroscience`). A value that's both included and excluded counts as excluded.
+- `notice_from`, `notice_to`, `paper_from`, `paper_to`: four-digit years. A reversed range is turned around.
 - `revisions=include`, `editorial_staff=exclude`
-- `sort`, `page`
+- `sort`: `relevance`, `newest`, `oldest`, `paper_newest` or `paper_oldest`. A sort that gives the default order is left out, and relevance without search text means newest first.
+- `page`, starting at 1
+
+Values are the values in the data, so URLs stay readable. Unknown parameters are ignored. To keep a hand-made URL from building a huge search, a query holds at most 10 field terms, 10 author names, 50 values per filter and 1,000 characters per text.
 
 **One request for results and every count.** Typesense's `multi_search` sends up to 50 searches in one HTTP request. The body holds:
 
