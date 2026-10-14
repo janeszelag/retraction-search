@@ -27,9 +27,13 @@ export function collectionSchema(name) {
       { name: 'title', type: 'string' },
       { name: 'authors', type: 'string[]' },
       { name: 'institutions', type: 'string[]' },
-      // Searched, and filters.
+      // Searched, and filter counts.
       facet('journal', 'string'),
       facet('publisher', 'string'),
+      // Exact name filters (spike S8): Typesense's exact filters ignore capitals and accents.
+      { name: 'author_keys', type: 'string[]' },
+      { name: 'journal_key', type: 'string' },
+      { name: 'publisher_key', type: 'string' },
       // Filters.
       facet('notice_type', 'string'),
       facet('paywalled', 'string'),

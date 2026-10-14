@@ -31,7 +31,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC4, AC8, AC13, AC14, AC20, AC23, AC27, AC30)
   - Done when: every spike has a recorded result, and any that fail have a spec change proposed and agreed.
 
-- [ ] **4a. Keys for exact matches.** `pipeline/sql/20_search_documents.sql` adds `author_keys` (one per entry in `authors`), `journal_key` and `publisher_key`: the first 16 hexadecimal characters of each exact name's SHA-256 hash. The load's schema indexes them for filters. (AC4, AC14, AC30; plan change P2)
+- [x] **4a. Keys for exact matches.** `pipeline/sql/20_search_documents.sql` adds `author_keys` (one per entry in `authors`), `journal_key` and `publisher_key`: the first 16 hexadecimal characters of each exact name's SHA-256 hash. The load's schema indexes them for filters. (AC4, AC14, AC30; plan change P2)
   - Done when: a fixture test shows the keys line up with the names and equal Node's SHA-256 of the same text. After a load, filtering on the key of each of the 13 journal names that differ only in capitals or accents gives its DuckDB count.
 
 - [ ] **4b. Load: full names, value check and the site's key.** `npm run load`:

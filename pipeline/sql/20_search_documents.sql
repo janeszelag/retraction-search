@@ -24,6 +24,12 @@ SELECT
   records.institutions,
   records.journal,
   records.publisher,
+  -- Keys for exact name filters: the first 16 hex characters of each name's SHA-256.
+  -- Typesense's exact filters ignore capitals and accents and can't hold a backtick
+  -- (spec 002, spike S8), so selected names filter on these instead.
+  [left(sha256(author), 16) FOR author IN records.authors] AS author_keys,
+  left(sha256(records.journal), 16) AS journal_key,
+  left(sha256(records.publisher), 16) AS publisher_key,
   -- Filters (Goal 1 of the product brief).
   records.countries,
   list_sort(list_distinct([subject.code FOR subject IN records.subjects])) AS subject_categories,
