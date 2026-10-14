@@ -79,7 +79,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   - Done when: every filter works against the local stack, counts follow the plan's rules, and the drawer works at 375 px.
 
 - [ ] **13. Value search for long filters.** `app/api/facet-values/route.ts` uses Typesense's `facet_query` for the publisher and journal filters, with cut values swapped for their full names, and the filter's search box calls it. (AC6)
-  - Done when: typing part of any of the 1,718 publishers or 8,778 journals finds it.
+  - Done when: typing part of any of the 1,717 publishers or 8,771 journals finds it.
 
 - [ ] **14. Search box and field search.** Client components update the URL after a 300 ms pause. Field-search rows have the helper text and "Add a row". DOI and PubMed ID lookups say that filters don't apply. (AC10, AC11, AC12)
   - Done when: a misspelled title word still finds the record, a two-row field search matches the plan, and pasting the DOI of an expression of concern finds it under the default filters. A search whose filters leave no exact match shows the close-spellings notice, with counts that agree with the results.

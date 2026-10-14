@@ -45,7 +45,7 @@ Rules:
 - `pipeline/`: DuckDB SQL and JavaScript glue
 - `web/`: Next.js app
 - `data/`: local downloads and outputs (not committed)
-- `docs/`: brief, decisions, specs
+- `docs/`: brief, decisions, specs, and the [data issues](docs/data-issues.md) found so far
 
 ## Commands
 
