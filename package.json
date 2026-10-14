@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "check": "npm run check -w pipeline --",
+    "check:search": "npm run check:search -w web",
     "clean": "npm run clean -w pipeline --",
     "download": "npm run download -w pipeline --",
     "load": "npm run load -w pipeline --",

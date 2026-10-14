@@ -261,6 +261,10 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 
 `npm test` stays network-free. The checks that need Docker and the full snapshot run through their own commands.
 
+**How `npm run check:search` works (task 21).** It runs the site's own server code (`runSearch`, `startExport`) against the local Typesense, and reads the same snapshot's search documents into DuckDB, found through the `meta` document. The filters are written again in SQL from the spec, not from the Typesense mapping. For each of 17 filter-only queries it compares the total, the totals by notice type and every filter count shown. Long filters are checked to show their top values. The name pairs from spike S6 can't be compared by count: Typesense expands a prefix to only a few candidate words, so it skips rare ones such as "iran0". So the check models Typesense's words in DuckDB (split at spaces, and at hyphens and slashes outside author names, with other punctuation dropped, so "He'nan" is "henan") and asserts that every record with the exact word is found and every result has a word starting with it. On the 2026-10-09 snapshot all 49 cases pass in about 15 s (checked 2026-10-14).
+
+**Known limit: author names in other scripts (AC14).** Typesense's exact filters ignore capitals only for Latin letters. On the 2026-10-09 snapshot, 3 of the 967 groups of author names that differ only in capitals or accents (6 names) differ in Cyrillic capitals, and a name link finds only its own spelling. The check covers the groups that differ in Latin capitals or accents.
+
 ## Spikes first
 
 Each is a short experiment against the local stack before the matching tasks start. If one fails, the spec gets a proposed change before code continues.

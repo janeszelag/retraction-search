@@ -126,7 +126,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tas
 
 **Checks**
 
-- [ ] **21. Search check against DuckDB.** `npm run check:search` runs a fixed set of queries against the local stack and DuckDB on the same snapshot. It compares totals and every filter count, and covers:
+- [x] **21. Search check against DuckDB.** `npm run check:search` runs a fixed set of queries against the local stack and DuckDB on the same snapshot. It compares totals and every filter count, and covers:
   - deep paging, and years before 1970
   - the twelve name pairs from spike S6 in both directions, the close-spellings fallback, and identifier lookups
   - author names, including ones that differ only in capitals or accents, merged journal spellings, and the export round trip
