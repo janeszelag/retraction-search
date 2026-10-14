@@ -102,7 +102,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC14, AC18a, AC22)
   - Done when: `/record/7962` shows all 14 authors and 9 institutions, and opening it directly shows no back link.
 
-- [ ] **17. Cite this search.** The citation panel and its copy button. (AC24)
+- [x] **17. Cite this search.** The citation panel and its copy button. (AC24)
   - Done when: the citation for the brief's example matches the one from task 7 and copies to the clipboard.
 
 - [ ] **18. CSV download.** `app/api/export/route.ts`:

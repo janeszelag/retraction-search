@@ -4,12 +4,13 @@ import { ui } from '@/components/ui';
 import { formatDataDate } from '@/lib/format/dates';
 import { formatNumber } from '@/lib/format/numbers';
 import { issueUrl } from '@/lib/links';
-import { describeQuery, totalPhrase } from '@/lib/query/describe';
+import { citation, describeQuery, totalPhrase } from '@/lib/query/describe';
 import { SORTS, effectiveSort, type Query, type Sort } from '@/lib/query/types';
 import { queryHref, serializeQuery } from '@/lib/query/url';
 import type { SearchOk } from '@/lib/search/types';
 import { ResultItem } from './result-item';
 import { SortSelect } from './sort-select';
+import { Toolbar } from './toolbar';
 
 // Links that change the search don't prefetch, so scrolling past them doesn't
 // start searches or use up the visitor's rate limit (decision record 003).
@@ -130,10 +131,13 @@ export function Results({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-y border-[#e3e6ea] py-2.5">
-        {/* An identifier lookup always lists the newest notice first. */}
-        <SortSelect value={result.lookup ? 'newest' : effectiveSort(query)} hrefs={sortHrefs} hasText={Boolean(query.q) && !result.lookup} />
-      </div>
+      <Toolbar
+        sort={
+          // An identifier lookup always lists the newest notice first.
+          <SortSelect value={result.lookup ? 'newest' : effectiveSort(query)} hrefs={sortHrefs} hasText={Boolean(query.q) && !result.lookup} />
+        }
+        citation={dataDate ? citation({ query, totals: result.totals, dataDate, url: searchUrl }) : ''}
+      />
 
       {result.found === 0 && <NoResults query={query} searchUrl={searchUrl} dataDate={dataDate} />}
       {pastTheEnd && (
