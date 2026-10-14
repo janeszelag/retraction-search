@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { BackToResults } from '@/components/record/back-to-results';
 import { CopyLink } from '@/components/record/copy-link';
 import { Unavailable } from '@/components/search/unavailable';
 import { ui } from '@/components/ui';
-import { formatApDate, formatDataDate } from '@/lib/format/dates';
+import { formatApDate } from '@/lib/format/dates';
 import { describeLink } from '@/lib/format/links';
 import { noticeTypeClasses } from '@/lib/format/notice-types';
 import { publishedRows } from '@/lib/format/published';
@@ -56,16 +57,7 @@ export default async function RecordPage({ params }: Props) {
   return (
     <>
       {/* No search box here, as in the design (AC22). */}
-      <header className="border-b border-ink-150">
-        <div className={`${ui.wrap} flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5 py-3.5`}>
-          <Link href="/" className="text-xl font-extrabold tracking-[-0.01em] text-ink-950 no-underline hover:text-ink-950">
-            Retraction search
-          </Link>
-          <span className="text-[13px] text-ink-600">
-            Retraction Watch Database{meta ? ` · Data as of ${formatDataDate(meta.dataDate)}` : ''}
-          </span>
-        </div>
-      </header>
+      <PageHeader dataDate={meta?.dataDate ?? null} />
       {result.status === 'unavailable' ? (
         <main className={`${ui.wrap} pt-6 pb-12`}>
           <Unavailable retryHref={`/record/${id}`} />

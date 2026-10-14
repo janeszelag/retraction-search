@@ -23,7 +23,7 @@ Chosen from three interactive prototypes built on the 2026-10-09 snapshot: the l
   2. "Not affiliated with Retraction Watch or Crossref. Reasons are Retraction Watch’s classification. Author names are matched as names, not identified people."
   3. "About this data · Missing retraction? Tell Retraction Watch · Problem with this site? Open an issue on GitHub". "Tell Retraction Watch" links to the user guide.
 
-  The GitHub issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
+  The GitHub issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters, worded as in the prototype: "Problem with the search" with "Search link: …" on the search page, "Problem with a record page" with "Record page: …" (the prototype gave only the ID, and AC25 asks for the link), and "Problem with this site" with "Page: …" elsewhere. The layout can't see the page's address on the server, so a small client component fills it in and follows filter changes; until it loads, the link opens an issue without the address. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
 
 **Filters**
 
@@ -198,7 +198,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 |---|---|
 | `app/page.tsx` | Server component. Parses the URL, checks the rate limit, runs the `multi_search`, renders everything. |
 | `app/record/[id]/page.tsx` | Fetches one record with a search filtered by `record_id`, because the site's key can't fetch documents directly. Shows every field, with the original values next to the cleaned ones. The URL is always just `/record/<id>`, so links to a record never carry a search. The header has the site name and data date but no search box. |
-| `app/about/page.tsx` | The data source, license, caveats, how counts work, and how to report a missing retraction (AC26). |
+| `app/about/page.tsx` | The data source, license, caveats, how counts work, and how to report a missing retraction (AC26). The prototype has no About page, so its text is new: one section per caveat in the brief, with the ids the filters' "Read more" links use. The license source is Crossref's metadata page, whose license table lists the Retraction Watch database under CC0 (checked 2026-10-14). Record pages and About share a header without a search box. |
 | `app/api/facet-values/route.ts` | Value search for long filters. |
 | `app/api/export/route.ts` | The CSV download (below). |
 
