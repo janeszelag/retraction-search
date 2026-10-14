@@ -79,6 +79,11 @@
   --color-reason-other-line: #c9c9c0;
 }
 
+/* Wider than this, the filters sit beside the results (the prototype's 820px breakpoint). */
+@theme {
+  --breakpoint-cols: 821px;
+}
+
 /* The typefaces come from next/font in layout.tsx, which sets these variables. */
 @theme inline {
   --font-sans: var(--font-public-sans), system-ui, sans-serif;
@@ -94,8 +99,10 @@
     line-height: 1.45;
   }
 
+  /* Underlined, as browsers show links by default and the design keeps them. */
   a {
     color: var(--color-accent);
+    text-decoration-line: underline;
   }
 
   a:hover {
