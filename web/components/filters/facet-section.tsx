@@ -1,16 +1,56 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { ui } from '@/components/ui';
 import { formatNumber } from '@/lib/format/numbers';
 import { clearFilter, setMatch } from '@/lib/query/changes';
 import type { FilterKey, Query } from '@/lib/query/types';
-import { queryHref } from '@/lib/query/url';
+import { queryHref, serializeQuery } from '@/lib/query/url';
 import { filterLink, ValueRow } from './value-row';
 
 // The most values a filter lists at once; a find box reaches the rest.
 export const MORE_LIMIT = 40;
+// Typed names are sent after this pause, so each keystroke isn't a search.
+const TYPING_PAUSE_MS = 250;
+
+type RemoteResult = { find: string; values: FacetValue[] } | { find: string; error: true };
+
+// Asks the site's route handler for values matching the typed text, for
+// filters with too many values to send to the page (journals and publishers).
+function useRemoteValues(facet: 'journal' | 'publisher' | undefined, find: string, query: Query): RemoteResult | null {
+  const [result, setResult] = useState<RemoteResult | null>(null);
+  const search = serializeQuery({ ...query, page: 1 });
+  const text = find.trim();
+  useEffect(() => {
+    if (!facet || text.length < 2) {
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams(search);
+        params.set('facet', facet);
+        params.set('facet_find', text);
+        const response = await fetch(`/api/facet-values?${params}`, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const body = (await response.json()) as { values: { value: string; count: number }[] };
+        setResult({ find: text, values: body.values.map(({ value, count }) => ({ value, label: value, count })) });
+      } catch {
+        if (!controller.signal.aborted) {
+          setResult({ find: text, error: true });
+        }
+      }
+    }, TYPING_PAUSE_MS);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [facet, text, search]);
+  return result && result.find === text ? result : null;
+}
 
 export interface FacetValue {
   value: string;
@@ -101,6 +141,7 @@ export function FacetSection({
   findPlaceholder,
   isDefault = false,
   topOnly = false,
+  remote,
 }: {
   query: Query;
   facet: FilterKey;
@@ -116,14 +157,24 @@ export function FacetSection({
   isDefault?: boolean;
   // Only the top values are known, as for journals and publishers.
   topOnly?: boolean;
+  // Typed text finds values through the site's route handler instead of in the page.
+  remote?: 'journal' | 'publisher';
 }) {
   const [more, setMore] = useState(false);
   const [find, setFind] = useState('');
   const selection = query.filters[facet];
   const selected = new Set([...selection.include, ...selection.exclude]);
   const needle = find.trim().toLowerCase();
+  const remoteResult = useRemoteValues(remote, find, query);
+  const remoteText = remote && find.trim().length >= 2;
 
-  const matching = needle ? values.filter((entry) => entry.label.toLowerCase().includes(needle)) : values;
+  const matching = !needle
+    ? values
+    : remoteText
+      ? remoteResult && 'values' in remoteResult
+        ? remoteResult.values
+        : []
+      : values.filter((entry) => entry.label.toLowerCase().includes(needle));
   const limit = more || needle ? MORE_LIMIT : show;
   const shown = matching.slice(0, limit);
   // A selected value stays visible even when it's past the limit or its count is 0.
@@ -139,7 +190,7 @@ export function FacetSection({
   return (
     <section className="border-t border-[#e3e6ea] py-3.5">
       <SectionHead title={title} clearHref={hasSelection ? queryHref(clearFilter(query, facet)) : null} note={note} noteHref={noteHref} />
-      {values.length > 12 && (
+      {(remote || values.length > 12) && (
         <input
           type="search"
           value={find}
@@ -158,11 +209,20 @@ export function FacetSection({
         ))}
       </ul>
       {shown.length === 0 && (
-        <p className="mt-1.5 text-[13px] text-ink-600">
-          {needle ? `No ${title.toLowerCase()} values match “${find.trim()}”.` : 'No values for these results.'}
+        <p role="status" className="mt-1.5 text-[13px] text-ink-600">
+          {!needle
+            ? 'No values for these results.'
+            : remoteText && !remoteResult
+              ? 'Searching…'
+              : remoteResult && 'error' in remoteResult
+                ? 'Search is unavailable right now.'
+                : `No ${title.toLowerCase()} values match “${find.trim()}”.`}
         </p>
       )}
-      {matching.length > limit && (more || needle) && (
+      {remoteText && remoteResult && 'values' in remoteResult && remoteResult.values.length >= MORE_LIMIT && (
+        <p className="mt-1.5 text-[12.5px] text-ink-600">Showing the top {MORE_LIMIT} matches. Type more to narrow them.</p>
+      )}
+      {!remoteText && matching.length > limit && (more || needle) && (
         <p className="mt-1.5 text-[12.5px] text-ink-600">
           {topOnly
             ? `Showing the top ${limit}. Type to find the rest.`

@@ -155,6 +155,7 @@ export function FilterSidebar({ query, counts, lastYear }: { query: Query; count
         listField={false}
         findPlaceholder="Find a journal"
         topOnly
+        remote="journal"
       />
       <FacetSection
         query={query}
@@ -165,6 +166,7 @@ export function FilterSidebar({ query, counts, lastYear }: { query: Query; count
         listField={false}
         findPlaceholder="Find a publisher"
         topOnly
+        remote="publisher"
       />
       <FacetSection
         query={query}

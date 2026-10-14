@@ -126,6 +126,14 @@ function fullNames(field: string, counts: ValueCount[], meta: Meta): ValueCount[
 
 export class SearchResponseError extends Error {}
 
+// The values a long filter's search box found, with full names (spec 002 AC6).
+export function parseFacetValues(result: TypesenseResult, field: 'journal' | 'publisher', meta: Meta): ValueCount[] {
+  if (result.error) {
+    throw new SearchResponseError(`Typesense refused a value search: ${result.error}`);
+  }
+  return fullNames(field, facet(result, field), meta);
+}
+
 export function parseSearch({
   query,
   plan,

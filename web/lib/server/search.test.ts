@@ -9,7 +9,7 @@ import { segments } from '../search/parse';
 import type { SearchOk } from '../search/types';
 import { toTypesense, type TypesenseSearch } from '../query/typesense';
 import { parseQuery } from '../query/url';
-import { loadMeta, runSearch } from './search';
+import { loadMeta, runFacetValueSearch, runSearch } from './search';
 import { SearchUnavailableError, type TypesenseClient } from './typesense';
 import type { TypesenseResult } from '../search/parse';
 
@@ -172,5 +172,43 @@ describe('segments', () => {
       { text: 'cell', mark: true },
     ]);
     expect(segments('')).toEqual([]);
+  });
+});
+
+describe('value search (AC6)', () => {
+  it('returns found values with full names for cut ones', async () => {
+    const cut = Object.entries((metaDocument as { cut_names: { journal: Record<string, string> } }).cut_names.journal)[0];
+    const { client, asked } = recorded({
+      search: '',
+      typos: 'fallback',
+      results: [
+        { found: 10, facet_counts: [{ field_name: 'journal', counts: [{ value: cut[0], count: 3 }, { value: 'medRxiv', count: 2 }] }] },
+        { found: 1, facet_counts: [{ field_name: 'journal', counts: [{ value: 'Med', count: 1 }] }] },
+      ],
+    });
+    const result = await runFacetValueSearch(parseQuery(new URLSearchParams('')), 'journal', 'med', client);
+    // The journal named exactly as typed comes first.
+    expect(result).toEqual({
+      status: 'ok',
+      values: [
+        { value: 'Med', count: 1 },
+        { value: cut[1], count: 3 },
+        { value: 'medRxiv', count: 2 },
+      ],
+    });
+    expect(asked[0][0].facet_query).toBe('journal:med');
+    expect(asked[0][1].filter_by).toBe('notice_type:=[`Retraction`] && is_revision:=false && journal:=[`med`]');
+  });
+
+  it('says the search is unavailable when Typesense is', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const client: TypesenseClient = {
+      multiSearch: async () => {
+        throw new SearchUnavailableError('down');
+      },
+      meta: async () => metaDocument as Record<string, unknown>,
+    };
+    expect(await runFacetValueSearch(parseQuery(new URLSearchParams('')), 'publisher', 'spring', client)).toEqual({ status: 'unavailable' });
+    log.mockRestore();
   });
 });

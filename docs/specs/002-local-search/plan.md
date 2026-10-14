@@ -188,7 +188,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 
 **Sorting:** relevance is `_text_match:desc,notice_date:desc,record_id:desc`; the date orders sort on `notice_date` or `paper_date`, then `record_id`. The tie-breaker keeps pages from overlapping (spike S3).
 
-**Filter counts:** small filters (notice type, reason, subject, country, article type, paywalled) return every value in one go. Publisher and journal return their top values, and their search box asks `/api/facet-values`, which uses Typesense's `facet_query`. Journal and publisher values that Typesense cut at 255 bytes are swapped for their full names from `meta` before they're shown or linked.
+**Filter counts:** small filters (notice type, reason, subject, country, article type, paywalled) return every value in one go. Publisher and journal return their top values, and their search box asks `/api/facet-values`, which uses Typesense's `facet_query`. That matches each typed word as the start of a word in the name and ranks by count, so a short or common name ("Health", "Chem") can rank past the top 40; the same request also looks for a value named exactly as typed, ignoring capitals and accents, and lists it first. Checked 2026-10-13: every one of the 8,771 journals and 1,717 publishers is found by typing its two longest words (10,018), its four longest (418) or its name (52). Journal and publisher values that Typesense cut at 255 bytes are swapped for their full names from `meta` before they're shown or linked.
 
 **Highlighting** uses Typesense's highlight output for title and authors, with marker strings that the page splits into text and `<mark>` elements. No returned HTML is inserted directly.
 

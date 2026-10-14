@@ -71,6 +71,7 @@ export interface TypesenseSearch {
   typo_tokens_threshold?: number;
   filter_by?: string;
   facet_by?: string;
+  facet_query?: string;
   max_facet_values?: number;
   sort_by?: string;
   per_page: number;
@@ -265,6 +266,51 @@ const highlighting = {
   enable_highlight_v1: false,
 };
 
+// The search-text part of every search for a query.
+function textParams(query: Query, typos: 'fallback' | 'always') {
+  return query.q
+    ? {
+        q: query.q,
+        query_by: QUERY_BY,
+        num_typos: NUM_TYPOS,
+        drop_tokens_threshold: 0,
+        ...(typos === 'always' ? { typo_tokens_threshold: TYPOS_ALWAYS_THRESHOLD } : {}),
+      }
+    : { q: '*' };
+}
+
+// Finds a long filter's values by name, for its search box (spec 002 AC6):
+// the filter's counts search, narrowed with Typesense's facet_query, which
+// matches each typed word as the start of a word in the name.
+export function toFacetValueSearch(query: Query, part: 'journal' | 'publisher', find: string): TypesenseSearch {
+  const parts = filterParts(query);
+  const others = [...parts].filter(([key]) => key !== part).map(([, clause]) => clause);
+  return {
+    collection: COLLECTION,
+    ...textParams(query, 'fallback'),
+    filter_by: joinFilter(others),
+    facet_by: part,
+    facet_query: `${part}:${find.replaceAll('`', '')}`,
+    max_facet_values: LONG_FACET_LIMIT,
+    per_page: 0,
+  };
+}
+
+// The value named exactly as typed, ignoring capitals and accents, for names
+// so short or common that facet_query ranks them past the top values
+// ("Health", "Chem").
+export function toExactValueSearch(query: Query, part: 'journal' | 'publisher', find: string): TypesenseSearch {
+  const others = [...filterParts(query)].filter(([key]) => key !== part).map(([, clause]) => clause);
+  return {
+    collection: COLLECTION,
+    ...textParams(query, 'fallback'),
+    filter_by: joinFilter([...others, anyOf(part, [find])]),
+    facet_by: part,
+    max_facet_values: 5,
+    per_page: 0,
+  };
+}
+
 export interface PlanOptions {
   // 'fallback': Typesense's default, trying other spellings only when nothing matches exactly.
   // 'always': typos on for every search, used when the results came only from close spellings.
@@ -297,16 +343,7 @@ export function toTypesense(query: Query, { typos = 'fallback' }: PlanOptions = 
     return { searches, roles, lookup };
   }
 
-  const text = query.q
-    ? {
-        q: query.q,
-        query_by: QUERY_BY,
-        num_typos: NUM_TYPOS,
-        drop_tokens_threshold: 0,
-        ...(typos === 'always' ? { typo_tokens_threshold: TYPOS_ALWAYS_THRESHOLD } : {}),
-      }
-    : { q: '*' };
-
+  const text = textParams(query, typos);
   const parts = filterParts(query);
   const without = (...omitted: string[]) => [...parts].filter(([part]) => !omitted.includes(part)).map(([, clause]) => clause);
   const own = COUNT_PARTS.filter((part) => hasOwnCounts(query, part));

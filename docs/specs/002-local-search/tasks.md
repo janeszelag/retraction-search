@@ -78,7 +78,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC31)
   - Done when: every filter works against the local stack, counts follow the plan's rules, and the drawer works at 375 px.
 
-- [ ] **13. Value search for long filters.** `app/api/facet-values/route.ts` uses Typesense's `facet_query` for the publisher and journal filters, with cut values swapped for their full names, and the filter's search box calls it. (AC6)
+- [x] **13. Value search for long filters.** `app/api/facet-values/route.ts` uses Typesense's `facet_query` for the publisher and journal filters, with cut values swapped for their full names, and the filter's search box calls it. (AC6)
   - Done when: typing part of any of the 1,717 publishers or 8,771 journals finds it.
 
 - [ ] **14. Search box and field search.** Client components update the URL after a 300 ms pause. Field-search rows have the helper text and "Add a row". DOI and PubMed ID lookups say that filters don't apply. (AC10, AC11, AC12)

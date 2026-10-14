@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ui } from '@/components/ui';
-import { formatNumber } from '@/lib/format/numbers';
+import { formatNumber, formatRecords } from '@/lib/format/numbers';
 import { setYears } from '@/lib/query/changes';
 import type { Query, YearRange } from '@/lib/query/types';
 import { queryHref } from '@/lib/query/url';
@@ -103,7 +103,7 @@ export function YearSection({
             key={bar.label}
             href={queryHref(setYears(query, which, bar.pick))}
             title={`${bar.label}: ${formatNumber(bar.count)}`}
-            aria-label={`${bar.label}: ${formatNumber(bar.count)} records. Select this year.`}
+            aria-label={`${bar.label}: ${formatRecords(bar.count)}. Select this year.`}
             className="group flex h-full min-w-0 flex-1 flex-col justify-end"
             {...filterLink}
           >

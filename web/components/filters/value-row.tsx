@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { formatNumber } from '@/lib/format/numbers';
+import { formatNumber, formatRecords } from '@/lib/format/numbers';
 import { toggleExclude, toggleInclude, valueState } from '@/lib/query/changes';
 import type { FilterKey, Query } from '@/lib/query/types';
 import { queryHref } from '@/lib/query/url';
@@ -80,7 +80,7 @@ export function ValueRow({
       {before}
       <Link
         href={queryHref(toggleInclude(query, facet, value))}
-        aria-label={`${label}, ${formatNumber(count)} records${STATE_TEXT[state]}`}
+        aria-label={`${label}, ${formatRecords(count)}${STATE_TEXT[state]}`}
         className="flex min-h-9 min-w-0 flex-1 items-center gap-2.5 rounded-md px-1.5 py-1 text-left text-ink-950 no-underline hover:text-ink-950"
         {...filterLink}
       >
@@ -92,7 +92,6 @@ export function ValueRow({
         </span>
         <span className="text-[13px] whitespace-nowrap text-ink-600 tabular-nums">
           {formatNumber(count)}
-          <span className="sr-only"> records</span>
         </span>
       </Link>
       <Link
@@ -116,7 +115,7 @@ export function OptionRow({ href, on, label, count }: { href: string; on: boolea
     <div className="flex items-center gap-0.5 rounded-md hover:bg-ink-50">
       <Link
         href={href}
-        aria-label={`${label}${count !== null ? `, ${formatNumber(count)} records` : ''}${on ? ', selected' : ''}`}
+        aria-label={`${label}${count !== null ? `, ${formatRecords(count)}` : ''}${on ? ', selected' : ''}`}
         className="flex min-h-9 min-w-0 flex-1 items-center gap-2.5 rounded-md px-1.5 py-1 text-left text-ink-950 no-underline hover:text-ink-950"
         {...filterLink}
       >
@@ -128,7 +127,6 @@ export function OptionRow({ href, on, label, count }: { href: string; on: boolea
         {count !== null && (
           <span className="text-[13px] whitespace-nowrap text-ink-600 tabular-nums">
             {formatNumber(count)}
-            <span className="sr-only"> records</span>
           </span>
         )}
       </Link>

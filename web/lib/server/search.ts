@@ -1,10 +1,10 @@
 // Runs a search for a page (spec 002, task 10). Server-only, like the client it uses.
 import 'server-only';
 import { cache } from 'react';
-import { toTypesense } from '../query/typesense';
+import { toExactValueSearch, toFacetValueSearch, toTypesense } from '../query/typesense';
 import type { Query } from '../query/types';
-import { onlyCloseSpellings, parseMeta, parseSearch } from '../search/parse';
-import type { Meta, SearchResult } from '../search/types';
+import { onlyCloseSpellings, parseFacetValues, parseMeta, parseSearch } from '../search/parse';
+import type { Meta, SearchResult, ValueCount } from '../search/types';
 import { typesenseClient, type TypesenseClient } from './typesense';
 
 function logFailure(what: string, error: unknown) {
@@ -42,6 +42,29 @@ export async function runSearch(query: Query, client: TypesenseClient = typesens
   } catch (error) {
     // The page says search is unavailable instead of failing (AC29).
     logFailure('Search', error);
+    return { status: 'unavailable' };
+  }
+}
+
+// Finds journals or publishers by name for a filter's search box.
+export async function runFacetValueSearch(
+  query: Query,
+  part: 'journal' | 'publisher',
+  find: string,
+  client: TypesenseClient = typesenseClient,
+): Promise<{ status: 'ok'; values: ValueCount[] } | { status: 'unavailable' }> {
+  try {
+    const meta = await loadMeta(client);
+    if (!meta) {
+      return { status: 'unavailable' };
+    }
+    const [found, exact] = await client.multiSearch([toFacetValueSearch(query, part, find), toExactValueSearch(query, part, find)]);
+    // A value named exactly as typed comes first, then the rest by count.
+    const exactValues = parseFacetValues(exact ?? {}, part, meta);
+    const values = parseFacetValues(found ?? {}, part, meta);
+    return { status: 'ok', values: [...exactValues, ...values.filter((entry) => !exactValues.some((other) => other.value === entry.value))] };
+  } catch (error) {
+    logFailure('Value search', error);
     return { status: 'unavailable' };
   }
 }

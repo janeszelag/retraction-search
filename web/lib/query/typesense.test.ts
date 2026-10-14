@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LONG_FACET_LIMIT, PER_PAGE, SMALL_FACET_LIMIT, toTypesense, type SearchPlan } from './typesense';
+import { LONG_FACET_LIMIT, PER_PAGE, SMALL_FACET_LIMIT, toFacetValueSearch, toTypesense, type SearchPlan } from './typesense';
 import { parseQuery } from './url';
 
 const plan = (search: string, options?: Parameters<typeof toTypesense>[1]) =>
@@ -300,5 +300,24 @@ describe('size', () => {
     const result = plan(everything);
     expect(result.searches.length).toBeLessThanOrEqual(50);
     expect(result.roles.filter((role) => role.kind === 'counts')).toHaveLength(12);
+  });
+});
+
+describe('value search for long filters (AC6)', () => {
+  it('narrows the filter’s counts search with facet_query', () => {
+    const query = parseQuery(new URLSearchParams('q=heart&journal=Cureus&reason=A'));
+    expect(toFacetValueSearch(query, 'journal', 'nucleic acids')).toMatchObject({
+      collection: 'retractions',
+      q: 'heart',
+      filter_by: `${DEFAULTS} && reasons:=[\`A\`]`,
+      facet_by: 'journal',
+      facet_query: 'journal:nucleic acids',
+      max_facet_values: LONG_FACET_LIMIT,
+      per_page: 0,
+    });
+  });
+
+  it('drops a backtick from the typed text', () => {
+    expect(toFacetValueSearch(parseQuery(new URLSearchParams('')), 'publisher', 'spr`ing').facet_query).toBe('publisher:spring');
   });
 });
