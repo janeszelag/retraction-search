@@ -57,6 +57,15 @@ FROM (
   SELECT 'Subject without a code', record_id, subject.name
   FROM (SELECT record_id, unnest(subjects) AS subject FROM records)
   WHERE subject.code IS NULL
+  UNION ALL
+  SELECT 'Backtick in an author name', record_id, original.author
+  FROM records WHERE contains(original.author, '`')
+  UNION ALL
+  SELECT 'Journal or publisher spelling merged', record_id, 'journal "' || trim(original.journal) || '" became "' || journal || '"'
+  FROM records WHERE original.journal IS NOT NULL
+  UNION ALL
+  SELECT 'Journal or publisher spelling merged', record_id, 'publisher "' || trim(original.publisher) || '" became "' || publisher || '"'
+  FROM records WHERE original.publisher IS NOT NULL
 )
 ORDER BY issue, record_id, value;
 
@@ -66,12 +75,19 @@ SELECT position, flag, CAST(records AS INTEGER) AS records
 FROM (
   SELECT 1 AS position, 'Revised version (is_revision)' AS flag, count(*) FILTER (WHERE is_revision) AS records FROM records
   UNION ALL SELECT 2, 'Editorial Staff author (has_editorial_staff_author)', count(*) FILTER (WHERE has_editorial_staff_author) FROM records
-  UNION ALL SELECT 3, 'Author placeholder rewritten to "Unknown"', count(*) FILTER (WHERE original.author IS NOT NULL) FROM records
+  UNION ALL SELECT 3, 'Author placeholder rewritten to "Unknown"', count(*) FILTER (
+    WHERE len([entry FOR entry IN split_list(original.author)
+               IF lower(entry) IN ('unknown', 'unavailable', 'not available') AND entry <> 'Unknown']) > 0
+  ) FROM records
   UNION ALL SELECT 4, 'Institution placeholder rewritten to "Unknown"', count(*) FILTER (WHERE original.institution IS NOT NULL) FROM records
   UNION ALL SELECT 5, 'Country placeholder rewritten to "Unknown"', count(*) FILTER (WHERE original.country IS NOT NULL) FROM records
   UNION ALL SELECT 6, 'Stray "x" removed from a DOI', count(*) FILTER (
     WHERE (starts_with(lower(trim(original.notice_doi)), 'x') AND starts_with(notice_doi, '10.'))
        OR (starts_with(lower(trim(original.paper_doi)), 'x') AND starts_with(paper_doi, '10.'))
   ) FROM records
+  -- Spec 002's name rules.
+  UNION ALL SELECT 7, 'Backtick fixed in an author name', count(*) FILTER (WHERE contains(original.author, '`')) FROM records
+  UNION ALL SELECT 8, 'Journal spelling merged into the most common one', count(*) FILTER (WHERE original.journal IS NOT NULL) FROM records
+  UNION ALL SELECT 9, 'Publisher spelling merged into the most common one', count(*) FILTER (WHERE original.publisher IS NOT NULL) FROM records
 )
 ORDER BY position;

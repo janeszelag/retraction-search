@@ -13,9 +13,10 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 
 ## Stack
 
-See decision records [001](docs/decisions/001-languages.md) (languages) and [002](docs/decisions/002-search-engine.md) (search).
+See decision records [001](docs/decisions/001-languages.md) (languages), [002](docs/decisions/002-search-engine.md) (search) and [003](docs/decisions/003-ui-stack.md) (UI).
 
 - Frontend: Next.js (React) written in TypeScript.
+- UI: Tailwind CSS 4, with Radix Primitives only where native HTML falls short. The search page is a server component, and the URL holds the whole query.
 - Search: Typesense 30.2 on Railway (Hobby plan, $50 hard limit), reached only through the website's server code.
 - Data transforms: SQL run by DuckDB, kept in `.sql` files.
 - Pipeline glue: JavaScript (ES modules) on Node 22, using `@duckdb/node-api`. No build step.
@@ -44,7 +45,7 @@ Rules:
 - `pipeline/`: DuckDB SQL and JavaScript glue
 - `web/`: Next.js app
 - `data/`: local downloads and outputs (not committed)
-- `docs/`: brief, decisions, specs
+- `docs/`: brief, decisions, specs, and the [data issues](docs/data-issues.md) found so far
 
 ## Commands
 
@@ -53,9 +54,13 @@ Run from the repository root:
 | Command | What it does |
 |---|---|
 | `npm install` | Installs dependencies |
-| `npm test` | Runs the pipeline tests (Vitest) on the committed fixtures; needs no network or full data |
+| `npm test` | Runs the pipeline and web tests (Vitest) on the committed fixtures; needs no network or full data |
 | `npm run download` | Saves the latest snapshot to `data/raw/`, pinned by its upstream commit (`-- --commit <sha>` for a specific one) |
 | `npm run clean` | Cleans the newest snapshot into `data/clean/<data date>-<short sha>/` (`-- --input <file>` for another) |
 | `npm run check` | Cleans the newest snapshot twice and checks the outputs (`-- --input <file>` for another) |
+| `npm run search:up` | Starts Typesense and Redis in Docker, with the keys from `.env.local` (copy `.env.example` to make one) |
+| `npm run search:down` | Stops them |
+| `npm run load` | Loads the newest cleaned snapshot into Typesense (`-- --input <folder>` for another) and saves the site's key to `.env.local` |
+| `npm run web` | Starts the site at http://localhost:3000 |
 
 The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.

@@ -28,6 +28,7 @@ const REQUIRED = {
   paper_date: 'number',
   paper_year: 'number',
   urls: 'array',
+  url_record_counts: 'array',
   original: 'object',
 };
 const OPTIONAL = {
@@ -114,6 +115,31 @@ describe('search documents (AC13)', () => {
     for (const field of ['reasons', 'subject_categories', 'subjects', 'notice_type', 'countries', 'publisher', 'notice_year', 'paper_year', 'paywalled']) {
       expect(doc, field).toHaveProperty(field);
     }
+  });
+
+  it('counts how many records list each URL (spec 002, AC18a)', () => {
+    for (const doc of documents.values()) {
+      expect(doc.url_record_counts, `record ${doc.id}`).toHaveLength(doc.urls.length);
+    }
+    // Records 34181 and 34394 link to the same post, and no other fixture row does.
+    expect(documents.get(34181).url_record_counts).toEqual([2]);
+    expect(documents.get(34394).url_record_counts).toEqual([2]);
+    // Record 4's two posts appear nowhere else in the fixture.
+    expect(documents.get(4).url_record_counts).toEqual([1, 1]);
+    // Records 12419 and 22992 list the same two URLs.
+    expect(documents.get(12419).url_record_counts).toEqual([2, 2]);
+    expect(documents.get(96).url_record_counts).toEqual([]);
+  });
+
+  it('counts a URL the same with http or https and with or without a trailing slash', async () => {
+    const db = await openDatabase();
+    await loadSource(db, fixture('sample.csv'));
+    await cleanRecords(db);
+    await db.run(`UPDATE records SET urls = ['https://retractionwatch.com/2021/11/14/publisher-retracts-nearly-80-articles-over-three-days'] WHERE record_id = 34394`);
+    await buildDocuments(db);
+    const docs = new Map((await documentLines(db)).map((line) => JSON.parse(line)).map((doc) => [doc.record_id, doc]));
+    expect(docs.get(34181).url_record_counts).toEqual([2]);
+    expect(docs.get(34394).url_record_counts).toEqual([2]);
   });
 
   it('keeps the original values for record pages', () => {

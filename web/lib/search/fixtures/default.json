@@ -1,0 +1,4909 @@
+{
+ "search": "",
+ "typos": "fallback",
+ "results": [
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 67384,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 30648,
+       "highlighted": "Investigation by Journal/Publisher",
+       "value": "Investigation by Journal/Publisher"
+      },
+      {
+       "count": 22142,
+       "highlighted": "Unreliable Results and/or Conclusions",
+       "value": "Unreliable Results and/or Conclusions"
+      },
+      {
+       "count": 17809,
+       "highlighted": "Investigation by Third Party",
+       "value": "Investigation by Third Party"
+      },
+      {
+       "count": 15134,
+       "highlighted": "Concerns/Issues about Referencing/Attributions",
+       "value": "Concerns/Issues about Referencing/Attributions"
+      },
+      {
+       "count": 14403,
+       "highlighted": "Concerns/Issues about Data",
+       "value": "Concerns/Issues about Data"
+      },
+      {
+       "count": 11956,
+       "highlighted": "Notice - Limited or No Information",
+       "value": "Notice - Limited or No Information"
+      },
+      {
+       "count": 11712,
+       "highlighted": "Paper Mill",
+       "value": "Paper Mill"
+      },
+      {
+       "count": 11449,
+       "highlighted": "Concerns/Issues about Peer Review",
+       "value": "Concerns/Issues about Peer Review"
+      },
+      {
+       "count": 11415,
+       "highlighted": "Compromised Peer Review",
+       "value": "Compromised Peer Review"
+      },
+      {
+       "count": 9377,
+       "highlighted": "Computer-Aided Content or Computer-Generated Content",
+       "value": "Computer-Aided Content or Computer-Generated Content"
+      },
+      {
+       "count": 9306,
+       "highlighted": "Concerns/Issues about Results and/or Conclusions",
+       "value": "Concerns/Issues about Results and/or Conclusions"
+      },
+      {
+       "count": 6907,
+       "highlighted": "Date of Article and/or Notice Unknown",
+       "value": "Date of Article and/or Notice Unknown"
+      },
+      {
+       "count": 5404,
+       "highlighted": "Duplication of/in Image",
+       "value": "Duplication of/in Image"
+      },
+      {
+       "count": 4781,
+       "highlighted": "Breach of Policy by Author",
+       "value": "Breach of Policy by Author"
+      },
+      {
+       "count": 3967,
+       "highlighted": "Objections by Author(s)",
+       "value": "Objections by Author(s)"
+      },
+      {
+       "count": 3921,
+       "highlighted": "Removed",
+       "value": "Removed"
+      },
+      {
+       "count": 3822,
+       "highlighted": "Euphemisms for Plagiarism",
+       "value": "Euphemisms for Plagiarism"
+      },
+      {
+       "count": 3672,
+       "highlighted": "Duplication of/in Article",
+       "value": "Duplication of/in Article"
+      },
+      {
+       "count": 3370,
+       "highlighted": "Author Unresponsive",
+       "value": "Author Unresponsive"
+      },
+      {
+       "count": 3274,
+       "highlighted": "Investigation by Company/Institution",
+       "value": "Investigation by Company/Institution"
+      },
+      {
+       "count": 3152,
+       "highlighted": "Rogue Editor",
+       "value": "Rogue Editor"
+      },
+      {
+       "count": 3140,
+       "highlighted": "Concerns/Issues about Image",
+       "value": "Concerns/Issues about Image"
+      },
+      {
+       "count": 2967,
+       "highlighted": "Concerns/Issues about Authorship/Affiliation",
+       "value": "Concerns/Issues about Authorship/Affiliation"
+      },
+      {
+       "count": 2884,
+       "highlighted": "Plagiarism of/in Article",
+       "value": "Plagiarism of/in Article"
+      },
+      {
+       "count": 2646,
+       "highlighted": "Lack of IRB/IACUC Approval and/or Compliance",
+       "value": "Lack of IRB/IACUC Approval and/or Compliance"
+      },
+      {
+       "count": 2471,
+       "highlighted": "Original Data and/or Images not Provided and/or not Available",
+       "value": "Original Data and/or Images not Provided and/or not Available"
+      },
+      {
+       "count": 2398,
+       "highlighted": "Upgrade/Update of Prior Notice(s)",
+       "value": "Upgrade/Update of Prior Notice(s)"
+      },
+      {
+       "count": 2354,
+       "highlighted": "Unreliable Data",
+       "value": "Unreliable Data"
+      },
+      {
+       "count": 2294,
+       "highlighted": "Euphemisms for Duplication",
+       "value": "Euphemisms for Duplication"
+      },
+      {
+       "count": 2196,
+       "highlighted": "Plagiarism of Text",
+       "value": "Plagiarism of Text"
+      },
+      {
+       "count": 1930,
+       "highlighted": "Error in Data",
+       "value": "Error in Data"
+      },
+      {
+       "count": 1848,
+       "highlighted": "Misconduct by Author",
+       "value": "Misconduct by Author"
+      },
+      {
+       "count": 1829,
+       "highlighted": "Concerns/Issues about Third Party Involvement",
+       "value": "Concerns/Issues about Third Party Involvement"
+      },
+      {
+       "count": 1797,
+       "highlighted": "Concerns/Issues about Article",
+       "value": "Concerns/Issues about Article"
+      },
+      {
+       "count": 1708,
+       "highlighted": "Falsification/Fabrication of Data",
+       "value": "Falsification/Fabrication of Data"
+      },
+      {
+       "count": 1608,
+       "highlighted": "Informed/Patient Consent - None/Withdrawn",
+       "value": "Informed/Patient Consent - None/Withdrawn"
+      },
+      {
+       "count": 1541,
+       "highlighted": "Misconduct - Official Investigation(s) and/or Finding(s)",
+       "value": "Misconduct - Official Investigation(s) and/or Finding(s)"
+      },
+      {
+       "count": 1454,
+       "highlighted": "Error in Results and/or Conclusions",
+       "value": "Error in Results and/or Conclusions"
+      },
+      {
+       "count": 1390,
+       "highlighted": "Error in Analyses",
+       "value": "Error in Analyses"
+      },
+      {
+       "count": 1340,
+       "highlighted": "Manipulation of Images",
+       "value": "Manipulation of Images"
+      },
+      {
+       "count": 1251,
+       "highlighted": "Error in Methods",
+       "value": "Error in Methods"
+      },
+      {
+       "count": 1058,
+       "highlighted": "Duplication of Data",
+       "value": "Duplication of Data"
+      },
+      {
+       "count": 1052,
+       "highlighted": "Error by Journal/Publisher",
+       "value": "Error by Journal/Publisher"
+      },
+      {
+       "count": 946,
+       "highlighted": "Error in Image",
+       "value": "Error in Image"
+      },
+      {
+       "count": 943,
+       "highlighted": "Results Not Reproducible",
+       "value": "Results Not Reproducible"
+      },
+      {
+       "count": 898,
+       "highlighted": "False/Forged Authorship",
+       "value": "False/Forged Authorship"
+      },
+      {
+       "count": 888,
+       "highlighted": "Duplication of Content through Error by Journal/Publisher",
+       "value": "Duplication of Content through Error by Journal/Publisher"
+      },
+      {
+       "count": 883,
+       "highlighted": "Plagiarism of Image",
+       "value": "Plagiarism of Image"
+      },
+      {
+       "count": 821,
+       "highlighted": "Retract and Replace",
+       "value": "Retract and Replace"
+      },
+      {
+       "count": 810,
+       "highlighted": "Conflict of Interest",
+       "value": "Conflict of Interest"
+      },
+      {
+       "count": 778,
+       "highlighted": "Error in Text",
+       "value": "Error in Text"
+      },
+      {
+       "count": 733,
+       "highlighted": "Objections by Third Party",
+       "value": "Objections by Third Party"
+      },
+      {
+       "count": 692,
+       "highlighted": "Copyright Claims",
+       "value": "Copyright Claims"
+      },
+      {
+       "count": 654,
+       "highlighted": "Plagiarism of Data",
+       "value": "Plagiarism of Data"
+      },
+      {
+       "count": 645,
+       "highlighted": "Ethical Violations by Author",
+       "value": "Ethical Violations by Author"
+      },
+      {
+       "count": 615,
+       "highlighted": "Concerns/Issues about Human Subject Welfare",
+       "value": "Concerns/Issues about Human Subject Welfare"
+      },
+      {
+       "count": 574,
+       "highlighted": "Lack of Approval from Author",
+       "value": "Lack of Approval from Author"
+      },
+      {
+       "count": 543,
+       "highlighted": "Falsification/Fabrication of Image",
+       "value": "Falsification/Fabrication of Image"
+      },
+      {
+       "count": 496,
+       "highlighted": "Withdrawn to Publish in Different Journal",
+       "value": "Withdrawn to Publish in Different Journal"
+      },
+      {
+       "count": 480,
+       "highlighted": "Duplication of Text",
+       "value": "Duplication of Text"
+      },
+      {
+       "count": 456,
+       "highlighted": "Lack of Approval from Third Party",
+       "value": "Lack of Approval from Third Party"
+      },
+      {
+       "count": 373,
+       "highlighted": "Taken from Dissertation/Thesis",
+       "value": "Taken from Dissertation/Thesis"
+      },
+      {
+       "count": 355,
+       "highlighted": "Notice - Lack of",
+       "value": "Notice - Lack of"
+      },
+      {
+       "count": 298,
+       "highlighted": "Lack of Approval from Company/Institution",
+       "value": "Lack of Approval from Company/Institution"
+      },
+      {
+       "count": 286,
+       "highlighted": "Investigation by ORI",
+       "value": "Investigation by ORI"
+      },
+      {
+       "count": 268,
+       "highlighted": "Unreliable Image",
+       "value": "Unreliable Image"
+      },
+      {
+       "count": 250,
+       "highlighted": "Concerns/Issues about Methods",
+       "value": "Concerns/Issues about Methods"
+      },
+      {
+       "count": 208,
+       "highlighted": "Withdrawn as Out of Date",
+       "value": "Withdrawn as Out of Date"
+      },
+      {
+       "count": 207,
+       "highlighted": "Cites Retracted Work",
+       "value": "Cites Retracted Work"
+      },
+      {
+       "count": 196,
+       "highlighted": "False/Forged Affiliation",
+       "value": "False/Forged Affiliation"
+      },
+      {
+       "count": 194,
+       "highlighted": "Error in Materials",
+       "value": "Error in Materials"
+      },
+      {
+       "count": 182,
+       "highlighted": "Notice - Unable to Access via current resources",
+       "value": "Notice - Unable to Access via current resources"
+      },
+      {
+       "count": 162,
+       "highlighted": "Contamination of Cell Lines/Tissues",
+       "value": "Contamination of Cell Lines/Tissues"
+      },
+      {
+       "count": 136,
+       "highlighted": "Doing the Right Thing",
+       "value": "Doing the Right Thing"
+      },
+      {
+       "count": 117,
+       "highlighted": "Falsification/Fabrication of Results",
+       "value": "Falsification/Fabrication of Results"
+      },
+      {
+       "count": 114,
+       "highlighted": "Legal Reasons and/or Threats",
+       "value": "Legal Reasons and/or Threats"
+      },
+      {
+       "count": 102,
+       "highlighted": "Miscommunication with/by Author",
+       "value": "Miscommunication with/by Author"
+      },
+      {
+       "count": 100,
+       "highlighted": "Complaints about Author",
+       "value": "Complaints about Author"
+      },
+      {
+       "count": 99,
+       "highlighted": "Bias Issues or Lack of Balance",
+       "value": "Bias Issues or Lack of Balance"
+      },
+      {
+       "count": 94,
+       "highlighted": "Error in Cell Lines/Tissues",
+       "value": "Error in Cell Lines/Tissues"
+      },
+      {
+       "count": 81,
+       "highlighted": "Publishing Ban",
+       "value": "Publishing Ban"
+      },
+      {
+       "count": 80,
+       "highlighted": "Contamination of Materials",
+       "value": "Contamination of Materials"
+      },
+      {
+       "count": 75,
+       "highlighted": "Criminal Proceedings",
+       "value": "Criminal Proceedings"
+      },
+      {
+       "count": 60,
+       "highlighted": "Concerns/Issues about Animal Welfare",
+       "value": "Concerns/Issues about Animal Welfare"
+      },
+      {
+       "count": 55,
+       "highlighted": "Temporary Removal",
+       "value": "Temporary Removal"
+      },
+      {
+       "count": 49,
+       "highlighted": "Misconduct by Third Party",
+       "value": "Misconduct by Third Party"
+      },
+      {
+       "count": 43,
+       "highlighted": "Error by Third Party",
+       "value": "Error by Third Party"
+      },
+      {
+       "count": 43,
+       "highlighted": "Manipulation of Results",
+       "value": "Manipulation of Results"
+      },
+      {
+       "count": 43,
+       "highlighted": "Transfer of Copyright and/or Ownership",
+       "value": "Transfer of Copyright and/or Ownership"
+      },
+      {
+       "count": 40,
+       "highlighted": "Not Presented at Conference",
+       "value": "Not Presented at Conference"
+      },
+      {
+       "count": 30,
+       "highlighted": "Manipulation of Data",
+       "value": "Manipulation of Data"
+      },
+      {
+       "count": 29,
+       "highlighted": "Salami Slicing",
+       "value": "Salami Slicing"
+      },
+      {
+       "count": 29,
+       "highlighted": "Ethical Violations by Company/Institution/Third Party",
+       "value": "Ethical Violations by Company/Institution/Third Party"
+      },
+      {
+       "count": 28,
+       "highlighted": "Civil Proceedings",
+       "value": "Civil Proceedings"
+      },
+      {
+       "count": 28,
+       "highlighted": "Objections by Company/Institution",
+       "value": "Objections by Company/Institution"
+      },
+      {
+       "count": 23,
+       "highlighted": "Taken via Peer Review",
+       "value": "Taken via Peer Review"
+      },
+      {
+       "count": 22,
+       "highlighted": "Updated to Retraction",
+       "value": "Updated to Retraction"
+      },
+      {
+       "count": 18,
+       "highlighted": "Miscommunication with/by Journal/Publisher",
+       "value": "Miscommunication with/by Journal/Publisher"
+      },
+      {
+       "count": 15,
+       "highlighted": "Hoax Paper",
+       "value": "Hoax Paper"
+      },
+      {
+       "count": 12,
+       "highlighted": "Miscommunication with/by Third Party",
+       "value": "Miscommunication with/by Third Party"
+      },
+      {
+       "count": 11,
+       "highlighted": "Taken via Translation",
+       "value": "Taken via Translation"
+      },
+      {
+       "count": 11,
+       "highlighted": "Euphemisms for Misconduct",
+       "value": "Euphemisms for Misconduct"
+      },
+      {
+       "count": 11,
+       "highlighted": "Nonpayment of Fees and/or Refusal to Pay",
+       "value": "Nonpayment of Fees and/or Refusal to Pay"
+      },
+      {
+       "count": 11,
+       "highlighted": "Miscommunication with/by Company/Institution",
+       "value": "Miscommunication with/by Company/Institution"
+      },
+      {
+       "count": 9,
+       "highlighted": "Complaints about Third Party",
+       "value": "Complaints about Third Party"
+      },
+      {
+       "count": 8,
+       "highlighted": "Misconduct by Company/Institution",
+       "value": "Misconduct by Company/Institution"
+      },
+      {
+       "count": 6,
+       "highlighted": "Updated to Correction",
+       "value": "Updated to Correction"
+      },
+      {
+       "count": 5,
+       "highlighted": "Complaints about Company/Institution",
+       "value": "Complaints about Company/Institution"
+      },
+      {
+       "count": 4,
+       "highlighted": "No Further Action",
+       "value": "No Further Action"
+      },
+      {
+       "count": 1,
+       "highlighted": "Sabotage of Materials/Methods",
+       "value": "Sabotage of Materials/Methods"
+      }
+     ],
+     "field_name": "reasons",
+     "sampled": false,
+     "stats": {
+      "total_values": 110
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 12524,
+       "highlighted": "B/T: Technology",
+       "value": "B/T: Technology"
+      },
+      {
+       "count": 11328,
+       "highlighted": "BLS: Biology - Cellular",
+       "value": "BLS: Biology - Cellular"
+      },
+      {
+       "count": 9594,
+       "highlighted": "B/T: Computer Science",
+       "value": "B/T: Computer Science"
+      },
+      {
+       "count": 8621,
+       "highlighted": "BLS: Genetics",
+       "value": "BLS: Genetics"
+      },
+      {
+       "count": 7743,
+       "highlighted": "BLS: Biochemistry",
+       "value": "BLS: Biochemistry"
+      },
+      {
+       "count": 6490,
+       "highlighted": "BLS: Biology - Cancer",
+       "value": "BLS: Biology - Cancer"
+      },
+      {
+       "count": 5972,
+       "highlighted": "B/T: Data Science",
+       "value": "B/T: Data Science"
+      },
+      {
+       "count": 5273,
+       "highlighted": "SOC: Education",
+       "value": "SOC: Education"
+      },
+      {
+       "count": 4615,
+       "highlighted": "BLS: Biology - Molecular",
+       "value": "BLS: Biology - Molecular"
+      },
+      {
+       "count": 4184,
+       "highlighted": "B/T: Business - Economics",
+       "value": "B/T: Business - Economics"
+      },
+      {
+       "count": 4109,
+       "highlighted": "PHY: Mathematics",
+       "value": "PHY: Mathematics"
+      },
+      {
+       "count": 3887,
+       "highlighted": "HSC: Medicine - Oncology",
+       "value": "HSC: Medicine - Oncology"
+      },
+      {
+       "count": 3322,
+       "highlighted": "ENV: Environmental Sciences",
+       "value": "ENV: Environmental Sciences"
+      },
+      {
+       "count": 3207,
+       "highlighted": "PHY: Materials Science",
+       "value": "PHY: Materials Science"
+      },
+      {
+       "count": 3085,
+       "highlighted": "B/T: Business - Management",
+       "value": "B/T: Business - Management"
+      },
+      {
+       "count": 3026,
+       "highlighted": "HSC: Medicine - Pharmacology",
+       "value": "HSC: Medicine - Pharmacology"
+      },
+      {
+       "count": 2533,
+       "highlighted": "HSC: Medicine - Surgery",
+       "value": "HSC: Medicine - Surgery"
+      },
+      {
+       "count": 2503,
+       "highlighted": "HSC: Medicine - Cardiovascular",
+       "value": "HSC: Medicine - Cardiovascular"
+      },
+      {
+       "count": 2409,
+       "highlighted": "HSC: Medicine - Neurology",
+       "value": "HSC: Medicine - Neurology"
+      },
+      {
+       "count": 2335,
+       "highlighted": "BLS: Toxicology",
+       "value": "BLS: Toxicology"
+      },
+      {
+       "count": 2297,
+       "highlighted": "PHY: Chemistry",
+       "value": "PHY: Chemistry"
+      },
+      {
+       "count": 2226,
+       "highlighted": "PHY: Engineering - Electrical",
+       "value": "PHY: Engineering - Electrical"
+      },
+      {
+       "count": 2105,
+       "highlighted": "SOC: Psychology",
+       "value": "SOC: Psychology"
+      },
+      {
+       "count": 2076,
+       "highlighted": "B/T: Business - General",
+       "value": "B/T: Business - General"
+      },
+      {
+       "count": 1913,
+       "highlighted": "HSC: Medicine - Obstetrics/Gynecology",
+       "value": "HSC: Medicine - Obstetrics/Gynecology"
+      },
+      {
+       "count": 1794,
+       "highlighted": "BLS: Microbiology",
+       "value": "BLS: Microbiology"
+      },
+      {
+       "count": 1741,
+       "highlighted": "PHY: Engineering - General",
+       "value": "PHY: Engineering - General"
+      },
+      {
+       "count": 1686,
+       "highlighted": "PHY: Nanotechnology",
+       "value": "PHY: Nanotechnology"
+      },
+      {
+       "count": 1684,
+       "highlighted": "HSC: Radiology/Imaging",
+       "value": "HSC: Radiology/Imaging"
+      },
+      {
+       "count": 1616,
+       "highlighted": "HSC: Medicine - Rehabilitation/Therapy",
+       "value": "HSC: Medicine - Rehabilitation/Therapy"
+      },
+      {
+       "count": 1613,
+       "highlighted": "PHY: Energy",
+       "value": "PHY: Energy"
+      },
+      {
+       "count": 1548,
+       "highlighted": "HSC: Public Health and Safety",
+       "value": "HSC: Public Health and Safety"
+      },
+      {
+       "count": 1540,
+       "highlighted": "HSC: Medicine - Infectious Disease",
+       "value": "HSC: Medicine - Infectious Disease"
+      },
+      {
+       "count": 1529,
+       "highlighted": "HSC: Medicine - Gastroenterology",
+       "value": "HSC: Medicine - Gastroenterology"
+      },
+      {
+       "count": 1505,
+       "highlighted": "SOC: Sports and Recreation",
+       "value": "SOC: Sports and Recreation"
+      },
+      {
+       "count": 1494,
+       "highlighted": "BLS: Plant Biology/Botany",
+       "value": "BLS: Plant Biology/Botany"
+      },
+      {
+       "count": 1481,
+       "highlighted": "BLS: Agriculture",
+       "value": "BLS: Agriculture"
+      },
+      {
+       "count": 1478,
+       "highlighted": "HSC: Medicine - Orthopedics",
+       "value": "HSC: Medicine - Orthopedics"
+      },
+      {
+       "count": 1461,
+       "highlighted": "PHY: Engineering - Chemical",
+       "value": "PHY: Engineering - Chemical"
+      },
+      {
+       "count": 1437,
+       "highlighted": "PHY: Engineering - Mechanical",
+       "value": "PHY: Engineering - Mechanical"
+      },
+      {
+       "count": 1388,
+       "highlighted": "SOC: Sociology",
+       "value": "SOC: Sociology"
+      },
+      {
+       "count": 1386,
+       "highlighted": "B/T: Government",
+       "value": "B/T: Government"
+      },
+      {
+       "count": 1360,
+       "highlighted": "PHY: Physics",
+       "value": "PHY: Physics"
+      },
+      {
+       "count": 1312,
+       "highlighted": "HSC: Medicine - Immunology",
+       "value": "HSC: Medicine - Immunology"
+      },
+      {
+       "count": 1229,
+       "highlighted": "HSC: Medicine - Pulmonology",
+       "value": "HSC: Medicine - Pulmonology"
+      },
+      {
+       "count": 1181,
+       "highlighted": "HSC: Medicine - General",
+       "value": "HSC: Medicine - General"
+      },
+      {
+       "count": 1150,
+       "highlighted": "B/T: Transportation",
+       "value": "B/T: Transportation"
+      },
+      {
+       "count": 1139,
+       "highlighted": "BLS: Neuroscience",
+       "value": "BLS: Neuroscience"
+      },
+      {
+       "count": 1117,
+       "highlighted": "B/T: Urban Planning",
+       "value": "B/T: Urban Planning"
+      },
+      {
+       "count": 1043,
+       "highlighted": "SOC: Communications",
+       "value": "SOC: Communications"
+      },
+      {
+       "count": 1035,
+       "highlighted": "HSC: Medicine - Pathology",
+       "value": "HSC: Medicine - Pathology"
+      },
+      {
+       "count": 1029,
+       "highlighted": "ENV: Ecology",
+       "value": "ENV: Ecology"
+      },
+      {
+       "count": 1019,
+       "highlighted": "HSC: Medicine - Pediatrics",
+       "value": "HSC: Medicine - Pediatrics"
+      },
+      {
+       "count": 967,
+       "highlighted": "HSC: Biostatistics/Epidemiology",
+       "value": "HSC: Biostatistics/Epidemiology"
+      },
+      {
+       "count": 964,
+       "highlighted": "HSC: Medicine - Urology/Nephrology",
+       "value": "HSC: Medicine - Urology/Nephrology"
+      },
+      {
+       "count": 951,
+       "highlighted": "HSC: Medicine - Anesthesia/Anaesthesia",
+       "value": "HSC: Medicine - Anesthesia/Anaesthesia"
+      },
+      {
+       "count": 927,
+       "highlighted": "BLS: Biology - General",
+       "value": "BLS: Biology - General"
+      },
+      {
+       "count": 921,
+       "highlighted": "SOC: Linguistics",
+       "value": "SOC: Linguistics"
+      },
+      {
+       "count": 917,
+       "highlighted": "PHY: Engineering - Structural",
+       "value": "PHY: Engineering - Structural"
+      },
+      {
+       "count": 802,
+       "highlighted": "HSC: Medicine - Cardiology",
+       "value": "HSC: Medicine - Cardiology"
+      },
+      {
+       "count": 799,
+       "highlighted": "BLS: Zoology",
+       "value": "BLS: Zoology"
+      },
+      {
+       "count": 788,
+       "highlighted": "ENV: Ground/Surface Water",
+       "value": "ENV: Ground/Surface Water"
+      },
+      {
+       "count": 751,
+       "highlighted": "BLS: Anatomy/Physiology",
+       "value": "BLS: Anatomy/Physiology"
+      },
+      {
+       "count": 748,
+       "highlighted": "HSC: Medicine - Alternative",
+       "value": "HSC: Medicine - Alternative"
+      },
+      {
+       "count": 744,
+       "highlighted": "B/T: Business - Marketing",
+       "value": "B/T: Business - Marketing"
+      },
+      {
+       "count": 718,
+       "highlighted": "HSC: Medicine - Drug Design",
+       "value": "HSC: Medicine - Drug Design"
+      },
+      {
+       "count": 697,
+       "highlighted": "HSC: Medicine - Diabetes",
+       "value": "HSC: Medicine - Diabetes"
+      },
+      {
+       "count": 658,
+       "highlighted": "HUM: Arts - General",
+       "value": "HUM: Arts - General"
+      },
+      {
+       "count": 650,
+       "highlighted": "SOC: Law/Legal Issues",
+       "value": "SOC: Law/Legal Issues"
+      },
+      {
+       "count": 632,
+       "highlighted": "HSC: Medicine - Endocrinology",
+       "value": "HSC: Medicine - Endocrinology"
+      },
+      {
+       "count": 615,
+       "highlighted": "B/T: International Relations",
+       "value": "B/T: International Relations"
+      },
+      {
+       "count": 608,
+       "highlighted": "B/T: Business - Manufacturing",
+       "value": "B/T: Business - Manufacturing"
+      },
+      {
+       "count": 606,
+       "highlighted": "B/T: Business - Accounting",
+       "value": "B/T: Business - Accounting"
+      },
+      {
+       "count": 604,
+       "highlighted": "HSC: Medicine - Nursing",
+       "value": "HSC: Medicine - Nursing"
+      },
+      {
+       "count": 593,
+       "highlighted": "PHY: Geology",
+       "value": "PHY: Geology"
+      },
+      {
+       "count": 555,
+       "highlighted": "PHY: Crystallography/Spectroscopy",
+       "value": "PHY: Crystallography/Spectroscopy"
+      },
+      {
+       "count": 545,
+       "highlighted": "SOC: Political Science",
+       "value": "SOC: Political Science"
+      },
+      {
+       "count": 545,
+       "highlighted": "HSC: Medicine - Otorhinolaryngology",
+       "value": "HSC: Medicine - Otorhinolaryngology"
+      },
+      {
+       "count": 504,
+       "highlighted": "HSC: Medicine - Psychiatry",
+       "value": "HSC: Medicine - Psychiatry"
+      },
+      {
+       "count": 496,
+       "highlighted": "HSC: Medicine - Dermatology",
+       "value": "HSC: Medicine - Dermatology"
+      },
+      {
+       "count": 462,
+       "highlighted": "HSC: Medicine - Dentistry",
+       "value": "HSC: Medicine - Dentistry"
+      },
+      {
+       "count": 439,
+       "highlighted": "HSC: Medicine - Ophthalmology",
+       "value": "HSC: Medicine - Ophthalmology"
+      },
+      {
+       "count": 415,
+       "highlighted": "HSC: Medicine - Geriatric",
+       "value": "HSC: Medicine - Geriatric"
+      },
+      {
+       "count": 409,
+       "highlighted": "HUM: Arts - Music",
+       "value": "HUM: Arts - Music"
+      },
+      {
+       "count": 390,
+       "highlighted": "PHY: Statistics",
+       "value": "PHY: Statistics"
+      },
+      {
+       "count": 360,
+       "highlighted": "HSC: Medicine - Internal",
+       "value": "HSC: Medicine - Internal"
+      },
+      {
+       "count": 355,
+       "highlighted": "HSC: Occupational Health and Safety",
+       "value": "HSC: Occupational Health and Safety"
+      },
+      {
+       "count": 350,
+       "highlighted": "HSC: Sports Science",
+       "value": "HSC: Sports Science"
+      },
+      {
+       "count": 320,
+       "highlighted": "HUM: Architecture",
+       "value": "HUM: Architecture"
+      },
+      {
+       "count": 313,
+       "highlighted": "ENV: Food Science",
+       "value": "ENV: Food Science"
+      },
+      {
+       "count": 279,
+       "highlighted": "BLS: Nutrition",
+       "value": "BLS: Nutrition"
+      },
+      {
+       "count": 269,
+       "highlighted": "HSC: Nutrition",
+       "value": "HSC: Nutrition"
+      },
+      {
+       "count": 269,
+       "highlighted": "HSC: Veterinary Science",
+       "value": "HSC: Veterinary Science"
+      },
+      {
+       "count": 252,
+       "highlighted": "HUM: History - Europe",
+       "value": "HUM: History - Europe"
+      },
+      {
+       "count": 245,
+       "highlighted": "HSC: Medicine - Sports",
+       "value": "HSC: Medicine - Sports"
+      },
+      {
+       "count": 237,
+       "highlighted": "PHY: Hydrology",
+       "value": "PHY: Hydrology"
+      },
+      {
+       "count": 233,
+       "highlighted": "SOC: Criminology",
+       "value": "SOC: Criminology"
+      },
+      {
+       "count": 225,
+       "highlighted": "HUM: Arts - Literature/Poetry",
+       "value": "HUM: Arts - Literature/Poetry"
+      },
+      {
+       "count": 221,
+       "highlighted": "HUM: Religion",
+       "value": "HUM: Religion"
+      },
+      {
+       "count": 213,
+       "highlighted": "ENV: Climatology",
+       "value": "ENV: Climatology"
+      },
+      {
+       "count": 180,
+       "highlighted": "ENV: Climate Change",
+       "value": "ENV: Climate Change"
+      },
+      {
+       "count": 170,
+       "highlighted": "SOC: Military/Naval Studies",
+       "value": "SOC: Military/Naval Studies"
+      },
+      {
+       "count": 162,
+       "highlighted": "BLS: Parasitology",
+       "value": "BLS: Parasitology"
+      },
+      {
+       "count": 150,
+       "highlighted": "SOC: Philosophy",
+       "value": "SOC: Philosophy"
+      },
+      {
+       "count": 128,
+       "highlighted": "HUM: Philosophy",
+       "value": "HUM: Philosophy"
+      },
+      {
+       "count": 125,
+       "highlighted": "B/T: Business - Public Relations",
+       "value": "B/T: Business - Public Relations"
+      },
+      {
+       "count": 122,
+       "highlighted": "SOC: Ethics/Bioethics",
+       "value": "SOC: Ethics/Bioethics"
+      },
+      {
+       "count": 115,
+       "highlighted": "HUM: History - Asia",
+       "value": "HUM: History - Asia"
+      },
+      {
+       "count": 115,
+       "highlighted": "HSC: Medicine - Transplantation",
+       "value": "HSC: Medicine - Transplantation"
+      },
+      {
+       "count": 97,
+       "highlighted": "SOC: Sexual And Marital Studies",
+       "value": "SOC: Sexual And Marital Studies"
+      },
+      {
+       "count": 89,
+       "highlighted": "HUM: History - General",
+       "value": "HUM: History - General"
+      },
+      {
+       "count": 88,
+       "highlighted": "PHY: Astrophysics",
+       "value": "PHY: Astrophysics"
+      },
+      {
+       "count": 79,
+       "highlighted": "HUM: Arts - Film Studies",
+       "value": "HUM: Arts - Film Studies"
+      },
+      {
+       "count": 67,
+       "highlighted": "BLS: Anthropology",
+       "value": "BLS: Anthropology"
+      },
+      {
+       "count": 58,
+       "highlighted": "HUM: Journalism",
+       "value": "HUM: Journalism"
+      },
+      {
+       "count": 48,
+       "highlighted": "BLS: Archeology",
+       "value": "BLS: Archeology"
+      },
+      {
+       "count": 42,
+       "highlighted": "SOC: Forensics",
+       "value": "SOC: Forensics"
+      },
+      {
+       "count": 38,
+       "highlighted": "HUM: Cartography",
+       "value": "HUM: Cartography"
+      },
+      {
+       "count": 28,
+       "highlighted": "PHY: Cosmology",
+       "value": "PHY: Cosmology"
+      },
+      {
+       "count": 26,
+       "highlighted": "PHY: Astronomy",
+       "value": "PHY: Astronomy"
+      },
+      {
+       "count": 24,
+       "highlighted": "BLS: Paleontology",
+       "value": "BLS: Paleontology"
+      },
+      {
+       "count": 24,
+       "highlighted": "BLS: Forensic Sciences",
+       "value": "BLS: Forensic Sciences"
+      },
+      {
+       "count": 20,
+       "highlighted": "HUM: Arts - Biography",
+       "value": "HUM: Arts - Biography"
+      },
+      {
+       "count": 13,
+       "highlighted": "B/T: Foreign Aid",
+       "value": "B/T: Foreign Aid"
+      },
+      {
+       "count": 13,
+       "highlighted": "HUM: History - North America",
+       "value": "HUM: History - North America"
+      },
+      {
+       "count": 11,
+       "highlighted": "HUM: History - Africa",
+       "value": "HUM: History - Africa"
+      },
+      {
+       "count": 7,
+       "highlighted": "HUM: History - United States",
+       "value": "HUM: History - United States"
+      },
+      {
+       "count": 7,
+       "highlighted": "HUM: History - South America",
+       "value": "HUM: History - South America"
+      },
+      {
+       "count": 5,
+       "highlighted": "PHY: Forensic Sciences",
+       "value": "PHY: Forensic Sciences"
+      },
+      {
+       "count": 1,
+       "highlighted": "HUM: History - Australia",
+       "value": "HUM: History - Australia"
+      }
+     ],
+     "field_name": "subjects",
+     "sampled": false,
+     "stats": {
+      "total_values": 130
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 26215,
+       "highlighted": "B/T",
+       "value": "B/T"
+      },
+      {
+       "count": 21892,
+       "highlighted": "BLS",
+       "value": "BLS"
+      },
+      {
+       "count": 21740,
+       "highlighted": "HSC",
+       "value": "HSC"
+      },
+      {
+       "count": 16327,
+       "highlighted": "PHY",
+       "value": "PHY"
+      },
+      {
+       "count": 10916,
+       "highlighted": "SOC",
+       "value": "SOC"
+      },
+      {
+       "count": 4684,
+       "highlighted": "ENV",
+       "value": "ENV"
+      },
+      {
+       "count": 2354,
+       "highlighted": "HUM",
+       "value": "HUM"
+      }
+     ],
+     "field_name": "subject_categories",
+     "sampled": false,
+     "stats": {
+      "total_values": 7
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 36807,
+       "highlighted": "China",
+       "value": "China"
+      },
+      {
+       "count": 6254,
+       "highlighted": "India",
+       "value": "India"
+      },
+      {
+       "count": 6241,
+       "highlighted": "United States",
+       "value": "United States"
+      },
+      {
+       "count": 3129,
+       "highlighted": "Russia",
+       "value": "Russia"
+      },
+      {
+       "count": 2343,
+       "highlighted": "Saudi Arabia",
+       "value": "Saudi Arabia"
+      },
+      {
+       "count": 2009,
+       "highlighted": "Iran",
+       "value": "Iran"
+      },
+      {
+       "count": 1653,
+       "highlighted": "United Kingdom",
+       "value": "United Kingdom"
+      },
+      {
+       "count": 1622,
+       "highlighted": "Pakistan",
+       "value": "Pakistan"
+      },
+      {
+       "count": 1610,
+       "highlighted": "Japan",
+       "value": "Japan"
+      },
+      {
+       "count": 1462,
+       "highlighted": "South Korea",
+       "value": "South Korea"
+      },
+      {
+       "count": 1349,
+       "highlighted": "Germany",
+       "value": "Germany"
+      },
+      {
+       "count": 1233,
+       "highlighted": "Egypt",
+       "value": "Egypt"
+      },
+      {
+       "count": 1014,
+       "highlighted": "Italy",
+       "value": "Italy"
+      },
+      {
+       "count": 996,
+       "highlighted": "Malaysia",
+       "value": "Malaysia"
+      },
+      {
+       "count": 940,
+       "highlighted": "Unknown",
+       "value": "Unknown"
+      },
+      {
+       "count": 925,
+       "highlighted": "Iraq",
+       "value": "Iraq"
+      },
+      {
+       "count": 811,
+       "highlighted": "Turkey",
+       "value": "Turkey"
+      },
+      {
+       "count": 793,
+       "highlighted": "Australia",
+       "value": "Australia"
+      },
+      {
+       "count": 792,
+       "highlighted": "Canada",
+       "value": "Canada"
+      },
+      {
+       "count": 728,
+       "highlighted": "France",
+       "value": "France"
+      },
+      {
+       "count": 717,
+       "highlighted": "Taiwan",
+       "value": "Taiwan"
+      },
+      {
+       "count": 622,
+       "highlighted": "Spain",
+       "value": "Spain"
+      },
+      {
+       "count": 551,
+       "highlighted": "Ethiopia",
+       "value": "Ethiopia"
+      },
+      {
+       "count": 430,
+       "highlighted": "Netherlands",
+       "value": "Netherlands"
+      },
+      {
+       "count": 407,
+       "highlighted": "Brazil",
+       "value": "Brazil"
+      },
+      {
+       "count": 339,
+       "highlighted": "Thailand",
+       "value": "Thailand"
+      },
+      {
+       "count": 337,
+       "highlighted": "Bangladesh",
+       "value": "Bangladesh"
+      },
+      {
+       "count": 303,
+       "highlighted": "Poland",
+       "value": "Poland"
+      },
+      {
+       "count": 291,
+       "highlighted": "Uzbekistan",
+       "value": "Uzbekistan"
+      },
+      {
+       "count": 285,
+       "highlighted": "Vietnam",
+       "value": "Vietnam"
+      },
+      {
+       "count": 278,
+       "highlighted": "South Africa",
+       "value": "South Africa"
+      },
+      {
+       "count": 275,
+       "highlighted": "Sweden",
+       "value": "Sweden"
+      },
+      {
+       "count": 264,
+       "highlighted": "Indonesia",
+       "value": "Indonesia"
+      },
+      {
+       "count": 254,
+       "highlighted": "Switzerland",
+       "value": "Switzerland"
+      },
+      {
+       "count": 245,
+       "highlighted": "Nigeria",
+       "value": "Nigeria"
+      },
+      {
+       "count": 227,
+       "highlighted": "Jordan",
+       "value": "Jordan"
+      },
+      {
+       "count": 222,
+       "highlighted": "Singapore",
+       "value": "Singapore"
+      },
+      {
+       "count": 210,
+       "highlighted": "Romania",
+       "value": "Romania"
+      },
+      {
+       "count": 208,
+       "highlighted": "United Arab Emirates",
+       "value": "United Arab Emirates"
+      },
+      {
+       "count": 206,
+       "highlighted": "Greece",
+       "value": "Greece"
+      },
+      {
+       "count": 204,
+       "highlighted": "Kazakhstan",
+       "value": "Kazakhstan"
+      },
+      {
+       "count": 170,
+       "highlighted": "Norway",
+       "value": "Norway"
+      },
+      {
+       "count": 170,
+       "highlighted": "Belgium",
+       "value": "Belgium"
+      },
+      {
+       "count": 168,
+       "highlighted": "Czech Republic",
+       "value": "Czech Republic"
+      },
+      {
+       "count": 157,
+       "highlighted": "Denmark",
+       "value": "Denmark"
+      },
+      {
+       "count": 150,
+       "highlighted": "Serbia",
+       "value": "Serbia"
+      },
+      {
+       "count": 148,
+       "highlighted": "Mexico",
+       "value": "Mexico"
+      },
+      {
+       "count": 146,
+       "highlighted": "Tunisia",
+       "value": "Tunisia"
+      },
+      {
+       "count": 138,
+       "highlighted": "Portugal",
+       "value": "Portugal"
+      },
+      {
+       "count": 134,
+       "highlighted": "Philippines",
+       "value": "Philippines"
+      },
+      {
+       "count": 131,
+       "highlighted": "Israel",
+       "value": "Israel"
+      },
+      {
+       "count": 131,
+       "highlighted": "Ireland",
+       "value": "Ireland"
+      },
+      {
+       "count": 117,
+       "highlighted": "Hong Kong",
+       "value": "Hong Kong"
+      },
+      {
+       "count": 114,
+       "highlighted": "Ukraine",
+       "value": "Ukraine"
+      },
+      {
+       "count": 107,
+       "highlighted": "Oman",
+       "value": "Oman"
+      },
+      {
+       "count": 107,
+       "highlighted": "Algeria",
+       "value": "Algeria"
+      },
+      {
+       "count": 106,
+       "highlighted": "Colombia",
+       "value": "Colombia"
+      },
+      {
+       "count": 104,
+       "highlighted": "Finland",
+       "value": "Finland"
+      },
+      {
+       "count": 102,
+       "highlighted": "Ghana",
+       "value": "Ghana"
+      },
+      {
+       "count": 99,
+       "highlighted": "Lebanon",
+       "value": "Lebanon"
+      },
+      {
+       "count": 98,
+       "highlighted": "New Zealand",
+       "value": "New Zealand"
+      },
+      {
+       "count": 95,
+       "highlighted": "Austria",
+       "value": "Austria"
+      },
+      {
+       "count": 84,
+       "highlighted": "Hungary",
+       "value": "Hungary"
+      },
+      {
+       "count": 81,
+       "highlighted": "Nepal",
+       "value": "Nepal"
+      },
+      {
+       "count": 80,
+       "highlighted": "Azerbaijan",
+       "value": "Azerbaijan"
+      },
+      {
+       "count": 78,
+       "highlighted": "Morocco",
+       "value": "Morocco"
+      },
+      {
+       "count": 71,
+       "highlighted": "Argentina",
+       "value": "Argentina"
+      },
+      {
+       "count": 69,
+       "highlighted": "Yemen",
+       "value": "Yemen"
+      },
+      {
+       "count": 62,
+       "highlighted": "Chile",
+       "value": "Chile"
+      },
+      {
+       "count": 61,
+       "highlighted": "Kuwait",
+       "value": "Kuwait"
+      },
+      {
+       "count": 59,
+       "highlighted": "Qatar",
+       "value": "Qatar"
+      },
+      {
+       "count": 57,
+       "highlighted": "Peru",
+       "value": "Peru"
+      },
+      {
+       "count": 57,
+       "highlighted": "Slovakia",
+       "value": "Slovakia"
+      },
+      {
+       "count": 54,
+       "highlighted": "Sudan",
+       "value": "Sudan"
+      },
+      {
+       "count": 54,
+       "highlighted": "Tajikistan",
+       "value": "Tajikistan"
+      },
+      {
+       "count": 50,
+       "highlighted": "Kyrgyzstan",
+       "value": "Kyrgyzstan"
+      },
+      {
+       "count": 48,
+       "highlighted": "Croatia",
+       "value": "Croatia"
+      },
+      {
+       "count": 48,
+       "highlighted": "Bahrain",
+       "value": "Bahrain"
+      },
+      {
+       "count": 43,
+       "highlighted": "Ecuador",
+       "value": "Ecuador"
+      },
+      {
+       "count": 43,
+       "highlighted": "Cameroon",
+       "value": "Cameroon"
+      },
+      {
+       "count": 41,
+       "highlighted": "Kenya",
+       "value": "Kenya"
+      },
+      {
+       "count": 40,
+       "highlighted": "Malta",
+       "value": "Malta"
+      },
+      {
+       "count": 40,
+       "highlighted": "Afghanistan",
+       "value": "Afghanistan"
+      },
+      {
+       "count": 36,
+       "highlighted": "Belarus",
+       "value": "Belarus"
+      },
+      {
+       "count": 32,
+       "highlighted": "Georgia",
+       "value": "Georgia"
+      },
+      {
+       "count": 31,
+       "highlighted": "Cyprus",
+       "value": "Cyprus"
+      },
+      {
+       "count": 31,
+       "highlighted": "Sri Lanka",
+       "value": "Sri Lanka"
+      },
+      {
+       "count": 25,
+       "highlighted": "Macau",
+       "value": "Macau"
+      },
+      {
+       "count": 25,
+       "highlighted": "Democratic Republic of the Congo",
+       "value": "Democratic Republic of the Congo"
+      },
+      {
+       "count": 22,
+       "highlighted": "Libya",
+       "value": "Libya"
+      },
+      {
+       "count": 22,
+       "highlighted": "Honduras",
+       "value": "Honduras"
+      },
+      {
+       "count": 21,
+       "highlighted": "Tanzania",
+       "value": "Tanzania"
+      },
+      {
+       "count": 21,
+       "highlighted": "Palestine",
+       "value": "Palestine"
+      },
+      {
+       "count": 21,
+       "highlighted": "Lithuania",
+       "value": "Lithuania"
+      },
+      {
+       "count": 20,
+       "highlighted": "Burundi",
+       "value": "Burundi"
+      },
+      {
+       "count": 20,
+       "highlighted": "Bulgaria",
+       "value": "Bulgaria"
+      },
+      {
+       "count": 19,
+       "highlighted": "Armenia",
+       "value": "Armenia"
+      },
+      {
+       "count": 18,
+       "highlighted": "Senegal",
+       "value": "Senegal"
+      },
+      {
+       "count": 17,
+       "highlighted": "Slovenia",
+       "value": "Slovenia"
+      },
+      {
+       "count": 17,
+       "highlighted": "Botswana",
+       "value": "Botswana"
+      },
+      {
+       "count": 16,
+       "highlighted": "Brunei (Brunei Darussalam)",
+       "value": "Brunei (Brunei Darussalam)"
+      },
+      {
+       "count": 14,
+       "highlighted": "Zambia",
+       "value": "Zambia"
+      },
+      {
+       "count": 14,
+       "highlighted": "Uganda",
+       "value": "Uganda"
+      },
+      {
+       "count": 13,
+       "highlighted": "Estonia",
+       "value": "Estonia"
+      },
+      {
+       "count": 13,
+       "highlighted": "Venezuela",
+       "value": "Venezuela"
+      },
+      {
+       "count": 13,
+       "highlighted": "Myanmar (formerly Burma)",
+       "value": "Myanmar (formerly Burma)"
+      },
+      {
+       "count": 12,
+       "highlighted": "Gabon",
+       "value": "Gabon"
+      },
+      {
+       "count": 12,
+       "highlighted": "Gambia",
+       "value": "Gambia"
+      },
+      {
+       "count": 12,
+       "highlighted": "Albania",
+       "value": "Albania"
+      },
+      {
+       "count": 11,
+       "highlighted": "Rwanda",
+       "value": "Rwanda"
+      },
+      {
+       "count": 11,
+       "highlighted": "Bosnia & Herzegovina",
+       "value": "Bosnia & Herzegovina"
+      },
+      {
+       "count": 9,
+       "highlighted": "Cuba",
+       "value": "Cuba"
+      },
+      {
+       "count": 9,
+       "highlighted": "Syria",
+       "value": "Syria"
+      },
+      {
+       "count": 9,
+       "highlighted": "Iceland",
+       "value": "Iceland"
+      },
+      {
+       "count": 9,
+       "highlighted": "Mongolia",
+       "value": "Mongolia"
+      },
+      {
+       "count": 9,
+       "highlighted": "Luxembourg",
+       "value": "Luxembourg"
+      },
+      {
+       "count": 9,
+       "highlighted": "Trinidad & Tobago",
+       "value": "Trinidad & Tobago"
+      },
+      {
+       "count": 8,
+       "highlighted": "Montenegro",
+       "value": "Montenegro"
+      },
+      {
+       "count": 7,
+       "highlighted": "Latvia",
+       "value": "Latvia"
+      },
+      {
+       "count": 7,
+       "highlighted": "Kosovo",
+       "value": "Kosovo"
+      },
+      {
+       "count": 7,
+       "highlighted": "Grenada",
+       "value": "Grenada"
+      },
+      {
+       "count": 7,
+       "highlighted": "Cambodia",
+       "value": "Cambodia"
+      },
+      {
+       "count": 6,
+       "highlighted": "Benin",
+       "value": "Benin"
+      },
+      {
+       "count": 6,
+       "highlighted": "Aruba",
+       "value": "Aruba"
+      },
+      {
+       "count": 6,
+       "highlighted": "Uruguay",
+       "value": "Uruguay"
+      },
+      {
+       "count": 6,
+       "highlighted": "Moldova",
+       "value": "Moldova"
+      },
+      {
+       "count": 6,
+       "highlighted": "Maldives",
+       "value": "Maldives"
+      },
+      {
+       "count": 5,
+       "highlighted": "Mali",
+       "value": "Mali"
+      },
+      {
+       "count": 5,
+       "highlighted": "Niger",
+       "value": "Niger"
+      },
+      {
+       "count": 5,
+       "highlighted": "Malawi",
+       "value": "Malawi"
+      },
+      {
+       "count": 5,
+       "highlighted": "Zimbabwe",
+       "value": "Zimbabwe"
+      },
+      {
+       "count": 5,
+       "highlighted": "Papua New Guinea",
+       "value": "Papua New Guinea"
+      },
+      {
+       "count": 5,
+       "highlighted": "Eswatini (formerly Swaziland)",
+       "value": "Eswatini (formerly Swaziland)"
+      },
+      {
+       "count": 5,
+       "highlighted": "North Macedonia (formerly Macedonia)",
+       "value": "North Macedonia (formerly Macedonia)"
+      },
+      {
+       "count": 5,
+       "highlighted": "Republic of the Congo (Congo-Brazzaville)",
+       "value": "Republic of the Congo (Congo-Brazzaville)"
+      },
+      {
+       "count": 4,
+       "highlighted": "Chad",
+       "value": "Chad"
+      },
+      {
+       "count": 4,
+       "highlighted": "Panama",
+       "value": "Panama"
+      },
+      {
+       "count": 4,
+       "highlighted": "Somalia",
+       "value": "Somalia"
+      },
+      {
+       "count": 4,
+       "highlighted": "Guatemala",
+       "value": "Guatemala"
+      },
+      {
+       "count": 4,
+       "highlighted": "Madagascar",
+       "value": "Madagascar"
+      },
+      {
+       "count": 4,
+       "highlighted": "Costa Rica",
+       "value": "Costa Rica"
+      },
+      {
+       "count": 4,
+       "highlighted": "North Korea",
+       "value": "North Korea"
+      },
+      {
+       "count": 4,
+       "highlighted": "Burkina Faso",
+       "value": "Burkina Faso"
+      },
+      {
+       "count": 4,
+       "highlighted": "Réunion Island",
+       "value": "Réunion Island"
+      },
+      {
+       "count": 3,
+       "highlighted": "Laos",
+       "value": "Laos"
+      },
+      {
+       "count": 3,
+       "highlighted": "Samoa",
+       "value": "Samoa"
+      },
+      {
+       "count": 3,
+       "highlighted": "French Polynesia",
+       "value": "French Polynesia"
+      },
+      {
+       "count": 2,
+       "highlighted": "U",
+       "value": "U"
+      },
+      {
+       "count": 2,
+       "highlighted": "Togo",
+       "value": "Togo"
+      },
+      {
+       "count": 2,
+       "highlighted": "Fiji",
+       "value": "Fiji"
+      },
+      {
+       "count": 2,
+       "highlighted": "Haiti",
+       "value": "Haiti"
+      },
+      {
+       "count": 2,
+       "highlighted": "Guyana",
+       "value": "Guyana"
+      },
+      {
+       "count": 2,
+       "highlighted": "Belize",
+       "value": "Belize"
+      },
+      {
+       "count": 2,
+       "highlighted": "Angola",
+       "value": "Angola"
+      },
+      {
+       "count": 2,
+       "highlighted": "Namibia",
+       "value": "Namibia"
+      },
+      {
+       "count": 2,
+       "highlighted": "Lesotho",
+       "value": "Lesotho"
+      },
+      {
+       "count": 2,
+       "highlighted": "Bolivia",
+       "value": "Bolivia"
+      },
+      {
+       "count": 2,
+       "highlighted": "Bermuda",
+       "value": "Bermuda"
+      },
+      {
+       "count": 2,
+       "highlighted": "Anguilla",
+       "value": "Anguilla"
+      },
+      {
+       "count": 2,
+       "highlighted": "Mozambique",
+       "value": "Mozambique"
+      },
+      {
+       "count": 2,
+       "highlighted": "Puerto Rico",
+       "value": "Puerto Rico"
+      },
+      {
+       "count": 2,
+       "highlighted": "Sint Maarten",
+       "value": "Sint Maarten"
+      },
+      {
+       "count": 2,
+       "highlighted": "Sierra Leone",
+       "value": "Sierra Leone"
+      },
+      {
+       "count": 2,
+       "highlighted": "Cote d'Ivoire",
+       "value": "Cote d'Ivoire"
+      },
+      {
+       "count": 2,
+       "highlighted": "Cayman Islands",
+       "value": "Cayman Islands"
+      },
+      {
+       "count": 2,
+       "highlighted": "Dominican Republic",
+       "value": "Dominican Republic"
+      },
+      {
+       "count": 2,
+       "highlighted": "Central African Republic",
+       "value": "Central African Republic"
+      },
+      {
+       "count": 1,
+       "highlighted": "Liberia",
+       "value": "Liberia"
+      },
+      {
+       "count": 1,
+       "highlighted": "Jamaica",
+       "value": "Jamaica"
+      },
+      {
+       "count": 1,
+       "highlighted": "Eritrea",
+       "value": "Eritrea"
+      },
+      {
+       "count": 1,
+       "highlighted": "Comoros",
+       "value": "Comoros"
+      },
+      {
+       "count": 1,
+       "highlighted": "Paraguay",
+       "value": "Paraguay"
+      },
+      {
+       "count": 1,
+       "highlighted": "Dominica",
+       "value": "Dominica"
+      },
+      {
+       "count": 1,
+       "highlighted": "Barbados",
+       "value": "Barbados"
+      },
+      {
+       "count": 1,
+       "highlighted": "Mauritius",
+       "value": "Mauritius"
+      },
+      {
+       "count": 1,
+       "highlighted": "Gaza Strip",
+       "value": "Gaza Strip"
+      },
+      {
+       "count": 1,
+       "highlighted": "East Timor",
+       "value": "East Timor"
+      },
+      {
+       "count": 1,
+       "highlighted": "El Salvador",
+       "value": "El Salvador"
+      },
+      {
+       "count": 1,
+       "highlighted": "Turkmenistan",
+       "value": "Turkmenistan"
+      },
+      {
+       "count": 1,
+       "highlighted": "Cook Islands",
+       "value": "Cook Islands"
+      },
+      {
+       "count": 1,
+       "highlighted": "French Guiana",
+       "value": "French Guiana"
+      },
+      {
+       "count": 1,
+       "highlighted": "Faroe Islands",
+       "value": "Faroe Islands"
+      },
+      {
+       "count": 1,
+       "highlighted": "St. Kitts & Nevis",
+       "value": "St. Kitts & Nevis"
+      },
+      {
+       "count": 1,
+       "highlighted": "Saint Vincent & the Grenadines",
+       "value": "Saint Vincent & the Grenadines"
+      }
+     ],
+     "field_name": "countries",
+     "sampled": false,
+     "stats": {
+      "total_values": 184
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 45703,
+       "highlighted": "Research Article",
+       "value": "Research Article"
+      },
+      {
+       "count": 14087,
+       "highlighted": "Conference Abstract/Paper",
+       "value": "Conference Abstract/Paper"
+      },
+      {
+       "count": 2723,
+       "highlighted": "Clinical Study",
+       "value": "Clinical Study"
+      },
+      {
+       "count": 2455,
+       "highlighted": "Review Article",
+       "value": "Review Article"
+      },
+      {
+       "count": 869,
+       "highlighted": "Meta-Analysis",
+       "value": "Meta-Analysis"
+      },
+      {
+       "count": 801,
+       "highlighted": "Case Report",
+       "value": "Case Report"
+      },
+      {
+       "count": 573,
+       "highlighted": "Book Chapter/Reference Work",
+       "value": "Book Chapter/Reference Work"
+      },
+      {
+       "count": 521,
+       "highlighted": "Article in Press",
+       "value": "Article in Press"
+      },
+      {
+       "count": 492,
+       "highlighted": "Letter",
+       "value": "Letter"
+      },
+      {
+       "count": 425,
+       "highlighted": "Commentary/Editorial",
+       "value": "Commentary/Editorial"
+      },
+      {
+       "count": 106,
+       "highlighted": "Preprint",
+       "value": "Preprint"
+      },
+      {
+       "count": 67,
+       "highlighted": "Guideline",
+       "value": "Guideline"
+      },
+      {
+       "count": 35,
+       "highlighted": "Correction/Erratum/Corrigendum",
+       "value": "Correction/Erratum/Corrigendum"
+      },
+      {
+       "count": 33,
+       "highlighted": "Other",
+       "value": "Other"
+      },
+      {
+       "count": 27,
+       "highlighted": "Trade Magazines",
+       "value": "Trade Magazines"
+      },
+      {
+       "count": 26,
+       "highlighted": "Retracted Article",
+       "value": "Retracted Article"
+      },
+      {
+       "count": 14,
+       "highlighted": "Supplementary Materials",
+       "value": "Supplementary Materials"
+      },
+      {
+       "count": 8,
+       "highlighted": "Retraction Notice",
+       "value": "Retraction Notice"
+      },
+      {
+       "count": 6,
+       "highlighted": "Technical Report/White Paper",
+       "value": "Technical Report/White Paper"
+      },
+      {
+       "count": 5,
+       "highlighted": "Auto/Biography",
+       "value": "Auto/Biography"
+      },
+      {
+       "count": 3,
+       "highlighted": "Interview/Q&A",
+       "value": "Interview/Q&A"
+      },
+      {
+       "count": 3,
+       "highlighted": "Government Publication",
+       "value": "Government Publication"
+      },
+      {
+       "count": 2,
+       "highlighted": "Dissertation/Thesis",
+       "value": "Dissertation/Thesis"
+      },
+      {
+       "count": 2,
+       "highlighted": "Expression of Concern",
+       "value": "Expression of Concern"
+      },
+      {
+       "count": 1,
+       "highlighted": "Legal Case/Analysis",
+       "value": "Legal Case/Analysis"
+      }
+     ],
+     "field_name": "article_types",
+     "sampled": false,
+     "stats": {
+      "total_values": 25
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 65674,
+       "highlighted": "No",
+       "value": "No"
+      },
+      {
+       "count": 1489,
+       "highlighted": "Yes",
+       "value": "Yes"
+      },
+      {
+       "count": 221,
+       "highlighted": "Unknown",
+       "value": "Unknown"
+      }
+     ],
+     "field_name": "paywalled",
+     "sampled": false,
+     "stats": {
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 13282,
+       "highlighted": "2023",
+       "value": "2023"
+      },
+      {
+       "count": 6497,
+       "highlighted": "2024",
+       "value": "2024"
+      },
+      {
+       "count": 5959,
+       "highlighted": "2025",
+       "value": "2025"
+      },
+      {
+       "count": 5591,
+       "highlighted": "2022",
+       "value": "2022"
+      },
+      {
+       "count": 4988,
+       "highlighted": "2010",
+       "value": "2010"
+      },
+      {
+       "count": 4914,
+       "highlighted": "2011",
+       "value": "2011"
+      },
+      {
+       "count": 3907,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 3077,
+       "highlighted": "2020",
+       "value": "2020"
+      },
+      {
+       "count": 2888,
+       "highlighted": "2019",
+       "value": "2019"
+      },
+      {
+       "count": 2520,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 2040,
+       "highlighted": "2026",
+       "value": "2026"
+      },
+      {
+       "count": 1692,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 1630,
+       "highlighted": "2016",
+       "value": "2016"
+      },
+      {
+       "count": 1494,
+       "highlighted": "2015",
+       "value": "2015"
+      },
+      {
+       "count": 1425,
+       "highlighted": "2013",
+       "value": "2013"
+      },
+      {
+       "count": 1174,
+       "highlighted": "2009",
+       "value": "2009"
+      },
+      {
+       "count": 1150,
+       "highlighted": "2012",
+       "value": "2012"
+      },
+      {
+       "count": 1092,
+       "highlighted": "2014",
+       "value": "2014"
+      },
+      {
+       "count": 450,
+       "highlighted": "2008",
+       "value": "2008"
+      },
+      {
+       "count": 334,
+       "highlighted": "2007",
+       "value": "2007"
+      },
+      {
+       "count": 214,
+       "highlighted": "2006",
+       "value": "2006"
+      },
+      {
+       "count": 140,
+       "highlighted": "2005",
+       "value": "2005"
+      },
+      {
+       "count": 128,
+       "highlighted": "2004",
+       "value": "2004"
+      },
+      {
+       "count": 124,
+       "highlighted": "2002",
+       "value": "2002"
+      },
+      {
+       "count": 89,
+       "highlighted": "2003",
+       "value": "2003"
+      },
+      {
+       "count": 71,
+       "highlighted": "1998",
+       "value": "1998"
+      },
+      {
+       "count": 51,
+       "highlighted": "1999",
+       "value": "1999"
+      },
+      {
+       "count": 46,
+       "highlighted": "1997",
+       "value": "1997"
+      },
+      {
+       "count": 41,
+       "highlighted": "2000",
+       "value": "2000"
+      },
+      {
+       "count": 37,
+       "highlighted": "2001",
+       "value": "2001"
+      },
+      {
+       "count": 31,
+       "highlighted": "1977",
+       "value": "1977"
+      },
+      {
+       "count": 28,
+       "highlighted": "1993",
+       "value": "1993"
+      },
+      {
+       "count": 28,
+       "highlighted": "1986",
+       "value": "1986"
+      },
+      {
+       "count": 26,
+       "highlighted": "1996",
+       "value": "1996"
+      },
+      {
+       "count": 25,
+       "highlighted": "1995",
+       "value": "1995"
+      },
+      {
+       "count": 25,
+       "highlighted": "1992",
+       "value": "1992"
+      },
+      {
+       "count": 23,
+       "highlighted": "1991",
+       "value": "1991"
+      },
+      {
+       "count": 22,
+       "highlighted": "1994",
+       "value": "1994"
+      },
+      {
+       "count": 19,
+       "highlighted": "1990",
+       "value": "1990"
+      },
+      {
+       "count": 15,
+       "highlighted": "1989",
+       "value": "1989"
+      },
+      {
+       "count": 14,
+       "highlighted": "1985",
+       "value": "1985"
+      },
+      {
+       "count": 14,
+       "highlighted": "1980",
+       "value": "1980"
+      },
+      {
+       "count": 13,
+       "highlighted": "1983",
+       "value": "1983"
+      },
+      {
+       "count": 12,
+       "highlighted": "1987",
+       "value": "1987"
+      },
+      {
+       "count": 8,
+       "highlighted": "1984",
+       "value": "1984"
+      },
+      {
+       "count": 7,
+       "highlighted": "1970",
+       "value": "1970"
+      },
+      {
+       "count": 6,
+       "highlighted": "1988",
+       "value": "1988"
+      },
+      {
+       "count": 5,
+       "highlighted": "1982",
+       "value": "1982"
+      },
+      {
+       "count": 5,
+       "highlighted": "1979",
+       "value": "1979"
+      },
+      {
+       "count": 3,
+       "highlighted": "1981",
+       "value": "1981"
+      },
+      {
+       "count": 2,
+       "highlighted": "1975",
+       "value": "1975"
+      },
+      {
+       "count": 2,
+       "highlighted": "1967",
+       "value": "1967"
+      },
+      {
+       "count": 1,
+       "highlighted": "1971",
+       "value": "1971"
+      },
+      {
+       "count": 1,
+       "highlighted": "1968",
+       "value": "1968"
+      },
+      {
+       "count": 1,
+       "highlighted": "1966",
+       "value": "1966"
+      },
+      {
+       "count": 1,
+       "highlighted": "1960",
+       "value": "1960"
+      },
+      {
+       "count": 1,
+       "highlighted": "1927",
+       "value": "1927"
+      },
+      {
+       "count": 1,
+       "highlighted": "1756",
+       "value": "1756"
+      }
+     ],
+     "field_name": "notice_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2018.9028701175353,
+      "max": 2026,
+      "min": 1756,
+      "sum": 136041751,
+      "total_values": 58
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 11131,
+       "highlighted": "2022",
+       "value": "2022"
+      },
+      {
+       "count": 7267,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 5353,
+       "highlighted": "2010",
+       "value": "2010"
+      },
+      {
+       "count": 5335,
+       "highlighted": "2011",
+       "value": "2011"
+      },
+      {
+       "count": 4545,
+       "highlighted": "2020",
+       "value": "2020"
+      },
+      {
+       "count": 3848,
+       "highlighted": "2023",
+       "value": "2023"
+      },
+      {
+       "count": 3472,
+       "highlighted": "2019",
+       "value": "2019"
+      },
+      {
+       "count": 3370,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 2758,
+       "highlighted": "2015",
+       "value": "2015"
+      },
+      {
+       "count": 2579,
+       "highlighted": "2024",
+       "value": "2024"
+      },
+      {
+       "count": 2529,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 2439,
+       "highlighted": "2016",
+       "value": "2016"
+      },
+      {
+       "count": 1868,
+       "highlighted": "2014",
+       "value": "2014"
+      },
+      {
+       "count": 1722,
+       "highlighted": "2013",
+       "value": "2013"
+      },
+      {
+       "count": 1684,
+       "highlighted": "2009",
+       "value": "2009"
+      },
+      {
+       "count": 1464,
+       "highlighted": "2012",
+       "value": "2012"
+      },
+      {
+       "count": 825,
+       "highlighted": "2007",
+       "value": "2007"
+      },
+      {
+       "count": 820,
+       "highlighted": "2008",
+       "value": "2008"
+      },
+      {
+       "count": 631,
+       "highlighted": "2025",
+       "value": "2025"
+      },
+      {
+       "count": 598,
+       "highlighted": "2006",
+       "value": "2006"
+      },
+      {
+       "count": 501,
+       "highlighted": "2005",
+       "value": "2005"
+      },
+      {
+       "count": 412,
+       "highlighted": "2004",
+       "value": "2004"
+      },
+      {
+       "count": 340,
+       "highlighted": "2003",
+       "value": "2003"
+      },
+      {
+       "count": 318,
+       "highlighted": "2002",
+       "value": "2002"
+      },
+      {
+       "count": 256,
+       "highlighted": "2001",
+       "value": "2001"
+      },
+      {
+       "count": 186,
+       "highlighted": "2000",
+       "value": "2000"
+      },
+      {
+       "count": 145,
+       "highlighted": "1999",
+       "value": "1999"
+      },
+      {
+       "count": 126,
+       "highlighted": "1998",
+       "value": "1998"
+      },
+      {
+       "count": 91,
+       "highlighted": "1997",
+       "value": "1997"
+      },
+      {
+       "count": 89,
+       "highlighted": "1996",
+       "value": "1996"
+      },
+      {
+       "count": 74,
+       "highlighted": "1995",
+       "value": "1995"
+      },
+      {
+       "count": 63,
+       "highlighted": "1990",
+       "value": "1990"
+      },
+      {
+       "count": 61,
+       "highlighted": "2026",
+       "value": "2026"
+      },
+      {
+       "count": 60,
+       "highlighted": "1994",
+       "value": "1994"
+      },
+      {
+       "count": 50,
+       "highlighted": "1991",
+       "value": "1991"
+      },
+      {
+       "count": 49,
+       "highlighted": "1993",
+       "value": "1993"
+      },
+      {
+       "count": 47,
+       "highlighted": "1992",
+       "value": "1992"
+      },
+      {
+       "count": 39,
+       "highlighted": "1989",
+       "value": "1989"
+      },
+      {
+       "count": 26,
+       "highlighted": "1986",
+       "value": "1986"
+      },
+      {
+       "count": 25,
+       "highlighted": "1977",
+       "value": "1977"
+      },
+      {
+       "count": 23,
+       "highlighted": "1988",
+       "value": "1988"
+      },
+      {
+       "count": 19,
+       "highlighted": "1987",
+       "value": "1987"
+      },
+      {
+       "count": 19,
+       "highlighted": "1984",
+       "value": "1984"
+      },
+      {
+       "count": 18,
+       "highlighted": "1981",
+       "value": "1981"
+      },
+      {
+       "count": 17,
+       "highlighted": "1979",
+       "value": "1979"
+      },
+      {
+       "count": 15,
+       "highlighted": "1985",
+       "value": "1985"
+      },
+      {
+       "count": 15,
+       "highlighted": "1983",
+       "value": "1983"
+      },
+      {
+       "count": 12,
+       "highlighted": "1980",
+       "value": "1980"
+      },
+      {
+       "count": 9,
+       "highlighted": "1978",
+       "value": "1978"
+      },
+      {
+       "count": 7,
+       "highlighted": "1982",
+       "value": "1982"
+      },
+      {
+       "count": 7,
+       "highlighted": "1975",
+       "value": "1975"
+      },
+      {
+       "count": 6,
+       "highlighted": "1970",
+       "value": "1970"
+      },
+      {
+       "count": 3,
+       "highlighted": "1976",
+       "value": "1976"
+      },
+      {
+       "count": 3,
+       "highlighted": "1967",
+       "value": "1967"
+      },
+      {
+       "count": 2,
+       "highlighted": "1973",
+       "value": "1973"
+      },
+      {
+       "count": 2,
+       "highlighted": "1923",
+       "value": "1923"
+      },
+      {
+       "count": 1,
+       "highlighted": "1974",
+       "value": "1974"
+      },
+      {
+       "count": 1,
+       "highlighted": "1971",
+       "value": "1971"
+      },
+      {
+       "count": 1,
+       "highlighted": "1968",
+       "value": "1968"
+      },
+      {
+       "count": 1,
+       "highlighted": "1966",
+       "value": "1966"
+      },
+      {
+       "count": 1,
+       "highlighted": "1963",
+       "value": "1963"
+      },
+      {
+       "count": 1,
+       "highlighted": "1962",
+       "value": "1962"
+      },
+      {
+       "count": 1,
+       "highlighted": "1959",
+       "value": "1959"
+      },
+      {
+       "count": 1,
+       "highlighted": "1955",
+       "value": "1955"
+      },
+      {
+       "count": 1,
+       "highlighted": "1951",
+       "value": "1951"
+      },
+      {
+       "count": 1,
+       "highlighted": "1926",
+       "value": "1926"
+      },
+      {
+       "count": 1,
+       "highlighted": "1753",
+       "value": "1753"
+      }
+     ],
+     "field_name": "paper_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2016.5135788911314,
+      "max": 2026,
+      "min": 1753,
+      "sum": 135880751,
+      "total_values": 67
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 67379,
+       "highlighted": "false",
+       "value": "false"
+      },
+      {
+       "count": 5,
+       "highlighted": "true",
+       "value": "true"
+      }
+     ],
+     "field_name": "has_editorial_staff_author",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    }
+   ],
+   "found": 67384,
+   "hits": [
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "China"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73321",
+      "institutions": [
+       "College of Natural Resources and Environment, Northwest A&F University, Yangling, Shaanxi Province 712100, PR China"
+      ],
+      "is_revision": false,
+      "journal": "Science of The Total Environment",
+      "notice_date": 1790208000,
+      "notice_doi": "10.1016/j.scitotenv.2026.182330",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/24/2026 0:00",
+       "notice_doi": "10.1016/j.scitotenv.2026.182330",
+       "notice_pubmed_id": "0",
+       "paper_date": "10/2/2021 0:00",
+       "paper_doi": "10.1016/j.scitotenv.2021.150699",
+       "paper_pubmed_id": "34600993"
+      },
+      "paper_date": 1633132800,
+      "paper_doi": "10.1016/j.scitotenv.2021.150699",
+      "paper_pubmed_id": 34600993,
+      "paper_year": 2021,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73321,
+      "subject_categories": [
+       "BLS",
+       "ENV"
+      ],
+      "subjects": [
+       "BLS: Agriculture",
+       "BLS: Microbiology",
+       "BLS: Toxicology",
+       "ENV: Environmental Sciences"
+      ],
+      "title": "Effects of further composting black soldier fly larvae manure on toxic metals and resistant bacteria communities by cornstalk amendment",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8"
+      ],
+      "countries": [
+       "China",
+       "Czech Republic",
+       "India",
+       "Saudi Arabia",
+       "Vietnam"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73238",
+      "institutions": [
+       "School of Innovation and Entrepreneurship Sanming University, No. 25 Jingdong Road, Sanming City, Fujian, 365004, China",
+       "Department of Aeronautical Engineering, Sathyabama Institute of Science and Technology, Chennai, India",
+       "Department of Botany and Microbiology, College of Science, King Saud University, PO Box -2455, Riyadh -11451, Saudi Arabia",
+       "Department of Physiology, College of Medicine and King Khalid University Hospital, King Saud University, Medical City, PO Box-2925, Riyadh, 11461, Saudi Arabia",
+       "Tomas Bata Univesity in Zlín, Faculty of Management and Economics, Mostní 5139, Zlín, 760 01, Czech Republic",
+       "Center for Transdisciplinary Research (CFTR), Department of Pharmacology, Saveetha Dental College, Saveetha Institute of Medical and Technical Sciences, Saveetha University, Chennai, India",
+       "Computational Engineering and Design Research Group, School of Engineering and Technology, Van Lang University, Ho Chi Minh City, Vietnam",
+       "School of Engineering and Technology, Van Lang University, Ho Chi Minh City, Vietnam"
+      ],
+      "is_revision": false,
+      "journal": "Environmental Research",
+      "notice_date": 1790035200,
+      "notice_doi": "10.1016/j.envres.2026.125670",
+      "notice_pubmed_id": 42771956,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/22/2026 0:00",
+       "notice_doi": "10.1016/j.envres.2026.125670",
+       "notice_pubmed_id": "42771956",
+       "paper_date": "11/17/2022 0:00",
+       "paper_doi": "10.1016/j.envres.2022.114742",
+       "paper_pubmed_id": "36347393"
+      },
+      "paper_date": 1668643200,
+      "paper_doi": "10.1016/j.envres.2022.114742",
+      "paper_pubmed_id": 36347393,
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Authorship/Affiliation",
+       "Objections by Author(s)"
+      ],
+      "record_id": 73238,
+      "subject_categories": [
+       "BLS",
+       "ENV",
+       "PHY"
+      ],
+      "subjects": [
+       "BLS: Agriculture",
+       "BLS: Biochemistry",
+       "ENV: Environmental Sciences",
+       "PHY: Energy",
+       "PHY: Engineering - Chemical"
+      ],
+      "title": "Role of chicken fat waste and hydrogen energy ratio as the potential alternate fuel with nano-additives: Insights into resources and atmospheric remediation process",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9",
+       "Lee Specimen 10"
+      ],
+      "countries": [
+       "Pakistan",
+       "Poland",
+       "Saudi Arabia",
+       "Yemen"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73234",
+      "institutions": [
+       "Department of Chemistry, University of Swabi, Swabi, Anbar, Khyber Pakhtunkhwa, Pakistan",
+       "Department of Chemistry, College of Science, Princess Nourah bint Abdulrahman University, Riyadh, Saudi Arabia",
+       "University Institute of Diet and Nutritional Sciences, Faculty of Allied Health Sciences, The University of Lahore, Lahore, Pakistan",
+       "Department of Human Nutrition and Dietetics, Riphah College of Rehabilitation and Allied Health Sciences, Riphah International University, Lahore, Pakistan",
+       "Department of Pharmacy, Bacha Khan University, Charsadda, Khyber Pakhtunkhwa, Pakistan",
+       "Department of Medical Chemistry and Laboratory Medicine, Poznan University of Medical Sciences, Poznan, Poland",
+       "College of Education, Seiyun University, Seiyun, Hadhramawt, Yemen",
+       "Pharmacy Department, Medical Sciences, Aljanad University for Science and Technology, Taiz, Yemen"
+      ],
+      "is_revision": false,
+      "journal": "Food Science & Nutrition",
+      "notice_date": 1790035200,
+      "notice_doi": "10.1002/fsn3.72358",
+      "notice_pubmed_id": 42775171,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/22/2026 0:00",
+       "notice_doi": "10.1002/fsn3.72358",
+       "notice_pubmed_id": "42775171",
+       "paper_date": "2/13/2024 0:00",
+       "paper_doi": "10.1002/fsn3.4017",
+       "paper_pubmed_id": "38726429"
+      },
+      "paper_date": 1707782400,
+      "paper_doi": "10.1002/fsn3.4017",
+      "paper_pubmed_id": 38726429,
+      "paper_year": 2024,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Error in Data",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)",
+       "Original Data and/or Images not Provided and/or not Available",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73234,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Plant Biology/Botany",
+       "BLS: Toxicology"
+      ],
+      "title": "Hypoglycemic, anti-inflammatory, and neuroprotective potentials of crude methanolic extract from Acacia nilotica L. – results of an in vitro study",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "China",
+       "India",
+       "Pakistan",
+       "Spain"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73228",
+      "institutions": [
+       "Department of Political Economy and Public Finance, Economic and Business Statistics and Economic Policy, University of Castilla-La Mancha, Ciudad Real, Spain",
+       "Department of Applied Economics, International Economy Institute, University of Alicante, Alicante, Spain",
+       "School of Management and Economics, Beijing Institute of Technology, Beijing, China",
+       "COMSATS University Islamabad, Lahore Campus, Lahore, Pakistan",
+       "Department of General Management and Economics, Goa Institute of Management, Sanquelim, India"
+      ],
+      "is_revision": false,
+      "journal": "Environmental Science and Pollution Research",
+      "notice_date": 1790035200,
+      "notice_doi": "10.1007/s11356-026-38249-y",
+      "notice_pubmed_id": 42768264,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/22/2026 0:00",
+       "notice_doi": "10.1007/s11356-026-38249-y",
+       "notice_pubmed_id": "42768264",
+       "paper_date": "12/27/2019 0:00",
+       "paper_doi": "10.1007/s11356-019-07372-4",
+       "paper_pubmed_id": "31879881"
+      },
+      "paper_date": 1577404800,
+      "paper_doi": "10.1007/s11356-019-07372-4",
+      "paper_pubmed_id": 31879881,
+      "paper_year": 2019,
+      "paywalled": "No",
+      "publisher": "Springer - Nature Publishing Group",
+      "reasons": [
+       "Compromised Peer Review",
+       "Objections by Author(s)",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73228,
+      "subject_categories": [
+       "ENV",
+       "SOC"
+      ],
+      "subjects": [
+       "ENV: Environmental Sciences",
+       "SOC: Sports and Recreation"
+      ],
+      "title": "The effects of tourism and globalization over environmental degradation in developed countries",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Czech Republic",
+       "India"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73114",
+      "institutions": [
+       "Department of Chemistry, Guru Jambheshwar University of Science and Technology, Hisar, 125001, India",
+       "Department of Bio and Nano Technology, Guru Jambheshwar University of Science and Technology, Hisar, 125001, India",
+       "Regional Centre of Advanced Technologies and Materials, Palacky University, Šlechtitelů 27, 783 71, Olomouc, Czech Republic"
+      ],
+      "is_revision": false,
+      "journal": "Environmental Research",
+      "notice_date": 1790035200,
+      "notice_doi": "10.1016/j.envres.2026.125691",
+      "notice_pubmed_id": 42771955,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/22/2026 0:00",
+       "notice_doi": "10.1016/j.envres.2026.125691",
+       "notice_pubmed_id": "42771955",
+       "paper_date": "9/12/2020 0:00",
+       "paper_doi": "10.1016/j.envres.2020.110005",
+       "paper_pubmed_id": "32926892"
+      },
+      "paper_date": 1599868800,
+      "paper_doi": "10.1016/j.envres.2020.110005",
+      "paper_pubmed_id": 32926892,
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Image",
+       "Duplication of/in Image",
+       "Euphemisms for Duplication",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73114,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Engineering - Chemical",
+       "PHY: Nanotechnology"
+      ],
+      "title": "Sn-MOF@CNT nanocomposite: An efficient electrochemical sensor for detection of hydrogen peroxide",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "India"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73322",
+      "institutions": [
+       "ICAR-Indian Institute of Pulses Research, Regional Research Centre, Bikaner, Rajasthan, India",
+       "ICAR-National Research Centre on Camel, Bikaner, Rajasthan, India",
+       "ICAR-Central Sheep & Wool Research Institute, Avikanagar, Rajasthan, India",
+       "ICAR-Central Institute of Arid Horticulture, Bikaner, Rajasthan, India",
+       "ICAR-Indian Institute of Pulses Research, Kanpur, U.P. India",
+       "ICAR-Central Arid Zone Research Institute, Regional Research Station, Bikaner, Rajasthan, India"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Agriculture and Food Research",
+      "notice_date": 1789948800,
+      "notice_doi": "10.1016/j.jafr.2026.103259",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/21/2026 0:00",
+       "notice_doi": "10.1016/j.jafr.2026.103259",
+       "notice_pubmed_id": "0",
+       "paper_date": "3/2/2026 0:00",
+       "paper_doi": "10.1016/j.jafr.2026.102795",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1772409600,
+      "paper_doi": "10.1016/j.jafr.2026.102795",
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Referencing/Attributions",
+       "Error in Text",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party"
+      ],
+      "record_id": 73322,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Agriculture",
+       "BLS: Biochemistry",
+       "BLS: Plant Biology/Botany"
+      ],
+      "title": "Acetic acid enhances stress tolerance, growth, and yield of mungbean (Vigna radiata L.) under arid conditions",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Egypt",
+       "Germany",
+       "Saudi Arabia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73235",
+      "institutions": [
+       "Department of Biochemistry, Faculty of Pharmacy, Zagazig University, Zagazig, 44519, Egypt",
+       "Institute of Nutritional Science, University of Potsdam, Nuthetal, Germany",
+       "Department of Pharmacognosy, College of Pharmacy, King Saud University, Riyadh, 11451, Saudi Arabia"
+      ],
+      "is_revision": false,
+      "journal": "Applied Biological Chemistry",
+      "notice_date": 1789776000,
+      "notice_doi": "10.1186/s13765-026-01138-6",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/19/2026 0:00",
+       "notice_doi": "10.1186/s13765-026-01138-6",
+       "notice_pubmed_id": "0",
+       "paper_date": "2/7/2026 0:00",
+       "paper_doi": "10.1186/s13765-025-01072-z",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1770422400,
+      "paper_doi": "10.1186/s13765-025-01072-z",
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "Springer - Nature Publishing Group",
+      "reasons": [
+       "Concerns/Issues about Animal Welfare",
+       "Investigation by Journal/Publisher",
+       "Objections by Author(s)",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73235,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics",
+       "BLS: Toxicology"
+      ],
+      "title": "Fisetin protects against renal injury and fibrosis evoked by diesel particulate matter via downregulation of IL-23/mTOR/S6K-b1 signaling and caveolin-1 expression in rats",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Review Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9",
+       "Lee Specimen 10"
+      ],
+      "countries": [
+       "Egypt",
+       "India",
+       "Saudi Arabia",
+       "United Arab Emirates"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "72706",
+      "institutions": [
+       "Department of Biomedical Sciences, School of Biosciences and Technology, Vellore Institute of Technology (VIT), Vellore, Tamil Nadu 632014, India",
+       "Centre of Molecular Medicine and Diagnostics (COMManD), Department of Biochemistry, Saveetha Dental College & Hospitals, Saveetha Institute of Medical and Technical Sciences, Saveetha University, Chennai, Tamil Nadu 600 077, India",
+       "Department of Basic Medical Sciences, College of Medicine, University of Sharjah, Sharjah 27272, United Arab Emirates",
+       "Department of Basic Medical Sciences, College of Medicine, AlMaarefa University, Riyadh 71666, Saudi Arabia",
+       "Department of Clinical Laboratory Sciences, College of Applied Medical Sciences, Jouf University, P.O.Box 2014, Sakaka, Saudi Arabia",
+       "Department of Anatomy, Faculty of Medicine, Mansoura University, Mansoura, Egypt",
+       "Human Molecular Cytogenetics and Stem Cell Laboratory, Department of Human Genetics and Molecular Biology, Bharathiar University, Coimbatore 641046, Tamil Nadu, India",
+       "Livestock Farming and Bioresource Technology, Tamil Nadu, India",
+       "Department of Life Sciences, Presidency University, Kolkata, West Bengal 700073, India"
+      ],
+      "is_revision": false,
+      "journal": "Biomedicine & Pharmacotherapy",
+      "notice_date": 1789776000,
+      "notice_doi": "10.1016/j.biopha.2026.119879",
+      "notice_pubmed_id": 42665523,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/19/2026 0:00",
+       "notice_doi": "10.1016/j.biopha.2026.119879",
+       "notice_pubmed_id": "42665523",
+       "paper_date": "5/24/2022 0:00",
+       "paper_doi": "10.1016/j.biopha.2022.113119",
+       "paper_pubmed_id": "35613529"
+      },
+      "paper_date": 1653350400,
+      "paper_doi": "10.1016/j.biopha.2022.113119",
+      "paper_pubmed_id": 35613529,
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Referencing/Attributions",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Unreliable Results and/or Conclusions",
+       "Upgrade/Update of Prior Notice(s)"
+      ],
+      "record_id": 72706,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Toxicology"
+      ],
+      "title": "Mechanism of chromium-induced toxicity in lungs, liver, and kidney and their ameliorative agents",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "Iran"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73433",
+      "institutions": [
+       "Clinical center for urological disease diagnosis and private clinic specialized in urological and andrological genetics, Tehran, Iran"
+      ],
+      "is_revision": false,
+      "journal": "Urologic Oncology: Seminars and Original Investigations",
+      "notice_date": 1789689600,
+      "notice_doi": "10.1016/j.urolonc.2026.05.028",
+      "notice_pubmed_id": 42448546,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/18/2026 0:00",
+       "notice_doi": "10.1016/j.urolonc.2026.05.028",
+       "notice_pubmed_id": "42448546",
+       "paper_date": "2/7/2012 0:00",
+       "paper_doi": "10.1016/j.urolonc.2012.01.002",
+       "paper_pubmed_id": "22317880"
+      },
+      "paper_date": 1328572800,
+      "paper_doi": "10.1016/j.urolonc.2012.01.002",
+      "paper_pubmed_id": 22317880,
+      "paper_year": 2012,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Error in Data",
+       "Investigation by Journal/Publisher",
+       "Original Data and/or Images not Provided and/or not Available",
+       "Unreliable Data"
+      ],
+      "record_id": 73433,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Molecular",
+       "BLS: Genetics"
+      ],
+      "title": "Effects of the T-786C, G894T and Intron 4 VNTR (4a/b) Polymorphisms of the Endothelial Nitric Oxide Synthase Gene on the Risk of Prostate Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "South Africa"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73239",
+      "institutions": [
+       "Department of Chemical, Metallurgical and Materials Engineering, Tshwane University of Technology, Pretoria, South Africa",
+       "Department of Electrical Engineering, Tshwane University of Technology, Pretoria, South Africa"
+      ],
+      "is_revision": false,
+      "journal": "The International Journal of Advanced Manufacturing Technology",
+      "notice_date": 1789689600,
+      "notice_doi": "10.1007/s00170-026-19147-6",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/18/2026 0:00",
+       "notice_doi": "10.1007/s00170-026-19147-6",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/2/2020 0:00",
+       "paper_doi": "10.1007/s00170-019-04699-7",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1577923200,
+      "paper_doi": "10.1007/s00170-019-04699-7",
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Springer - Nature Publishing Group",
+      "reasons": [
+       "Concerns/Issues about Image",
+       "Duplication of/in Image",
+       "Euphemisms for Duplication",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Unreliable Data",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73239,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Materials Science"
+      ],
+      "title": "Influence of CNTs addition on the mechanical, microstructural, and corrosion properties of Al alloy using spark plasma sintering technique",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Iraq"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73237",
+      "institutions": [
+       "Applied Sciences Department, University of Technology- Iraq, Baghdad 10066, Iraq",
+       "Mathematics Science Department, College of Science, Mustansiriyah University, Baghdad, Iraq",
+       "College of Production Engineering & Metallurgy, University of Technology- Iraq, Baghdad, Iraq"
+      ],
+      "is_revision": false,
+      "journal": "Experimental and Theoretical Nanotechnology (ETN)",
+      "notice_date": 1789689600,
+      "notice_doi": "10.56053/10.2.795",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/18/2026 0:00",
+       "notice_doi": "10.56053/10.2.795",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/15/2026 0:00",
+       "paper_doi": "10.56053/10.2.795",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1776211200,
+      "paper_doi": "10.56053/10.2.795",
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "Physico-Chemistry Laboratory of Advanced Materials",
+      "reasons": [
+       "Breach of Policy by Author",
+       "Date of Article and/or Notice Unknown"
+      ],
+      "record_id": 73237,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Engineering - Chemical",
+       "PHY: Nanotechnology"
+      ],
+      "title": "Fabrication and characterization of titanium dioxide thin films with various temperatures fabrication via sol-gel technique",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Iraq"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73236",
+      "institutions": [
+       "Applied Sciences Department, University of Technology- Iraq, Baghdad 10066, Iraq",
+       "Mathematics Science Department, College of Science, Mustansiriyah University, Baghdad, Iraq",
+       "College of Production Engineering & Metallurgy, University of Technology- Iraq, Baghdad, Iraq"
+      ],
+      "is_revision": false,
+      "journal": "Experimental and Theoretical Nanotechnology (ETN)",
+      "notice_date": 1789689600,
+      "notice_doi": "10.56053/10.2.725",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/18/2026 0:00",
+       "notice_doi": "10.56053/10.2.725",
+       "notice_pubmed_id": "0",
+       "paper_date": "4/15/2026 0:00",
+       "paper_doi": "10.56053/10.2.725",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1776211200,
+      "paper_doi": "10.56053/10.2.725",
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "Physico-Chemistry Laboratory of Advanced Materials",
+      "reasons": [
+       "Breach of Policy by Author",
+       "Date of Article and/or Notice Unknown"
+      ],
+      "record_id": 73236,
+      "subject_categories": [
+       "B/T",
+       "PHY"
+      ],
+      "subjects": [
+       "B/T: Computer Science",
+       "PHY: Engineering - Chemical",
+       "PHY: Nanotechnology"
+      ],
+      "title": "Numerical analysis of a single-diode photovoltaic cell model using NRM and SET algorithms with perspectives on nanotechnology-enhanced solar cells",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "China",
+       "Germany",
+       "New Zealand",
+       "Taiwan",
+       "United States"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73434",
+      "institutions": [
+       "State Key Laboratory of Environmental Geochemistry, Institute of Geochemistry, Chinese Academy of Sciences, 550082 Guiyang, P.R. China",
+       "University of Wuppertal, School of Architecture and Civil Engineering, Institute of Foundation Engineering, Water- and Waste-Management, Laboratory of Soil- and Groundwater-Management, Pauluskirchstraße 7, 42285 Wuppertal, Germany",
+       "Faculty of Mechanical Engineering and Safety Engineering, Department of Safety Technology and Environmental Protection, University of Wuppertal, Rainer-Gruenter-Straße, 42119 Wuppertal, Germany",
+       "Environmental Sciences, School of Agriculture and Environment, Massey University, 4442 Palmerston North, New Zealand",
+       "Department of Earth System Science, Stanford University, Stanford, California 94305, United States",
+       "Department of Agricultural Chemistry, National Taiwan University, Taipei 106, Taiwan ROC",
+       "University of Chinese Academy of Sciences, Beijing 100049, PR China"
+      ],
+      "is_revision": false,
+      "journal": "Environmental Science & Technology",
+      "notice_date": 1789603200,
+      "notice_doi": "10.1021/acs.est.6c11593",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/17/2026 0:00",
+       "notice_doi": "10.1021/acs.est.6c11593",
+       "notice_pubmed_id": "0",
+       "paper_date": "9/25/2024 0:00",
+       "paper_doi": "10.1021/acs.est.4c02989",
+       "paper_pubmed_id": "39319747"
+      },
+      "paper_date": 1727222400,
+      "paper_doi": "10.1021/acs.est.4c02989",
+      "paper_pubmed_id": 39319747,
+      "paper_year": 2024,
+      "paywalled": "No",
+      "publisher": "American Chemical Society (ACS)",
+      "reasons": [
+       "Duplication of/in Article",
+       "Error in Image",
+       "Error in Text",
+       "Euphemisms for Duplication",
+       "Investigation by Journal/Publisher"
+      ],
+      "record_id": 73434,
+      "subject_categories": [
+       "BLS",
+       "ENV",
+       "PHY"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Toxicology",
+       "ENV: Environmental Sciences",
+       "PHY: Geology"
+      ],
+      "title": "First Insight into the Mobilization and Sequestration of Arsenic in a Karstic Soil during Redox Changes",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Review Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Germany",
+       "India",
+       "Saudi Arabia",
+       "South Korea"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73113",
+      "institutions": [
+       "Plant Stress Physiology Lab, Department of Botanical and Environment Sciences, Guru Nanak Dev University, Amritsar, Punjab, India",
+       "Post Graduate Department of Botany, Khalsa College, Amritsar, Punjab, India",
+       "School of Architecture and Civil Engineering, Institute of Foundation Engineering, Water and Waste Management, Laboratory of Soil and Groundwater Management, University of Wuppertal, Pauluskirchstraße 7, 42285, Wuppertal, Germany",
+       "Department of Environment, Energy and Geoinformatics, Sejong University, 98 Gunja-Dong, Guangjin-Gu, Seoul, Republic of Korea",
+       "Botany and Microbiology Department, King Saud University, Riyadh, Saudi Arabia"
+      ],
+      "is_revision": false,
+      "journal": "Plant Growth Regulation",
+      "notice_date": 1789516800,
+      "notice_doi": "10.1007/s10725-026-01529-1",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/16/2026 0:00",
+       "notice_doi": "10.1007/s10725-026-01529-1",
+       "notice_pubmed_id": "0",
+       "paper_date": "6/8/2022 0:00",
+       "paper_doi": "10.1007/s10725-022-00844-7",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1654646400,
+      "paper_doi": "10.1007/s10725-022-00844-7",
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Springer - Nature Publishing Group",
+      "reasons": [
+       "Concerns/Issues about Referencing/Attributions",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73113,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Plant Biology/Botany",
+       "BLS: Toxicology"
+      ],
+      "title": "Boron in plants: uptake, deficiency and biological potential",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Iran"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73328",
+      "institutions": [
+       "Physiology Research Center, Institute of Neuropharmacology, Kerman University of Medical Sciences, Kerman, Iran",
+       "Endocrinology and Metabolism Research Center, Institute of Basic and Clinical Physiology Sciences, Kerman University of Medical Sciences Kerman, Kerman, Iran",
+       "Pathology and Stem Cell Research Center, Kerman University of Medical Sciences, Kerman, Iran",
+       "Department of Physiology and Pharmacology, Afzalipour Faculty of Medicine, Kerman University of Medical Sciences, Kerman, Iran"
+      ],
+      "is_revision": false,
+      "journal": "PLoS One",
+      "notice_date": 1789430400,
+      "notice_doi": "10.1371/journal.pone.0358279",
+      "notice_pubmed_id": 42743375,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/15/2026 0:00",
+       "notice_doi": "10.1371/journal.pone.0358279",
+       "notice_pubmed_id": "42743375",
+       "paper_date": "4/25/2023 0:00",
+       "paper_doi": "10.1371/journal.pone.0282089",
+       "paper_pubmed_id": "37098007"
+      },
+      "paper_date": 1682380800,
+      "paper_doi": "10.1371/journal.pone.0282089",
+      "paper_pubmed_id": 37098007,
+      "paper_year": 2023,
+      "paywalled": "No",
+      "publisher": "PLoS",
+      "reasons": [
+       "Concerns/Issues about Image",
+       "Concerns/Issues about Results and/or Conclusions",
+       "Duplication of/in Image",
+       "Euphemisms for Duplication",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)"
+      ],
+      "record_id": 73328,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cellular",
+       "BLS: Nutrition"
+      ],
+      "title": "Protective effects of calorie restriction and 17-β estradiol on cardiac hypertrophy in ovariectomized obese rats",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "India"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73323",
+      "institutions": [
+       "ICAR-Indian Institute of Pulses Research, Regional Research Centre, Bikaner, Rajasthan, India",
+       "ICAR-Indian Institute of Pulses Research, Kanpur, U.P. India",
+       "ICAR-National Research Centre on Camel, Bikaner, Rajasthan, India",
+       "ICAR-Central Arid Zone Research Institute, Regional Research Station, Bikaner, Rajasthan, India",
+       "ICAR-Indian Institute of Pulses Research, Regional Research Centre, Bikaner, Rajasthan, India"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Food Legumes",
+      "notice_date": 1789430400,
+      "notice_doi": "10.53550/jfl.v39.i2.378",
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/15/2026 0:00",
+       "notice_doi": "10.53550/jfl.v39.i2.378",
+       "notice_pubmed_id": "0",
+       "paper_date": "2/25/2026 0:00",
+       "paper_doi": "10.53550/jfl.v39.ncpspl.336",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1771977600,
+      "paper_doi": "10.53550/jfl.v39.ncpspl.336",
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "ISPRD: Indian Society of Pulses Research and Development",
+      "reasons": [
+       "Concerns/Issues about Referencing/Attributions",
+       "Investigation by Journal/Publisher",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 73323,
+      "subject_categories": [
+       "BLS",
+       "ENV"
+      ],
+      "subjects": [
+       "BLS: Agriculture",
+       "BLS: Plant Biology/Botany",
+       "ENV: Ecology"
+      ],
+      "title": "Arid Pulses for Climate-Resilient Agriculture: Production Constraints, Adaptive Physiology, and Sustainable Intensification",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder"
+      ],
+      "countries": [
+       "China"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "72464",
+      "institutions": [
+       "The First Affiliated Hospital of Anhui Medical University (Department of Rheumatology), Hefei, 231299, No. 218 Jixi Road, China",
+       "Department of Orthopaedics, South District, The First Affiliated Hospital of Anhui Medical University, Hefei, 231299, Anhui Province, China"
+      ],
+      "is_revision": false,
+      "journal": "International Journal of Biological Macromolecules",
+      "notice_date": 1789084800,
+      "notice_doi": "10.1016/j.ijbiomac.2026.153489",
+      "notice_pubmed_id": 42481310,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/11/2026 0:00",
+       "notice_doi": "10.1016/j.ijbiomac.2026.153489",
+       "notice_pubmed_id": "42481310",
+       "paper_date": "4/14/2025 0:00",
+       "paper_doi": "10.1016/j.ijbiomac.2025.143027",
+       "paper_pubmed_id": "40216124"
+      },
+      "paper_date": 1744588800,
+      "paper_doi": "10.1016/j.ijbiomac.2025.143027",
+      "paper_pubmed_id": 40216124,
+      "paper_year": 2025,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Compromised Peer Review",
+       "Investigation by Journal/Publisher",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 72464,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Molecular",
+       "BLS: Genetics",
+       "HSC: Medicine - Immunology",
+       "HSC: Medicine - Pathology"
+      ],
+      "title": "TMEM132C and LIPE protein molecules drive synovial hyperplasia via the PPARγ signaling axis: Mechanistic insights into core pathogenic proteins in rheumatoid arthritis",
+      "url_record_counts": [
+       127
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "China"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "72456",
+      "institutions": [
+       "Department of Orthopedics, The Second Affiliated Hospital of Zhejiang University School of Medicine, Hangzhou, 31000, Zhejiang Province, China",
+       "Department of Orthopedics, Affiliated Hangzhou First People's Hospital, WestLake University School of Medicine, Hangzhou, 310006, Zhejiang Province, China"
+      ],
+      "is_revision": false,
+      "journal": "International Journal of Biological Macromolecules",
+      "notice_date": 1789084800,
+      "notice_doi": "10.1016/j.ijbiomac.2026.153492",
+      "notice_pubmed_id": 42481329,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/11/2026 0:00",
+       "notice_doi": "10.1016/j.ijbiomac.2026.153492",
+       "notice_pubmed_id": "42481329",
+       "paper_date": "9/17/2024 0:00",
+       "paper_doi": "10.1016/j.ijbiomac.2024.135626",
+       "paper_pubmed_id": "39278441"
+      },
+      "paper_date": 1726531200,
+      "paper_doi": "10.1016/j.ijbiomac.2024.135626",
+      "paper_pubmed_id": 39278441,
+      "paper_year": 2024,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Compromised Peer Review",
+       "Investigation by Journal/Publisher",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 72456,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Molecular",
+       "BLS: Genetics",
+       "HSC: Medicine - Immunology",
+       "HSC: Medicine - Orthopedics"
+      ],
+      "title": "Study on pro-inflammatory effect and mechanism of galectin-9 (LGALS9) in osteoarthritis: Exacerbating inflammatory response by activating JNK and ERK1/2 pathways",
+      "url_record_counts": [
+       127
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "China"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "72413",
+      "institutions": [
+       "Clinical Research Institute, Affiliated Hospital of Nanjing University of Chinese Medicine, Nanjing, 210029, China",
+       "GCP Center, Affiliated Hospital of Nanjing University of Chinese Medicine, Nanjing, 210029, China",
+       "Department of General Surgery, The Fourth Affiliated Hospital of Nanjing Medical University, Nanjing, 210031, China",
+       "Department of Public Health, School of Medicine and Integrative Medicine, Nanjing University of Chinese Medicine, Nanjing, 210023, China"
+      ],
+      "is_revision": false,
+      "journal": "International Journal of Biological Macromolecules",
+      "notice_date": 1789084800,
+      "notice_doi": "10.1016/j.ijbiomac.2026.153473",
+      "notice_pubmed_id": 42481345,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/11/2026 0:00",
+       "notice_doi": "10.1016/j.ijbiomac.2026.153473",
+       "notice_pubmed_id": "42481345",
+       "paper_date": "12/28/2024 0:00",
+       "paper_doi": "10.1016/j.ijbiomac.2024.139155",
+       "paper_pubmed_id": "39725112"
+      },
+      "paper_date": 1735344000,
+      "paper_doi": "10.1016/j.ijbiomac.2024.139155",
+      "paper_pubmed_id": 39725112,
+      "paper_year": 2024,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Compromised Peer Review",
+       "Investigation by Journal/Publisher",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 72413,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Biology - Molecular",
+       "BLS: Genetics"
+      ],
+      "title": "Molecular structure of polysaccharide mediated autophagy markers KIF23 and PRC1 proteins and their regulatory role in triple negative cancer through the p53 signaling pathway",
+      "url_record_counts": [
+       127
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8",
+       "Ana Placeholder 9"
+      ],
+      "countries": [
+       "France"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73005",
+      "institutions": [
+       "Laboratoire de Signalisations Moléculaires et Neurodégénérescence, EA 3433, Université Louis Pasteur, Faculté de Médecine, 11 rue Humann, 67085 Strasbourg Cedex, France",
+       "Institut de Médecine Légale, 11 rue Humann, 67085 Strasbourg Cedex, France"
+      ],
+      "is_revision": false,
+      "journal": "Biochemical Journal",
+      "notice_date": 1788998400,
+      "notice_doi": "10.1042/bcj20040458_ret",
+      "notice_pubmed_id": 42719941,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "9/10/2026 0:00",
+       "notice_doi": "10.1042/BCJ20040458_RET",
+       "notice_pubmed_id": "42719941",
+       "paper_date": "12/14/2004 0:00",
+       "paper_doi": "10.1042/BJ20040458",
+       "paper_pubmed_id": "15350194"
+      },
+      "paper_date": 1102982400,
+      "paper_doi": "10.1042/bj20040458",
+      "paper_pubmed_id": 15350194,
+      "paper_year": 2004,
+      "paywalled": "No",
+      "publisher": "Portland Press",
+      "reasons": [
+       "Duplication of/in Image",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Original Data and/or Images not Provided and/or not Available"
+      ],
+      "record_id": 73005,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cellular",
+       "BLS: Biology - Molecular"
+      ],
+      "title": "Tissue specificity and regulation of the N-terminal diversity of reticulon 3",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    }
+   ],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 1607,
+       "highlighted": "Journal of Intelligent & Fuzzy Systems",
+       "value": "Journal of Intelligent & Fuzzy Systems"
+      },
+      {
+       "count": 1402,
+       "highlighted": "PLoS One",
+       "value": "PLoS One"
+      },
+      {
+       "count": 1280,
+       "highlighted": "2011 International Conference on E-Business and E-Government (ICEE)",
+       "value": "2011 International Conference on E-Business and E-Government (ICEE)"
+      },
+      {
+       "count": 1084,
+       "highlighted": "2011 5th International Conference on Bioinformatics and Biomedical Engineering",
+       "value": "2011 5th International Conference on Bioinformatics and Biomedical Engineering"
+      },
+      {
+       "count": 1074,
+       "highlighted": "Journal of Healthcare Engineering",
+       "value": "Journal of Healthcare Engineering"
+      },
+      {
+       "count": 1065,
+       "highlighted": "Computational and Mathematical Methods in Medicine",
+       "value": "Computational and Mathematical Methods in Medicine"
+      },
+      {
+       "count": 1029,
+       "highlighted": "Computational Intelligence and Neuroscience",
+       "value": "Computational Intelligence and Neuroscience"
+      },
+      {
+       "count": 948,
+       "highlighted": "Security and Communication Networks",
+       "value": "Security and Communication Networks"
+      },
+      {
+       "count": 947,
+       "highlighted": "BioMed Research International",
+       "value": "BioMed Research International"
+      },
+      {
+       "count": 877,
+       "highlighted": "Journal of Physics: Conference Series",
+       "value": "Journal of Physics: Conference Series"
+      },
+      {
+       "count": 799,
+       "highlighted": "Wireless Communications and Mobile Computing",
+       "value": "Wireless Communications and Mobile Computing"
+      },
+      {
+       "count": 788,
+       "highlighted": "Soft Computing",
+       "value": "Soft Computing"
+      },
+      {
+       "count": 752,
+       "highlighted": "Evidence-Based Complementary and Alternative Medicine",
+       "value": "Evidence-Based Complementary and Alternative Medicine"
+      },
+      {
+       "count": 689,
+       "highlighted": "Heliyon",
+       "value": "Heliyon"
+      },
+      {
+       "count": 580,
+       "highlighted": "E3S Web of Conferences",
+       "value": "E3S Web of Conferences"
+      },
+      {
+       "count": 464,
+       "highlighted": "Journal of Sensors",
+       "value": "Journal of Sensors"
+      },
+      {
+       "count": 441,
+       "highlighted": "2010 International Conference on Computer Application and System Modeling (ICCASM 2010)",
+       "value": "2010 International Conference on Computer Application and System Modeling (ICCASM 2010)"
+      },
+      {
+       "count": 435,
+       "highlighted": "Scientific Reports",
+       "value": "Scientific Reports"
+      },
+      {
+       "count": 434,
+       "highlighted": "Journal of Environmental and Public Health",
+       "value": "Journal of Environmental and Public Health"
+      },
+      {
+       "count": 433,
+       "highlighted": "Journal of Ambient Intelligence and Humanized Computing",
+       "value": "Journal of Ambient Intelligence and Humanized Computing"
+      },
+      {
+       "count": 430,
+       "highlighted": "Journal of Fundamental and Applied Sciences",
+       "value": "Journal of Fundamental and Applied Sciences"
+      },
+      {
+       "count": 430,
+       "highlighted": "2010 IEEE International Conference on Advanced Management Science (ICAMS 2010)",
+       "value": "2010 IEEE International Conference on Advanced Management Science (ICAMS 2010)"
+      },
+      {
+       "count": 415,
+       "highlighted": "2011 2nd International Conference on Artificial Intelligence, Management Science and Electronic Commerce",
+       "value": "2011 2nd International Conference on Artificial Intelligence, Management Science and Electronic Commerce"
+      },
+      {
+       "count": 388,
+       "highlighted": "The Journal of Biological Chemistry",
+       "value": "The Journal of Biological Chemistry"
+      },
+      {
+       "count": 382,
+       "highlighted": "Mobile Information Systems",
+       "value": "Mobile Information Systems"
+      },
+      {
+       "count": 371,
+       "highlighted": "Mathematical Problems in Engineering",
+       "value": "Mathematical Problems in Engineering"
+      },
+      {
+       "count": 369,
+       "highlighted": "Arabian Journal of Geosciences",
+       "value": "Arabian Journal of Geosciences"
+      },
+      {
+       "count": 359,
+       "highlighted": "2010 2nd International Conference on Computer Engineering and Technology",
+       "value": "2010 2nd International Conference on Computer Engineering and Technology"
+      },
+      {
+       "count": 349,
+       "highlighted": "Microprocessors and Microsystems",
+       "value": "Microprocessors and Microsystems"
+      },
+      {
+       "count": 333,
+       "highlighted": "European Review for Medical and Pharmacological Sciences",
+       "value": "European Review for Medical and Pharmacological Sciences"
+      },
+      {
+       "count": 323,
+       "highlighted": "ICIMTECH 21: The Sixth International Conference on Information Management and Technology",
+       "value": "ICIMTECH 21: The Sixth International Conference on Information Management and Technology"
+      },
+      {
+       "count": 306,
+       "highlighted": "AIP Conference Proceedings",
+       "value": "AIP Conference Proceedings"
+      },
+      {
+       "count": 304,
+       "highlighted": "International Wound Journal",
+       "value": "International Wound Journal"
+      },
+      {
+       "count": 299,
+       "highlighted": "Cochrane Database of Systematic Reviews",
+       "value": "Cochrane Database of Systematic Reviews"
+      },
+      {
+       "count": 291,
+       "highlighted": "2010 The 2nd Conference on Environmental Science and Information Application Technology",
+       "value": "2010 The 2nd Conference on Environmental Science and Information Application Technology"
+      },
+      {
+       "count": 287,
+       "highlighted": "Applied Bionics and Biomechanics",
+       "value": "Applied Bionics and Biomechanics"
+      },
+      {
+       "count": 274,
+       "highlighted": "2009 International Conference on Management and Service Science",
+       "value": "2009 International Conference on Management and Service Science"
+      },
+      {
+       "count": 272,
+       "highlighted": "2013 International Conference on Quality, Reliability, Risk, Maintenance, and Safety Engineering",
+       "value": "2013 International Conference on Quality, Reliability, Risk, Maintenance, and Safety Engineering"
+      },
+      {
+       "count": 268,
+       "highlighted": "Complexity",
+       "value": "Complexity"
+      },
+      {
+       "count": 251,
+       "highlighted": "Contrast Media & Molecular Imaging",
+       "value": "Contrast Media & Molecular Imaging"
+      }
+     ],
+     "field_name": "journal",
+     "sampled": false,
+     "stats": {
+      "total_values": 80
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 11486,
+       "highlighted": "Hindawi",
+       "value": "Hindawi"
+      },
+      {
+       "count": 10093,
+       "highlighted": "IEEE: Institute of Electrical and Electronics Engineers",
+       "value": "IEEE: Institute of Electrical and Electronics Engineers"
+      },
+      {
+       "count": 6896,
+       "highlighted": "Elsevier",
+       "value": "Elsevier"
+      },
+      {
+       "count": 4495,
+       "highlighted": "Springer",
+       "value": "Springer"
+      },
+      {
+       "count": 3912,
+       "highlighted": "Wiley",
+       "value": "Wiley"
+      },
+      {
+       "count": 3412,
+       "highlighted": "Springer - Nature Publishing Group",
+       "value": "Springer - Nature Publishing Group"
+      },
+      {
+       "count": 1827,
+       "highlighted": "Taylor and Francis",
+       "value": "Taylor and Francis"
+      },
+      {
+       "count": 1785,
+       "highlighted": "IOS Press (bought by Sage November 2023)",
+       "value": "IOS Press (bought by Sage November 2023)"
+      },
+      {
+       "count": 1473,
+       "highlighted": "PLoS",
+       "value": "PLoS"
+      },
+      {
+       "count": 1285,
+       "highlighted": "IOP Publishing",
+       "value": "IOP Publishing"
+      },
+      {
+       "count": 1237,
+       "highlighted": "SAGE Publications",
+       "value": "SAGE Publications"
+      },
+      {
+       "count": 919,
+       "highlighted": "Spandidos",
+       "value": "Spandidos"
+      },
+      {
+       "count": 902,
+       "highlighted": "Elsevier - Cell Press",
+       "value": "Elsevier - Cell Press"
+      },
+      {
+       "count": 783,
+       "highlighted": "EDP Sciences",
+       "value": "EDP Sciences"
+      },
+      {
+       "count": 698,
+       "highlighted": "Frontiers",
+       "value": "Frontiers"
+      },
+      {
+       "count": 627,
+       "highlighted": "Springer - Biomed Central (BMC)",
+       "value": "Springer - Biomed Central (BMC)"
+      },
+      {
+       "count": 570,
+       "highlighted": "Taylor and Francis - Dove Press",
+       "value": "Taylor and Francis - Dove Press"
+      },
+      {
+       "count": 538,
+       "highlighted": "Oxford University Press",
+       "value": "Oxford University Press"
+      },
+      {
+       "count": 490,
+       "highlighted": "MDPI",
+       "value": "MDPI"
+      },
+      {
+       "count": 452,
+       "highlighted": "Royal Society of Chemistry (RSC)",
+       "value": "Royal Society of Chemistry (RSC)"
+      },
+      {
+       "count": 438,
+       "highlighted": "Association for Computing Machinery (ACM)",
+       "value": "Association for Computing Machinery (ACM)"
+      },
+      {
+       "count": 430,
+       "highlighted": "University of El Qued",
+       "value": "University of El Qued"
+      },
+      {
+       "count": 399,
+       "highlighted": "AIP Publishing",
+       "value": "AIP Publishing"
+      },
+      {
+       "count": 386,
+       "highlighted": "American Chemical Society (ACS)",
+       "value": "American Chemical Society (ACS)"
+      },
+      {
+       "count": 368,
+       "highlighted": "American Society for Biochemistry and Molecular Biology (ASBMB)",
+       "value": "American Society for Biochemistry and Molecular Biology (ASBMB)"
+      },
+      {
+       "count": 333,
+       "highlighted": "Verduci Editore",
+       "value": "Verduci Editore"
+      },
+      {
+       "count": 326,
+       "highlighted": "Wolters Kluwer - Lippincott Williams & Wilkins",
+       "value": "Wolters Kluwer - Lippincott Williams & Wilkins"
+      },
+      {
+       "count": 300,
+       "highlighted": "Wolters Kluwer",
+       "value": "Wolters Kluwer"
+      },
+      {
+       "count": 296,
+       "highlighted": "De Gruyter",
+       "value": "De Gruyter"
+      },
+      {
+       "count": 235,
+       "highlighted": "Portland Press",
+       "value": "Portland Press"
+      },
+      {
+       "count": 218,
+       "highlighted": "Cureus (Part of Springer Nature as of December 2022)",
+       "value": "Cureus (Part of Springer Nature as of December 2022)"
+      },
+      {
+       "count": 206,
+       "highlighted": "BioMed Central (BMC)",
+       "value": "BioMed Central (BMC)"
+      },
+      {
+       "count": 194,
+       "highlighted": "Impact Journals",
+       "value": "Impact Journals"
+      },
+      {
+       "count": 172,
+       "highlighted": "American Society for Microbiology",
+       "value": "American Society for Microbiology"
+      },
+      {
+       "count": 168,
+       "highlighted": "American Association for Cancer Research",
+       "value": "American Association for Cancer Research"
+      },
+      {
+       "count": 162,
+       "highlighted": "Nature Publishing Group",
+       "value": "Nature Publishing Group"
+      },
+      {
+       "count": 159,
+       "highlighted": "Mary Ann Liebert",
+       "value": "Mary Ann Liebert"
+      },
+      {
+       "count": 155,
+       "highlighted": "BMJ Publishing",
+       "value": "BMJ Publishing"
+      },
+      {
+       "count": 149,
+       "highlighted": "ASTM International",
+       "value": "ASTM International"
+      },
+      {
+       "count": 142,
+       "highlighted": "International Union of Crystallography",
+       "value": "International Union of Crystallography"
+      }
+     ],
+     "field_name": "publisher",
+     "sampled": false,
+     "stats": {
+      "total_values": 80
+     }
+    }
+   ],
+   "found": 67384,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 67384,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      },
+      {
+       "count": 3731,
+       "highlighted": "Expression of concern",
+       "value": "Expression of concern"
+      },
+      {
+       "count": 1543,
+       "highlighted": "Correction",
+       "value": "Correction"
+      },
+      {
+       "count": 163,
+       "highlighted": "Reinstatement",
+       "value": "Reinstatement"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 4
+     }
+    }
+   ],
+   "found": 72821,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 67384,
+       "highlighted": "false",
+       "value": "false"
+      },
+      {
+       "count": 279,
+       "highlighted": "true",
+       "value": "true"
+      }
+     ],
+     "field_name": "is_revision",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    }
+   ],
+   "found": 67663,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  }
+ ]
+}

@@ -36,6 +36,30 @@ CREATE OR REPLACE MACRO unknown_if_placeholder(entry) AS
 CREATE OR REPLACE MACRO split_list_with_unknown(value) AS
   [unknown_if_placeholder(entry) FOR entry IN split_list(value)];
 
+-- Spec 002: a backtick in an author name is bad data, and Typesense filters can't
+-- hold one. Between two letters it becomes an apostrophe, as in "O'Example";
+-- anywhere else it's removed.
+CREATE OR REPLACE MACRO clean_author(entry) AS
+  replace(regexp_replace(entry, '(\p{L})`(\p{L})', '\1''\2', 'g'), '`', '');
+
+-- Spec 002: journal and publisher spellings that differ only in capitals or
+-- accents ("medRxiv" and "medrxiv") become the most common spelling, ties going
+-- to the first in sort order. Typesense's filters ignore capitals and accents,
+-- so separate spellings would give filter counts that disagree with the results.
+CREATE OR REPLACE TABLE preferred_spellings AS
+SELECT field, folded, value AS spelling
+FROM (
+  SELECT field, value, lower(strip_accents(value)) AS folded,
+         row_number() OVER (PARTITION BY field, lower(strip_accents(value)) ORDER BY count(*) DESC, value) AS rank
+  FROM (
+    SELECT 'journal' AS field, nullif(trim(Journal), '') AS value FROM source
+    UNION ALL SELECT 'publisher', nullif(trim(Publisher), '') FROM source
+  )
+  WHERE value IS NOT NULL
+  GROUP BY field, value
+)
+WHERE rank = 1;
+
 -- AC11: "(HSC) Medicine - Surgery" becomes code HSC and name "Medicine - Surgery".
 -- A subject without a code gets a NULL code and is listed in the profile report.
 CREATE OR REPLACE MACRO parse_subject(subject) AS {
@@ -48,9 +72,9 @@ SELECT
   CAST("Record ID" AS INTEGER) AS record_id,
   -- AC9: these can contain semicolons but aren't lists, so they're never split.
   nullif(trim(Title), '') AS title,
-  nullif(trim(Journal), '') AS journal,
-  nullif(trim(Publisher), '') AS publisher,
-  split_list_with_unknown(Author) AS authors,
+  coalesce(preferred_journal.spelling, nullif(trim(Journal), '')) AS journal,
+  coalesce(preferred_publisher.spelling, nullif(trim(Publisher), '')) AS publisher,
+  [clean_author(entry) FOR entry IN split_list_with_unknown(Author)] AS authors,
   split_list_with_unknown(Institution) AS institutions,
   split_list_with_unknown(Country) AS countries,
   split_list(URLS) AS urls,
@@ -74,7 +98,9 @@ SELECT
   nullif(trim(Notes), '') AS notes,
   -- AC4: the source text of every value above that the cleaning rewrites.
   -- List fields keep every entry in order, so their source text can be rebuilt,
-  -- except where a placeholder became "Unknown"; then the source text is kept too.
+  -- except where a placeholder became "Unknown" or an author's backtick was
+  -- fixed; then the source text is kept too. So is a journal or publisher
+  -- spelling that was merged into another.
   {
     'notice_date': RetractionDate,
     'notice_doi': RetractionDOI,
@@ -84,9 +110,16 @@ SELECT
     'paper_pubmed_id': OriginalPaperPubMedID,
     'author': CASE WHEN split_list(Author) <> authors THEN Author END,
     'institution': CASE WHEN split_list(Institution) <> institutions THEN Institution END,
-    'country': CASE WHEN split_list(Country) <> countries THEN Country END
+    'country': CASE WHEN split_list(Country) <> countries THEN Country END,
+    -- (Compared with the preferred spelling: "journal" here would mean the source column.)
+    'journal': CASE WHEN nullif(trim(Journal), '') <> preferred_journal.spelling THEN Journal END,
+    'publisher': CASE WHEN nullif(trim(Publisher), '') <> preferred_publisher.spelling THEN Publisher END
   } AS original
 FROM source
+LEFT JOIN preferred_spellings AS preferred_journal
+  ON preferred_journal.field = 'journal' AND preferred_journal.folded = lower(strip_accents(nullif(trim(source.Journal), '')))
+LEFT JOIN preferred_spellings AS preferred_publisher
+  ON preferred_publisher.field = 'publisher' AND preferred_publisher.folded = lower(strip_accents(nullif(trim(source.Publisher), '')))
 ORDER BY record_id;
 
 -- AC10: splitting loses and invents nothing. For each list field, the number of

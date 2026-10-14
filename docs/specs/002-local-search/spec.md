@@ -35,7 +35,10 @@ Made 2026-10-13:
 - Problems with the site are reported as GitHub issues, separately from problems with the data, which go to Retraction Watch.
 - Field terms match word by word for now: a multi-word term matches when all its words appear in the field. This over-counts generic phrases, such as "Department of Medicine" in institutions. The plan's "Field terms" section has the measurements and the options for matching phrases later.
 - Results show at least the first ten author names, plus any further down that matched the search.
-- Selecting an author name shows the records that list exactly that name, as a labeled name match (AC14).
+- Selecting an author name shows the records that list that name, ignoring capitals, accents and punctuation, as a labeled name match (AC14).
+- Journal and publisher spellings that differ only in capitals or accents, such as "medRxiv" and "medrxiv", become the most common spelling. Each journal then has one filter value and one count. Record pages show the spelling Retraction Watch published (AC22).
+- Backticks in author names are treated as bad data. A backtick between two letters becomes an apostrophe, and any other backtick is removed. Record pages show the published name (AC22).
+- When the filters leave no exact match for the search text, the page shows close spellings and says so (AC13, after spike S6).
 - Subject groups use Retraction Watch's own names, shown with their codes, from its user guide's "Appendix A: Fields" (checked 2026-10-13): Basic Life Sciences (BLS), Business and Technology (B/T), Environmental Sciences (ENV), Health Sciences (HSC), Humanities (HUM), Physical Sciences (PHY) and Social Sciences (SOC).
 
 ## Acceptance criteria
@@ -52,7 +55,7 @@ Every criterion is checked locally against one pinned snapshot. "List fields" ar
 - AC3: There are filters for notice type, reason, subject, country, publisher, journal, article type, notice year, paper year, whether the notice is paywalled, revised versions, and notices that list the journal's editorial staff as the author.
 - AC4: Every filter value shows a count, and the counts update after every change. In a filter that matches any of its values, a value's count is the number of records that match every other filter and have that value. In a filter that matches all of its values, a value's count is the number of records that match every filter, including that one, and also have that value.
 - AC5: Each value can be included or excluded. Included values match any of them by default, and list fields can switch to all of them. A record has to match every filter.
-- AC6: Every value of every filter can be reached, including all 1,718 publishers and 8,778 journals. Long filters show the most common values first and can be searched by name. A selected value stays visible even when its count drops to zero.
+- AC6: Every value of every filter can be reached, including all 1,717 publishers and 8,771 journals (2026-10-09 snapshot, after spellings that differ only in capitals or accents are merged). Long filters show the most common values first and can be searched by name. A selected value stays visible even when its count drops to zero.
 - AC7: Subjects have two levels: the seven categories, and the subjects within each. A whole category can be selected at once. Categories are shown by name, not only by code.
 - AC8: Each year filter selects a range, which can be open at either end, and shows how many matching records fall in each year. Years before 1970 filter and sort correctly.
 - AC9: Filters state the data caveats that affect their counts:
@@ -69,8 +72,8 @@ Every criterion is checked locally against one pinned snapshot. "List fields" ar
 - AC10: One search box searches titles, author names, institutions, journals and publishers together, and tolerates typos.
 - AC11: Without typing operators, users can add several terms at once, each for a single field (title, author name, institution, journal or publisher), choose whether one field's terms match any or all of them, and exclude terms. Helper text explains how these terms combine with each other and with the filters. A term of several words matches records where all its words appear somewhere in that field, in any order.
 - AC12: Pasting a DOI (in any case, with or without a doi.org prefix) or a PubMed ID finds the records whose notice or paper has it, and says which of the two matched. The lookup ignores the filters and says so.
-- AC13: Typo tolerance doesn't mix up near-identical names. A fixed list of name pairs, starting with Toronto and Torino, is tested in both directions. The words that matched are highlighted in each result, so a match on a different spelling is visible.
-- AC14: Author matches are labeled as name matches. Selecting an author name in a result or on a record page shows the records that list exactly that name. The results say they are name matches only: different people can share a name, and the same person may appear under other spellings or with initials. The summary describes the records as "listing the author name", never as one person's work. There's no list of authors to filter by, and the site shows no per-author counts, rankings or profiles.
+- AC13: Typo tolerance doesn't mix up near-identical names while the search has exact matches. A fixed list of name pairs, starting with Toronto and Torino, is tested in both directions. When the filters leave no exact match and the page falls back to close spellings, it says so. The words that matched are highlighted in each result, so a match on a different spelling is visible.
+- AC14: Author matches are labeled as name matches. Selecting an author name in a result or on a record page shows the records that list that name, ignoring capitals, accents and punctuation. Punctuation is dropped rather than read as a space, so "Ana Ma-Smith" also matches "Ana Masmith" but not "Ana Ma Smith". The results say they are name matches only: different people can share a name, and the same person may appear under other spellings or with initials. The summary describes the records as "listing the author name", never as one person's work. There's no list of authors to filter by, and the site shows no per-author counts, rankings or profiles.
 
 **Query summary and links**
 
@@ -139,7 +142,7 @@ All acceptance criteria pass locally, and the chosen design is recorded in `plan
 - Checking a list of papers, abstracts and topic search (Phase 6+ candidates).
 - Charts beyond the per-year counts in the year filters.
 - Accounts, saved searches or alerts.
-- Normalizing institutions, publishers or author names, as in spec 001.
+- Normalizing institutions, publishers or author names, as in spec 001, apart from two narrow fixes listed under Decisions: journal and publisher spellings that differ only in capitals or accents, and backticks in author names.
 - Languages other than English.
 
 ## Open questions

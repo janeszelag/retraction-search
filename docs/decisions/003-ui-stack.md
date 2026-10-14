@@ -1,6 +1,6 @@
 # 003: Tailwind, headless components and a URL-driven search page
 
-Status: proposed, 2026-10-13
+Status: accepted, 2026-10-13
 
 ## Context
 

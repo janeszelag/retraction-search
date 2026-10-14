@@ -74,6 +74,19 @@ describe('profile report', () => {
     expect(section(synthetic, '### Subject without a code (1)')).toContain('| 900000001 | No code here |');
   });
 
+  it('lists and counts the name fixes (spec 002)', async () => {
+    const synthetic = await profileOf('names.csv');
+    expect(section(synthetic, '### Backtick in an author name (1)')).toContain('| 900000101 | Maria O`Example;Jun Sample`;`Ana Placeholder |');
+    const merged = section(synthetic, '### Journal or publisher spelling merged (4)');
+    expect(merged).toContain('| 900000102 | journal "Synthetic journal of examples" became "Synthetic Journal of Examples" |');
+    expect(merged).toContain('| 900000105 | publisher "tie press" became "Tie Press" |');
+    const flags = section(synthetic, '## Flags and rewrites (AC12)');
+    expect(flags).toContain('| Backtick fixed in an author name | 1 |');
+    expect(flags).toContain('| Journal spelling merged into the most common one | 2 |');
+    expect(flags).toContain('| Publisher spelling merged into the most common one | 2 |');
+    expect(flags).toContain('| Author placeholder rewritten to "Unknown" | 0 |');
+  });
+
   it('shows list integrity for all seven list fields (AC10)', () => {
     const rows = tableRows(section(profile, '## List integrity (AC10)')).filter((row) => !row.startsWith('| Field'));
     expect(rows).toHaveLength(7);

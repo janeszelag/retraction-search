@@ -1,0 +1,1708 @@
+{
+ "search": "journal=Historical%2C%20Philosophical%2C%20Political%20and%20Legal%20Sciences%2C%20Culturology%20and%20Arts.%20Issues%20of%20Theory%20and%20Practice%20(%D0%98%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%2C%20%D0%A4%D0%B8%D0%BB%D0%BE%D1%81%D0%BE%D1%84%D1%81%D0%BA%D0%B8%D0%B5%2C%20%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%20%D0%98%20%D0%AE%D1%80%D0%B8%D0%B4%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%20%D0%9D%D0%B0%D1%83%D0%BA%D0%B8%2C%20%D0%9A%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F%20%D0%98%20%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%BE%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5.%20%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81%D1%8B%20%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D0%B8%20%D0%98%20%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B8)&journal=No+Such+Journal&not_journal=medRxiv",
+ "typos": "fallback",
+ "results": [
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 12,
+       "highlighted": "Error in Text",
+       "value": "Error in Text"
+      },
+      {
+       "count": 12,
+       "highlighted": "Error in Results and/or Conclusions",
+       "value": "Error in Results and/or Conclusions"
+      },
+      {
+       "count": 11,
+       "highlighted": "Retract and Replace",
+       "value": "Retract and Replace"
+      },
+      {
+       "count": 6,
+       "highlighted": "Plagiarism of Text",
+       "value": "Plagiarism of Text"
+      },
+      {
+       "count": 6,
+       "highlighted": "Euphemisms for Plagiarism",
+       "value": "Euphemisms for Plagiarism"
+      },
+      {
+       "count": 2,
+       "highlighted": "Duplication of/in Article",
+       "value": "Duplication of/in Article"
+      },
+      {
+       "count": 2,
+       "highlighted": "Notice - Limited or No Information",
+       "value": "Notice - Limited or No Information"
+      },
+      {
+       "count": 1,
+       "highlighted": "Removed",
+       "value": "Removed"
+      },
+      {
+       "count": 1,
+       "highlighted": "Conflict of Interest",
+       "value": "Conflict of Interest"
+      },
+      {
+       "count": 1,
+       "highlighted": "Ethical Violations by Author",
+       "value": "Ethical Violations by Author"
+      }
+     ],
+     "field_name": "reasons",
+     "sampled": false,
+     "stats": {
+      "total_values": 10
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 7,
+       "highlighted": "SOC: Sociology",
+       "value": "SOC: Sociology"
+      },
+      {
+       "count": 4,
+       "highlighted": "HUM: Religion",
+       "value": "HUM: Religion"
+      },
+      {
+       "count": 4,
+       "highlighted": "HUM: History - Europe",
+       "value": "HUM: History - Europe"
+      },
+      {
+       "count": 3,
+       "highlighted": "HUM: Philosophy",
+       "value": "HUM: Philosophy"
+      },
+      {
+       "count": 3,
+       "highlighted": "HUM: Arts - Music",
+       "value": "HUM: Arts - Music"
+      },
+      {
+       "count": 3,
+       "highlighted": "HUM: History - Asia",
+       "value": "HUM: History - Asia"
+      },
+      {
+       "count": 3,
+       "highlighted": "B/T: International Relations",
+       "value": "B/T: International Relations"
+      },
+      {
+       "count": 2,
+       "highlighted": "BLS: Anthropology",
+       "value": "BLS: Anthropology"
+      },
+      {
+       "count": 2,
+       "highlighted": "SOC: Law/Legal Issues",
+       "value": "SOC: Law/Legal Issues"
+      },
+      {
+       "count": 2,
+       "highlighted": "B/T: Business - Economics",
+       "value": "B/T: Business - Economics"
+      },
+      {
+       "count": 2,
+       "highlighted": "SOC: Sports and Recreation",
+       "value": "SOC: Sports and Recreation"
+      },
+      {
+       "count": 1,
+       "highlighted": "SOC: Psychology",
+       "value": "SOC: Psychology"
+      },
+      {
+       "count": 1,
+       "highlighted": "B/T: Technology",
+       "value": "B/T: Technology"
+      },
+      {
+       "count": 1,
+       "highlighted": "SOC: Linguistics",
+       "value": "SOC: Linguistics"
+      },
+      {
+       "count": 1,
+       "highlighted": "SOC: Criminology",
+       "value": "SOC: Criminology"
+      },
+      {
+       "count": 1,
+       "highlighted": "SOC: Communications",
+       "value": "SOC: Communications"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Nanotechnology",
+       "value": "PHY: Nanotechnology"
+      },
+      {
+       "count": 1,
+       "highlighted": "HUM: Arts - General",
+       "value": "HUM: Arts - General"
+      },
+      {
+       "count": 1,
+       "highlighted": "HUM: History - General",
+       "value": "HUM: History - General"
+      },
+      {
+       "count": 1,
+       "highlighted": "BLS: Biology - General",
+       "value": "BLS: Biology - General"
+      },
+      {
+       "count": 1,
+       "highlighted": "B/T: Business - General",
+       "value": "B/T: Business - General"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Engineering - Electrical",
+       "value": "PHY: Engineering - Electrical"
+      }
+     ],
+     "field_name": "subjects",
+     "sampled": false,
+     "stats": {
+      "total_values": 22
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 14,
+       "highlighted": "HUM",
+       "value": "HUM"
+      },
+      {
+       "count": 12,
+       "highlighted": "SOC",
+       "value": "SOC"
+      },
+      {
+       "count": 6,
+       "highlighted": "B/T",
+       "value": "B/T"
+      },
+      {
+       "count": 3,
+       "highlighted": "BLS",
+       "value": "BLS"
+      },
+      {
+       "count": 2,
+       "highlighted": "PHY",
+       "value": "PHY"
+      }
+     ],
+     "field_name": "subject_categories",
+     "sampled": false,
+     "stats": {
+      "total_values": 5
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "Russia",
+       "value": "Russia"
+      }
+     ],
+     "field_name": "countries",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "Research Article",
+       "value": "Research Article"
+      }
+     ],
+     "field_name": "article_types",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "No",
+       "value": "No"
+      }
+     ],
+     "field_name": "paywalled",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 17,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 3,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 2,
+       "highlighted": "2020",
+       "value": "2020"
+      }
+     ],
+     "field_name": "notice_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2018.590909090909,
+      "max": 2021,
+      "min": 2018,
+      "sum": 44409,
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 16,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 5,
+       "highlighted": "2016",
+       "value": "2016"
+      },
+      {
+       "count": 1,
+       "highlighted": "2015",
+       "value": "2015"
+      }
+     ],
+     "field_name": "paper_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2016.6818181818182,
+      "max": 2017,
+      "min": 2015,
+      "sum": 44367,
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "false",
+       "value": "false"
+      }
+     ],
+     "field_name": "has_editorial_staff_author",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 22,
+   "hits": [
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "26553",
+      "institutions": [
+       "Russian State Specialized Academy of Arts (Moscow)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1610323200,
+      "notice_type": "Retraction",
+      "notice_year": 2021,
+      "original": {
+       "notice_date": "1/11/2021 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 26553,
+      "subject_categories": [
+       "HUM"
+      ],
+      "subjects": [
+       "HUM: Arts - Music"
+      ],
+      "title": "Methodological Basis of the Practical Work of the Pianist-Concertmaster",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "26552",
+      "institutions": [
+       "Russian State Specialized Academy of Arts (Moscow)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1610323200,
+      "notice_type": "Retraction",
+      "notice_year": 2021,
+      "original": {
+       "notice_date": "1/11/2021 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 26552,
+      "subject_categories": [
+       "HUM"
+      ],
+      "subjects": [
+       "HUM: Arts - Music"
+      ],
+      "title": "Methodological Aspects of the Pianist-Concertmaster's Work with Piano Transcriptions of Symphonic Works",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "26551",
+      "institutions": [
+       "Russian State Specialized Academy of Arts (Moscow)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1610323200,
+      "notice_type": "Retraction",
+      "notice_year": 2021,
+      "original": {
+       "notice_date": "1/11/2021 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 26551,
+      "subject_categories": [
+       "HUM"
+      ],
+      "subjects": [
+       "HUM: Arts - Music"
+      ],
+      "title": "Strokes as a Basic Executive Element of the Pianist-Concertmaster's Work in the Instrumental Ensemble",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "26580",
+      "institutions": [
+       "Nizhny Novgorod State Pedagogical University named after K. Minina"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1605744000,
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "notice_date": "11/19/2020 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Notice - Limited or No Information",
+       "Removed"
+      ],
+      "record_id": 26580,
+      "subject_categories": [
+       "SOC"
+      ],
+      "subjects": [
+       "SOC: Linguistics",
+       "SOC: Sociology"
+      ],
+      "title": "Social Portrait of Modern Russian Languages: A Comparative Analysis (According to Questionnaire Surveys 2014-2015)",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "30550",
+      "institutions": [
+       "Nizhny Novgorod State Pedagogical University named after K. Minina"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1604620800,
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "notice_date": "11/6/2020 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "8/1/2015 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1438387200,
+      "paper_year": 2015,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Ethical Violations by Author",
+       "Notice - Limited or No Information"
+      ],
+      "record_id": 30550,
+      "subject_categories": [
+       "BLS",
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "BLS: Anthropology",
+       "HUM: Religion",
+       "SOC: Sociology"
+      ],
+      "title": "Written Sources of Modern Russian Pagans According to Field Research Data",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "29210",
+      "institutions": [
+       "Institute of Public and Municipal Service of the International Market Institute"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1526774400,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "5/20/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2016 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1451606400,
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Conflict of Interest",
+       "Duplication of/in Article"
+      ],
+      "record_id": 29210,
+      "subject_categories": [
+       "SOC"
+      ],
+      "subjects": [
+       "SOC: Law/Legal Issues"
+      ],
+      "title": "On Conflict of Interest - In a Comparative Key: Background and Practice",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27623",
+      "institutions": [
+       "Academy for Gifted Children (Nayanova) (Samara)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1526601600,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "5/18/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27623,
+      "subject_categories": [
+       "SOC"
+      ],
+      "subjects": [
+       "SOC: Communications",
+       "SOC: Sports and Recreation"
+      ],
+      "title": "Sport in Discourses of the Information Society",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27538",
+      "institutions": [
+       "Cheremkhovsky Pedagogical College"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1523232000,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "4/9/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27538,
+      "subject_categories": [
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "HUM: Religion",
+       "SOC: Sociology"
+      ],
+      "title": "Concept of the Phenomenon of Spirituality in the Conditions of the Globalized Modern World",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "30276",
+      "institutions": [
+       "Dagestan State University of National Economy (Makhachkala)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2016 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1451606400,
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 30276,
+      "subject_categories": [
+       "B/T",
+       "HUM"
+      ],
+      "subjects": [
+       "B/T: Business - Economics",
+       "B/T: International Relations",
+       "HUM: History - Asia",
+       "HUM: History - Europe"
+      ],
+      "title": "Persian Buyership and Astrakhan Customs in the First Half of the XIX Century.",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "29728",
+      "institutions": [
+       "Volga Region State Academy of Physical Culture, Sports and Tourism (Kazan)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2016 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1451606400,
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Duplication of/in Article"
+      ],
+      "record_id": 29728,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Engineering - Electrical"
+      ],
+      "title": "Methodological Problems of Researching the Maxwell Synthesis of Optics and Electromagnetism",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "29727",
+      "institutions": [
+       "Tula State Pedagogical University. L.N. Tolstoy"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2016 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1451606400,
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 29727,
+      "subject_categories": [
+       "HUM"
+      ],
+      "subjects": [
+       "HUM: History - Europe",
+       "HUM: Philosophy"
+      ],
+      "title": "Axiological Problems in the Teachings of Russian Philosophers of the XIX-XX Centuries. N.O. Lossky and S.L. Frank",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "29726",
+      "institutions": [
+       "Vologda State University"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2016 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1451606400,
+      "paper_year": 2016,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 29726,
+      "subject_categories": [
+       "PHY"
+      ],
+      "subjects": [
+       "PHY: Nanotechnology"
+      ],
+      "title": "Nanotechnology and Nanoscience: Epistemological Analysis",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27631",
+      "institutions": [
+       "Volgograd State University"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 27631,
+      "subject_categories": [
+       "BLS",
+       "HUM"
+      ],
+      "subjects": [
+       "BLS: Biology - General",
+       "HUM: Arts - General",
+       "HUM: History - General"
+      ],
+      "title": "The Problem of Attitude to Creativity in Classical Science",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27629",
+      "institutions": [
+       "Volgograd State University"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Euphemisms for Plagiarism",
+       "Plagiarism of Text"
+      ],
+      "record_id": 27629,
+      "subject_categories": [
+       "SOC"
+      ],
+      "subjects": [
+       "SOC: Criminology",
+       "SOC: Law/Legal Issues"
+      ],
+      "title": "Implementation of the Principle of Guilt in the Contemporary Criminal Law of Russia",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27625",
+      "institutions": [
+       "Lipetsk State Technical University"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27625,
+      "subject_categories": [
+       "HUM"
+      ],
+      "subjects": [
+       "HUM: History - Europe",
+       "HUM: Religion"
+      ],
+      "title": "Historical Background of the Folding of Fortified Churches in the North of France in the XVI-XVII Centuries",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27624",
+      "institutions": [
+       "Moscow State Technical University N.E. Bauman (National Research University)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27624,
+      "subject_categories": [
+       "B/T",
+       "SOC"
+      ],
+      "subjects": [
+       "B/T: Technology",
+       "SOC: Sociology"
+      ],
+      "title": "Role of Television in Human Life",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27579",
+      "institutions": [
+       "Far Eastern Federal University (Vladivostok)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27579,
+      "subject_categories": [
+       "B/T",
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "B/T: International Relations",
+       "HUM: History - Asia",
+       "SOC: Sports and Recreation"
+      ],
+      "title": "A Place of Tourism in the Culture of Modern South Korea: History and Contemporary",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27578",
+      "institutions": [
+       "R. G. Kuzeev Institute of Ethnological Research, Ufa Scientific Center, Russian Academy of Sciences"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27578,
+      "subject_categories": [
+       "BLS",
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "BLS: Anthropology",
+       "HUM: Religion",
+       "SOC: Sociology"
+      ],
+      "title": "Ethno-Confessional Group of Protestants-Tatar (On the Materials of Field Researches in the Regions of the South, Middle and Polar Urals)",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27575",
+      "institutions": [
+       "Surgut State University"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text",
+       "Retract and Replace"
+      ],
+      "record_id": 27575,
+      "subject_categories": [
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "HUM: Philosophy",
+       "SOC: Psychology"
+      ],
+      "title": "Philosophical Problems of Logic as a Tool of Cognitive Activity",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Russia"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "27541",
+      "institutions": [
+       "Siberian Federal University (Krasnoyarsk)"
+      ],
+      "is_revision": false,
+      "journal": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И Искусствоведение. Вопросы Теории И Практики)",
+      "notice_date": 1522108800,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "3/27/2018 0:00",
+       "notice_doi": "Unavailable",
+       "notice_pubmed_id": "0",
+       "paper_date": "1/1/2017 0:00",
+       "paper_doi": "Unavailable",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1483228800,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+      "reasons": [
+       "Error in Results and/or Conclusions",
+       "Error in Text"
+      ],
+      "record_id": 27541,
+      "subject_categories": [
+       "B/T",
+       "HUM",
+       "SOC"
+      ],
+      "subjects": [
+       "B/T: Business - Economics",
+       "HUM: History - Asia",
+       "HUM: Philosophy",
+       "SOC: Sociology"
+      ],
+      "title": "Socio-Philosophical Aspects of Convergence: Experience of Synthesis of Capitalism and Socialism in China",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {}
+    }
+   ],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "LLC Publishing House Gramota (ООО Издательство Грамота)",
+       "value": "LLC Publishing House Gramota (ООО Издательство Грамота)"
+      }
+     ],
+     "field_name": "publisher",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 22,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 22,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 1607,
+       "highlighted": "Journal of Intelligent & Fuzzy Systems",
+       "value": "Journal of Intelligent & Fuzzy Systems"
+      },
+      {
+       "count": 1402,
+       "highlighted": "PLoS One",
+       "value": "PLoS One"
+      },
+      {
+       "count": 1280,
+       "highlighted": "2011 International Conference on E-Business and E-Government (ICEE)",
+       "value": "2011 International Conference on E-Business and E-Government (ICEE)"
+      },
+      {
+       "count": 1084,
+       "highlighted": "2011 5th International Conference on Bioinformatics and Biomedical Engineering",
+       "value": "2011 5th International Conference on Bioinformatics and Biomedical Engineering"
+      },
+      {
+       "count": 1074,
+       "highlighted": "Journal of Healthcare Engineering",
+       "value": "Journal of Healthcare Engineering"
+      },
+      {
+       "count": 1065,
+       "highlighted": "Computational and Mathematical Methods in Medicine",
+       "value": "Computational and Mathematical Methods in Medicine"
+      },
+      {
+       "count": 1029,
+       "highlighted": "Computational Intelligence and Neuroscience",
+       "value": "Computational Intelligence and Neuroscience"
+      },
+      {
+       "count": 948,
+       "highlighted": "Security and Communication Networks",
+       "value": "Security and Communication Networks"
+      },
+      {
+       "count": 947,
+       "highlighted": "BioMed Research International",
+       "value": "BioMed Research International"
+      },
+      {
+       "count": 877,
+       "highlighted": "Journal of Physics: Conference Series",
+       "value": "Journal of Physics: Conference Series"
+      },
+      {
+       "count": 799,
+       "highlighted": "Wireless Communications and Mobile Computing",
+       "value": "Wireless Communications and Mobile Computing"
+      },
+      {
+       "count": 788,
+       "highlighted": "Soft Computing",
+       "value": "Soft Computing"
+      },
+      {
+       "count": 752,
+       "highlighted": "Evidence-Based Complementary and Alternative Medicine",
+       "value": "Evidence-Based Complementary and Alternative Medicine"
+      },
+      {
+       "count": 689,
+       "highlighted": "Heliyon",
+       "value": "Heliyon"
+      },
+      {
+       "count": 580,
+       "highlighted": "E3S Web of Conferences",
+       "value": "E3S Web of Conferences"
+      },
+      {
+       "count": 464,
+       "highlighted": "Journal of Sensors",
+       "value": "Journal of Sensors"
+      },
+      {
+       "count": 441,
+       "highlighted": "2010 International Conference on Computer Application and System Modeling (ICCASM 2010)",
+       "value": "2010 International Conference on Computer Application and System Modeling (ICCASM 2010)"
+      },
+      {
+       "count": 435,
+       "highlighted": "Scientific Reports",
+       "value": "Scientific Reports"
+      },
+      {
+       "count": 434,
+       "highlighted": "Journal of Environmental and Public Health",
+       "value": "Journal of Environmental and Public Health"
+      },
+      {
+       "count": 433,
+       "highlighted": "Journal of Ambient Intelligence and Humanized Computing",
+       "value": "Journal of Ambient Intelligence and Humanized Computing"
+      },
+      {
+       "count": 430,
+       "highlighted": "Journal of Fundamental and Applied Sciences",
+       "value": "Journal of Fundamental and Applied Sciences"
+      },
+      {
+       "count": 430,
+       "highlighted": "2010 IEEE International Conference on Advanced Management Science (ICAMS 2010)",
+       "value": "2010 IEEE International Conference on Advanced Management Science (ICAMS 2010)"
+      },
+      {
+       "count": 415,
+       "highlighted": "2011 2nd International Conference on Artificial Intelligence, Management Science and Electronic Commerce",
+       "value": "2011 2nd International Conference on Artificial Intelligence, Management Science and Electronic Commerce"
+      },
+      {
+       "count": 388,
+       "highlighted": "The Journal of Biological Chemistry",
+       "value": "The Journal of Biological Chemistry"
+      },
+      {
+       "count": 382,
+       "highlighted": "Mobile Information Systems",
+       "value": "Mobile Information Systems"
+      },
+      {
+       "count": 371,
+       "highlighted": "Mathematical Problems in Engineering",
+       "value": "Mathematical Problems in Engineering"
+      },
+      {
+       "count": 369,
+       "highlighted": "Arabian Journal of Geosciences",
+       "value": "Arabian Journal of Geosciences"
+      },
+      {
+       "count": 359,
+       "highlighted": "2010 2nd International Conference on Computer Engineering and Technology",
+       "value": "2010 2nd International Conference on Computer Engineering and Technology"
+      },
+      {
+       "count": 349,
+       "highlighted": "Microprocessors and Microsystems",
+       "value": "Microprocessors and Microsystems"
+      },
+      {
+       "count": 333,
+       "highlighted": "European Review for Medical and Pharmacological Sciences",
+       "value": "European Review for Medical and Pharmacological Sciences"
+      },
+      {
+       "count": 323,
+       "highlighted": "ICIMTECH 21: The Sixth International Conference on Information Management and Technology",
+       "value": "ICIMTECH 21: The Sixth International Conference on Information Management and Technology"
+      },
+      {
+       "count": 306,
+       "highlighted": "AIP Conference Proceedings",
+       "value": "AIP Conference Proceedings"
+      },
+      {
+       "count": 304,
+       "highlighted": "International Wound Journal",
+       "value": "International Wound Journal"
+      },
+      {
+       "count": 299,
+       "highlighted": "Cochrane Database of Systematic Reviews",
+       "value": "Cochrane Database of Systematic Reviews"
+      },
+      {
+       "count": 291,
+       "highlighted": "2010 The 2nd Conference on Environmental Science and Information Application Technology",
+       "value": "2010 The 2nd Conference on Environmental Science and Information Application Technology"
+      },
+      {
+       "count": 287,
+       "highlighted": "Applied Bionics and Biomechanics",
+       "value": "Applied Bionics and Biomechanics"
+      },
+      {
+       "count": 274,
+       "highlighted": "2009 International Conference on Management and Service Science",
+       "value": "2009 International Conference on Management and Service Science"
+      },
+      {
+       "count": 272,
+       "highlighted": "2013 International Conference on Quality, Reliability, Risk, Maintenance, and Safety Engineering",
+       "value": "2013 International Conference on Quality, Reliability, Risk, Maintenance, and Safety Engineering"
+      },
+      {
+       "count": 268,
+       "highlighted": "Complexity",
+       "value": "Complexity"
+      },
+      {
+       "count": 251,
+       "highlighted": "Contrast Media & Molecular Imaging",
+       "value": "Contrast Media & Molecular Imaging"
+      }
+     ],
+     "field_name": "journal",
+     "sampled": false,
+     "stats": {
+      "total_values": 80
+     }
+    }
+   ],
+   "found": 67384,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 23,
+       "highlighted": "medRxiv",
+       "value": "medRxiv"
+      },
+      {
+       "count": 22,
+       "highlighted": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И И",
+       "value": "Historical, Philosophical, Political and Legal Sciences, Culturology and Arts. Issues of Theory and Practice (Исторические, Философские, Политические И Юридические Науки, Культурология И И"
+      }
+     ],
+     "field_name": "journal",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    }
+   ],
+   "found": 45,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "false",
+       "value": "false"
+      }
+     ],
+     "field_name": "is_revision",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 22,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  }
+ ]
+}

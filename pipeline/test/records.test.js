@@ -322,3 +322,58 @@ describe('notice type and flags (AC12)', () => {
     expect(await record(id, 'paywalled')).toEqual({ paywalled });
   });
 });
+
+describe('names (spec 002)', () => {
+  let names;
+
+  beforeAll(async () => {
+    names = await cleanedDatabase('names.csv');
+  });
+
+  async function nameRecord(id) {
+    const [row] = await queryRows(
+      names,
+      `SELECT authors, journal, publisher, original.author AS source_author, original.journal AS source_journal,
+              original.publisher AS source_publisher
+       FROM records WHERE record_id = ${id}`,
+    );
+    return row;
+  }
+
+  it('turns a backtick between letters into an apostrophe and removes any other', async () => {
+    expect(await nameRecord(900000101)).toMatchObject({
+      authors: ["Maria O'Example", 'Jun Sample', 'Ana Placeholder'],
+      source_author: 'Maria O`Example;Jun Sample`;`Ana Placeholder',
+    });
+    expect(await nameRecord(900000103)).toMatchObject({ authors: ['Jun Sample'], source_author: null });
+  });
+
+  it('merges journal and publisher spellings that differ only in capitals or accents into the most common one', async () => {
+    expect(await nameRecord(900000102)).toMatchObject({
+      journal: 'Synthetic Journal of Examples',
+      publisher: 'Example Press',
+      source_journal: 'Synthetic journal of examples',
+      source_publisher: 'example press',
+    });
+    expect(await nameRecord(900000104)).toMatchObject({
+      journal: 'Synthetic Journal of Examples',
+      source_journal: 'Synthétic Journal of Examples',
+      source_publisher: null,
+    });
+    // The most common spelling itself keeps no source text.
+    expect(await nameRecord(900000103)).toMatchObject({ source_journal: null, source_publisher: null });
+  });
+
+  it('breaks a tie with the first spelling in sort order', async () => {
+    expect(await nameRecord(900000105)).toMatchObject({ publisher: 'Tie Press', source_publisher: 'tie press' });
+    expect(await nameRecord(900000106)).toMatchObject({ publisher: 'Tie Press', source_publisher: null });
+  });
+
+  it('leaves the sample records as they were published', async () => {
+    const [changed] = await queryRows(
+      db,
+      `SELECT CAST(count(*) FILTER (WHERE original.journal IS NOT NULL OR original.publisher IS NOT NULL) AS INTEGER) AS n FROM records`,
+    );
+    expect(changed.n).toBe(0);
+  });
+});

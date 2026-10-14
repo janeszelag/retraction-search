@@ -2,6 +2,18 @@
 -- Reads `records` (see 10_records.sql). Missing values are left out when clean.js
 -- writes the documents as JSON lines.
 CREATE OR REPLACE TABLE documents AS
+WITH
+  -- A URL's key ignores http versus https and a trailing slash (spec 002, AC18a).
+  url_entries AS (
+    SELECT DISTINCT records.record_id, regexp_replace(regexp_replace(url, '^https?://', ''), '/+$', '') AS url_key
+    FROM records, unnest(records.urls) AS entry(url)
+  ),
+  -- How many records list each URL, so a post about a batch of retractions
+  -- isn't read as a story about one paper.
+  url_counts AS (
+    SELECT map_from_entries(list((url_key, CAST(record_count AS INTEGER)))) AS by_key
+    FROM (SELECT url_key, count(*) AS record_count FROM url_entries GROUP BY url_key)
+  )
 SELECT
   -- Typesense document IDs are text.
   CAST(records.record_id AS VARCHAR) AS id,
@@ -37,7 +49,10 @@ SELECT
   records.paper_pubmed_id,
   -- Stored for display, not searched.
   records.urls,
+  -- One count per entry in `urls`, in the same order.
+  [url_counts.by_key[regexp_replace(regexp_replace(url, '^https?://', ''), '/+$', '')] FOR url IN records.urls]
+    AS url_record_counts,
   records.notes,
   records.original
-FROM records
+FROM records, url_counts
 ORDER BY records.record_id;

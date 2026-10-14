@@ -51,6 +51,7 @@ The other files are built from `sample.csv`:
 | `renamed-column.csv` | Reason is renamed to Reasons |
 | `extra-column.csv` | An unexpected column, Extra, contains data |
 | `subject-without-code.csv` | One synthetic row (record ID 900000001) whose first subject has no category code |
+| `names.csv` | Six synthetic rows (record IDs 900000101 to 900000106) with made-up names: author names with backticks, journal spellings that differ only in capitals or an accent, and a tie between two publisher spellings |
 
 ## Rebuilding
 
@@ -68,4 +69,16 @@ COPY (SELECT * EXCLUDE (Journal) FROM s ORDER BY CAST("Record ID" AS INTEGER) LI
 COPY (SELECT * RENAME (Reason AS Reasons) FROM s ORDER BY CAST("Record ID" AS INTEGER) LIMIT 3) TO 'pipeline/test/fixtures/renamed-column.csv' (HEADER);
 COPY (SELECT *, 'unexpected value' AS Extra FROM s ORDER BY CAST("Record ID" AS INTEGER) LIMIT 3) TO 'pipeline/test/fixtures/extra-column.csv' (HEADER);
 COPY (SELECT * REPLACE ('900000001' AS "Record ID", 'Synthetic row: a subject without a code' AS Title, 'No code here;(HSC) Medicine - Surgery;' AS Subject) FROM s WHERE "Record ID" = '2') TO 'pipeline/test/fixtures/subject-without-code.csv' (HEADER);
+CREATE TABLE r AS SELECT * FROM (VALUES
+  ('900000101', 'Synthetic Journal of Examples', 'Example Press', 'Maria O`Example;Jun Sample`;`Ana Placeholder'),
+  ('900000102', 'Synthetic journal of examples', 'example press', 'Maria Example'),
+  ('900000103', 'Synthetic Journal of Examples', 'Example Press', 'Jun Sample'),
+  ('900000104', 'Synthétic Journal of Examples', 'Example Press', 'Ana Placeholder'),
+  ('900000105', 'Another Example Journal', 'tie press', 'Maria Example'),
+  ('900000106', 'Another Example Journal', 'Tie Press', 'Jun Sample')
+) AS t(id, journal, publisher, author);
+COPY (
+  SELECT s.* REPLACE (r.id AS "Record ID", 'Synthetic row: name cleaning' AS Title, r.journal AS Journal, r.publisher AS Publisher, r.author AS Author)
+  FROM s, r WHERE s."Record ID" = '2' ORDER BY r.id
+) TO 'pipeline/test/fixtures/names.csv' (HEADER);
 ```

@@ -1,0 +1,2233 @@
+{
+ "search": "q=cancer+unknown",
+ "typos": "fallback",
+ "results": [
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 34,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 15,
+       "highlighted": "Removed",
+       "value": "Removed"
+      },
+      {
+       "count": 8,
+       "highlighted": "Concerns/Issues about Data",
+       "value": "Concerns/Issues about Data"
+      },
+      {
+       "count": 8,
+       "highlighted": "Investigation by Journal/Publisher",
+       "value": "Investigation by Journal/Publisher"
+      },
+      {
+       "count": 8,
+       "highlighted": "Date of Article and/or Notice Unknown",
+       "value": "Date of Article and/or Notice Unknown"
+      },
+      {
+       "count": 5,
+       "highlighted": "Paper Mill",
+       "value": "Paper Mill"
+      },
+      {
+       "count": 5,
+       "highlighted": "Investigation by Third Party",
+       "value": "Investigation by Third Party"
+      },
+      {
+       "count": 5,
+       "highlighted": "Notice - Limited or No Information",
+       "value": "Notice - Limited or No Information"
+      },
+      {
+       "count": 5,
+       "highlighted": "Unreliable Results and/or Conclusions",
+       "value": "Unreliable Results and/or Conclusions"
+      },
+      {
+       "count": 5,
+       "highlighted": "Concerns/Issues about Results and/or Conclusions",
+       "value": "Concerns/Issues about Results and/or Conclusions"
+      },
+      {
+       "count": 4,
+       "highlighted": "Error by Journal/Publisher",
+       "value": "Error by Journal/Publisher"
+      },
+      {
+       "count": 3,
+       "highlighted": "Lack of Approval from Author",
+       "value": "Lack of Approval from Author"
+      },
+      {
+       "count": 2,
+       "highlighted": "Error in Data",
+       "value": "Error in Data"
+      },
+      {
+       "count": 2,
+       "highlighted": "Author Unresponsive",
+       "value": "Author Unresponsive"
+      },
+      {
+       "count": 2,
+       "highlighted": "Objections by Author(s)",
+       "value": "Objections by Author(s)"
+      },
+      {
+       "count": 2,
+       "highlighted": "False/Forged Authorship",
+       "value": "False/Forged Authorship"
+      },
+      {
+       "count": 2,
+       "highlighted": "Duplication of/in Article",
+       "value": "Duplication of/in Article"
+      },
+      {
+       "count": 2,
+       "highlighted": "Concerns/Issues about Image",
+       "value": "Concerns/Issues about Image"
+      },
+      {
+       "count": 1,
+       "highlighted": "Unreliable Data",
+       "value": "Unreliable Data"
+      },
+      {
+       "count": 1,
+       "highlighted": "Copyright Claims",
+       "value": "Copyright Claims"
+      },
+      {
+       "count": 1,
+       "highlighted": "Manipulation of Images",
+       "value": "Manipulation of Images"
+      },
+      {
+       "count": 1,
+       "highlighted": "Complaints about Author",
+       "value": "Complaints about Author"
+      },
+      {
+       "count": 1,
+       "highlighted": "Withdrawn as Out of Date",
+       "value": "Withdrawn as Out of Date"
+      },
+      {
+       "count": 1,
+       "highlighted": "Plagiarism of/in Article",
+       "value": "Plagiarism of/in Article"
+      },
+      {
+       "count": 1,
+       "highlighted": "False/Forged Affiliation",
+       "value": "False/Forged Affiliation"
+      },
+      {
+       "count": 1,
+       "highlighted": "Euphemisms for Duplication",
+       "value": "Euphemisms for Duplication"
+      },
+      {
+       "count": 1,
+       "highlighted": "Breach of Policy by Author",
+       "value": "Breach of Policy by Author"
+      },
+      {
+       "count": 1,
+       "highlighted": "Upgrade/Update of Prior Notice(s)",
+       "value": "Upgrade/Update of Prior Notice(s)"
+      },
+      {
+       "count": 1,
+       "highlighted": "Lack of Approval from Third Party",
+       "value": "Lack of Approval from Third Party"
+      },
+      {
+       "count": 1,
+       "highlighted": "Contamination of Cell Lines/Tissues",
+       "value": "Contamination of Cell Lines/Tissues"
+      },
+      {
+       "count": 1,
+       "highlighted": "Concerns/Issues about Third Party Involvement",
+       "value": "Concerns/Issues about Third Party Involvement"
+      },
+      {
+       "count": 1,
+       "highlighted": "Original Data and/or Images not Provided and/or not Available",
+       "value": "Original Data and/or Images not Provided and/or not Available"
+      }
+     ],
+     "field_name": "reasons",
+     "sampled": false,
+     "stats": {
+      "total_values": 31
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 18,
+       "highlighted": "BLS: Biology - Cancer",
+       "value": "BLS: Biology - Cancer"
+      },
+      {
+       "count": 18,
+       "highlighted": "BLS: Biology - Cellular",
+       "value": "BLS: Biology - Cellular"
+      },
+      {
+       "count": 17,
+       "highlighted": "HSC: Medicine - Oncology",
+       "value": "HSC: Medicine - Oncology"
+      },
+      {
+       "count": 15,
+       "highlighted": "BLS: Genetics",
+       "value": "BLS: Genetics"
+      },
+      {
+       "count": 11,
+       "highlighted": "BLS: Biochemistry",
+       "value": "BLS: Biochemistry"
+      },
+      {
+       "count": 6,
+       "highlighted": "BLS: Biology - Molecular",
+       "value": "BLS: Biology - Molecular"
+      },
+      {
+       "count": 6,
+       "highlighted": "HSC: Medicine - Obstetrics/Gynecology",
+       "value": "HSC: Medicine - Obstetrics/Gynecology"
+      },
+      {
+       "count": 4,
+       "highlighted": "HSC: Medicine - Pulmonology",
+       "value": "HSC: Medicine - Pulmonology"
+      },
+      {
+       "count": 2,
+       "highlighted": "HSC: Medicine - Pharmacology",
+       "value": "HSC: Medicine - Pharmacology"
+      },
+      {
+       "count": 2,
+       "highlighted": "HSC: Biostatistics/Epidemiology",
+       "value": "HSC: Biostatistics/Epidemiology"
+      },
+      {
+       "count": 2,
+       "highlighted": "HSC: Medicine - Gastroenterology",
+       "value": "HSC: Medicine - Gastroenterology"
+      },
+      {
+       "count": 2,
+       "highlighted": "HSC: Medicine - Rehabilitation/Therapy",
+       "value": "HSC: Medicine - Rehabilitation/Therapy"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY: Materials Science",
+       "value": "PHY: Materials Science"
+      },
+      {
+       "count": 1,
+       "highlighted": "HSC: Radiology/Imaging",
+       "value": "HSC: Radiology/Imaging"
+      },
+      {
+       "count": 1,
+       "highlighted": "HSC: Medicine - Surgery",
+       "value": "HSC: Medicine - Surgery"
+      },
+      {
+       "count": 1,
+       "highlighted": "BLS: Anatomy/Physiology",
+       "value": "BLS: Anatomy/Physiology"
+      },
+      {
+       "count": 1,
+       "highlighted": "HSC: Medicine - Immunology",
+       "value": "HSC: Medicine - Immunology"
+      },
+      {
+       "count": 1,
+       "highlighted": "HSC: Public Health and Safety",
+       "value": "HSC: Public Health and Safety"
+      },
+      {
+       "count": 1,
+       "highlighted": "HSC: Medicine - Endocrinology",
+       "value": "HSC: Medicine - Endocrinology"
+      }
+     ],
+     "field_name": "subjects",
+     "sampled": false,
+     "stats": {
+      "total_values": 19
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 27,
+       "highlighted": "BLS",
+       "value": "BLS"
+      },
+      {
+       "count": 19,
+       "highlighted": "HSC",
+       "value": "HSC"
+      },
+      {
+       "count": 1,
+       "highlighted": "PHY",
+       "value": "PHY"
+      }
+     ],
+     "field_name": "subject_categories",
+     "sampled": false,
+     "stats": {
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 31,
+       "highlighted": "Unknown",
+       "value": "Unknown"
+      },
+      {
+       "count": 2,
+       "highlighted": "China",
+       "value": "China"
+      },
+      {
+       "count": 1,
+       "highlighted": "Canada",
+       "value": "Canada"
+      }
+     ],
+     "field_name": "countries",
+     "sampled": false,
+     "stats": {
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 22,
+       "highlighted": "Research Article",
+       "value": "Research Article"
+      },
+      {
+       "count": 8,
+       "highlighted": "Conference Abstract/Paper",
+       "value": "Conference Abstract/Paper"
+      },
+      {
+       "count": 3,
+       "highlighted": "Article in Press",
+       "value": "Article in Press"
+      },
+      {
+       "count": 2,
+       "highlighted": "Letter",
+       "value": "Letter"
+      },
+      {
+       "count": 1,
+       "highlighted": "Guideline",
+       "value": "Guideline"
+      },
+      {
+       "count": 1,
+       "highlighted": "Review Article",
+       "value": "Review Article"
+      },
+      {
+       "count": 1,
+       "highlighted": "Commentary/Editorial",
+       "value": "Commentary/Editorial"
+      },
+      {
+       "count": 1,
+       "highlighted": "Correction/Erratum/Corrigendum",
+       "value": "Correction/Erratum/Corrigendum"
+      }
+     ],
+     "field_name": "article_types",
+     "sampled": false,
+     "stats": {
+      "total_values": 8
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 27,
+       "highlighted": "No",
+       "value": "No"
+      },
+      {
+       "count": 5,
+       "highlighted": "Yes",
+       "value": "Yes"
+      },
+      {
+       "count": 2,
+       "highlighted": "Unknown",
+       "value": "Unknown"
+      }
+     ],
+     "field_name": "paywalled",
+     "sampled": false,
+     "stats": {
+      "total_values": 3
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 7,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 6,
+       "highlighted": "2022",
+       "value": "2022"
+      },
+      {
+       "count": 5,
+       "highlighted": "2016",
+       "value": "2016"
+      },
+      {
+       "count": 4,
+       "highlighted": "2023",
+       "value": "2023"
+      },
+      {
+       "count": 4,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 2,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 2,
+       "highlighted": "2019",
+       "value": "2019"
+      },
+      {
+       "count": 1,
+       "highlighted": "2026",
+       "value": "2026"
+      },
+      {
+       "count": 1,
+       "highlighted": "2025",
+       "value": "2025"
+      },
+      {
+       "count": 1,
+       "highlighted": "2024",
+       "value": "2024"
+      },
+      {
+       "count": 1,
+       "highlighted": "2020",
+       "value": "2020"
+      }
+     ],
+     "field_name": "notice_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2019.7941176470588,
+      "max": 2026,
+      "min": 2016,
+      "sum": 68673,
+      "total_values": 11
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 8,
+       "highlighted": "2017",
+       "value": "2017"
+      },
+      {
+       "count": 6,
+       "highlighted": "2016",
+       "value": "2016"
+      },
+      {
+       "count": 4,
+       "highlighted": "2022",
+       "value": "2022"
+      },
+      {
+       "count": 4,
+       "highlighted": "2021",
+       "value": "2021"
+      },
+      {
+       "count": 3,
+       "highlighted": "2020",
+       "value": "2020"
+      },
+      {
+       "count": 3,
+       "highlighted": "2018",
+       "value": "2018"
+      },
+      {
+       "count": 2,
+       "highlighted": "2019",
+       "value": "2019"
+      },
+      {
+       "count": 1,
+       "highlighted": "2026",
+       "value": "2026"
+      },
+      {
+       "count": 1,
+       "highlighted": "2023",
+       "value": "2023"
+      },
+      {
+       "count": 1,
+       "highlighted": "2014",
+       "value": "2014"
+      },
+      {
+       "count": 1,
+       "highlighted": "2009",
+       "value": "2009"
+      }
+     ],
+     "field_name": "paper_year",
+     "sampled": false,
+     "stats": {
+      "avg": 2018.4705882352941,
+      "max": 2026,
+      "min": 2009,
+      "sum": 68628,
+      "total_values": 11
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 33,
+       "highlighted": "false",
+       "value": "false"
+      },
+      {
+       "count": 1,
+       "highlighted": "true",
+       "value": "true"
+      }
+     ],
+     "field_name": "has_editorial_staff_author",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    }
+   ],
+   "found": 34,
+   "hits": [
+    {
+     "document": {
+      "article_types": [
+       "Guideline",
+       "Research Article"
+      ],
+      "authors": [
+       "Unknown"
+      ],
+      "countries": [
+       "Canada"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "39897",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Obstetrics and Gynaecology Canada",
+      "notice_date": 1659312000,
+      "notice_doi": "10.1016/j.jogc.2022.06.009",
+      "notice_pubmed_id": 35934417,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "notice_date": "8/1/2022 0:00",
+       "notice_doi": "10.1016/j.jogc.2022.06.009",
+       "notice_pubmed_id": "35934417",
+       "paper_date": "9/1/2014 0:00",
+       "paper_doi": "10.1016/S1701-2163(15)30459-X",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1409529600,
+      "paper_doi": "10.1016/s1701-2163(15)30459-x",
+      "paper_year": 2014,
+      "paywalled": "No",
+      "publisher": "Elsevier",
+      "reasons": [
+       "Withdrawn as Out of Date"
+      ],
+      "record_id": 39897,
+      "subject_categories": [
+       "HSC"
+      ],
+      "subjects": [
+       "HSC: Medicine - Endocrinology",
+       "HSC: Medicine - Obstetrics/Gynecology",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "Managing Menopause Chapter 3 Menopausal Hormone Therapy and Breast Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "authors": [
+       {
+        "matched_tokens": [
+         "Unknown"
+        ],
+        "snippet": "Unknown",
+        "value": "Unknown"
+       }
+      ],
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Managing Menopause Chapter 3 Menopausal Hormone Therapy and Breast Cancer",
+       "value": "Managing Menopause Chapter 3 Menopausal Hormone Therapy and Breast Cancer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Unknown"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "40111",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Molecular Oncology",
+      "notice_date": 1582848000,
+      "notice_doi": "10.1002/1878-0261.12656",
+      "notice_pubmed_id": 32112500,
+      "notice_type": "Retraction",
+      "notice_year": 2020,
+      "original": {
+       "institution": "Unavailable",
+       "notice_date": "2/28/2020 0:00",
+       "notice_doi": "10.1002/1878-0261.12656",
+       "notice_pubmed_id": "32112500",
+       "paper_date": "2/28/2020 0:00",
+       "paper_doi": "10.1002/1878-0261.12656",
+       "paper_pubmed_id": "32112500"
+      },
+      "paper_date": 1582848000,
+      "paper_doi": "10.1002/1878-0261.12656",
+      "paper_pubmed_id": 32112500,
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Date of Article and/or Notice Unknown",
+       "Lack of Approval from Author"
+      ],
+      "record_id": 40111,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics"
+      ],
+      "title": "Circ-SOX4 promotes non-small cell lung cancer progression by activating the Wnt/β-catenin pathway",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "authors": [
+       {
+        "matched_tokens": [
+         "Unknown"
+        ],
+        "snippet": "Unknown",
+        "value": "Unknown"
+       }
+      ],
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Circ-SOX4 promotes non-small cell lung cancer progression by activating the Wnt/β-catenin pathway",
+       "value": "Circ-SOX4 promotes non-small cell lung cancer progression by activating the Wnt/β-catenin pathway"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Review Article"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "73334",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Drug Development Research",
+      "notice_date": 1785196800,
+      "notice_doi": "10.1002/ddr.70356",
+      "notice_pubmed_id": 42517729,
+      "notice_type": "Retraction",
+      "notice_year": 2026,
+      "original": {
+       "notice_date": "7/28/2026 0:00",
+       "notice_doi": "10.1002/ddr.70356",
+       "notice_pubmed_id": "42517729",
+       "paper_date": "1/28/2026 0:00",
+       "paper_doi": "10.1002/DDR.70230",
+       "paper_pubmed_id": "41601391"
+      },
+      "paper_date": 1769558400,
+      "paper_doi": "10.1002/ddr.70230",
+      "paper_pubmed_id": 41601391,
+      "paper_year": 2026,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Third Party Involvement",
+       "False/Forged Authorship",
+       "Investigation by Journal/Publisher",
+       "Lack of Approval from Author"
+      ],
+      "record_id": 73334,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "HSC: Medicine - Oncology",
+       "HSC: Medicine - Pharmacology"
+      ],
+      "title": "Reprogramming the Tumor Microenvironment: Calebin A as a Polyphenolic Paradigm Shift in Controlling Inflammation, Stemness, and Resistance in Colorectal Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Reprogramming the Tumor Microenvironment: Calebin A as a Polyphenolic Paradigm Shift in Controlling Inflammation, Stemness, and Resistance in Colorectal Cancer",
+       "value": "Reprogramming the Tumor Microenvironment: Calebin A as a Polyphenolic Paradigm Shift in Controlling Inflammation, Stemness, and Resistance in Colorectal Cancer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Correction/Erratum/Corrigendum"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": true,
+      "id": "69833",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Frontiers in Oncology",
+      "notice_date": 1741046400,
+      "notice_doi": "10.3389/fonc.2025.1575643",
+      "notice_pubmed_id": 40104503,
+      "notice_type": "Retraction",
+      "notice_year": 2025,
+      "original": {
+       "notice_date": "3/4/2025 0:00",
+       "notice_doi": "10.3389/fonc.2025.1575643",
+       "notice_pubmed_id": "40104503",
+       "paper_date": "5/19/2022 0:00",
+       "paper_doi": "10.3389/fonc.2022.917378",
+       "paper_pubmed_id": "35664779"
+      },
+      "paper_date": 1652918400,
+      "paper_doi": "10.3389/fonc.2022.917378",
+      "paper_pubmed_id": 35664779,
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Frontiers",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Concerns/Issues about Image",
+       "Investigation by Journal/Publisher",
+       "Original Data and/or Images not Provided and/or not Available",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 69833,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics",
+       "HSC: Medicine - Obstetrics/Gynecology"
+      ],
+      "title": "Corrigendum: Upregulation of CCT-3 induces breast cancer cell proliferation through miR-223 competition and Wnt/b-catenin signaling pathway activation",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Corrigendum: Upregulation of CCT-3 induces breast cancer cell proliferation through miR-223 competition and Wnt/b-catenin signaling pathway activation",
+       "value": "Corrigendum: Upregulation of CCT-3 induces breast cancer cell proliferation through miR-223 competition and Wnt/b-catenin signaling pathway activation"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "55379",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Clinical Pharmacology",
+      "notice_date": 1712016000,
+      "notice_doi": "10.1002/jcph.2395",
+      "notice_pubmed_id": 38095153,
+      "notice_type": "Retraction",
+      "notice_year": 2024,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "4/2/2024 0:00",
+       "notice_doi": "10.1002/jcph.2395",
+       "notice_pubmed_id": "38095153",
+       "paper_date": "12/14/2023 0:00",
+       "paper_doi": "10.1002/jcph.2395",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1702512000,
+      "paper_doi": "10.1002/jcph.2395",
+      "paper_year": 2023,
+      "paywalled": "Unknown",
+      "publisher": "Wiley",
+      "reasons": [
+       "Author Unresponsive",
+       "Removed"
+      ],
+      "record_id": 55379,
+      "subject_categories": [
+       "HSC"
+      ],
+      "subjects": [
+       "HSC: Medicine - Oncology",
+       "HSC: Medicine - Pharmacology",
+       "HSC: Medicine - Pulmonology"
+      ],
+      "title": "Clinical Analysis of Immune-Related Adverse Events in 78 Patients with Advanced Metastatic Lung Cancer Treated with Immune Checkpoint Inhibitors",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Clinical Analysis of Immune-Related Adverse Events in 78 Patients with Advanced Metastatic Lung Cancer Treated with Immune Checkpoint Inhibitors",
+       "value": "Clinical Analysis of Immune-Related Adverse Events in 78 Patients with Advanced Metastatic Lung Cancer Treated with Immune Checkpoint Inhibitors"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "47529",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Clinical Laboratory",
+      "notice_date": 1693526400,
+      "notice_doi": "10.7754/clin.lab.2020.200599",
+      "notice_pubmed_id": 37702699,
+      "notice_type": "Retraction",
+      "notice_year": 2023,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "9/1/2023 0:00",
+       "notice_doi": "10.7754/Clin.Lab.2020.200599",
+       "notice_pubmed_id": "37702699",
+       "paper_date": "2/1/2021 0:00",
+       "paper_doi": "10.7754/Clin.Lab.2020.200519",
+       "paper_pubmed_id": "33616326"
+      },
+      "paper_date": 1612137600,
+      "paper_doi": "10.7754/clin.lab.2020.200519",
+      "paper_pubmed_id": 33616326,
+      "paper_year": 2021,
+      "paywalled": "No",
+      "publisher": "Clinical Laboratory Publications GmbH",
+      "reasons": [
+       "Notice - Limited or No Information",
+       "Removed"
+      ],
+      "record_id": 47529,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics"
+      ],
+      "title": "Diagnostic Value of Exosomal miR-148a-3p in the Serum of Patients with Differentiated Thyroid Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Diagnostic Value of Exosomal miR-148a-3p in the Serum of Patients with Differentiated Thyroid Cancer",
+       "value": "Diagnostic Value of Exosomal miR-148a-3p in the Serum of Patients with Differentiated Thyroid Cancer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "52815",
+      "institutions": [
+       "Affiliation unknown"
+      ],
+      "is_revision": false,
+      "journal": "Inorganic and Nano-Metal Chemistry",
+      "notice_date": 1692835200,
+      "notice_doi": "10.1080/24701556.2023.2247225",
+      "notice_type": "Retraction",
+      "notice_year": 2023,
+      "original": {
+       "notice_date": "8/24/2023 0:00",
+       "notice_doi": "10.1080/24701556.2023.2247225",
+       "notice_pubmed_id": "0",
+       "paper_date": "11/5/2020 0:00",
+       "paper_doi": "10.1080/24701556.2020.1841236",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1604534400,
+      "paper_doi": "10.1080/24701556.2020.1841236",
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Taylor and Francis",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)",
+       "Paper Mill",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 52815,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cellular",
+       "HSC: Medicine - Gastroenterology",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "Sonochemical synthesis and anti-gastric cancer activity of a Cu(II) coordination polymer",
+      "url_record_counts": [
+       142
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Sonochemical synthesis and anti-gastric cancer activity of a Cu(II) coordination polymer",
+       "value": "Sonochemical synthesis and anti-gastric cancer activity of a Cu(II) coordination polymer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "52811",
+      "institutions": [
+       "Affiliation unknown"
+      ],
+      "is_revision": false,
+      "journal": "Inorganic and Nano-Metal Chemistry",
+      "notice_date": 1692835200,
+      "notice_doi": "10.1080/24701556.2023.2247219",
+      "notice_type": "Retraction",
+      "notice_year": 2023,
+      "original": {
+       "notice_date": "8/24/2023 0:00",
+       "notice_doi": "10.1080/24701556.2023.2247219",
+       "notice_pubmed_id": "0",
+       "paper_date": "10/30/2020 0:00",
+       "paper_doi": "10.1080/24701556.2020.1841233",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1604016000,
+      "paper_doi": "10.1080/24701556.2020.1841233",
+      "paper_year": 2020,
+      "paywalled": "No",
+      "publisher": "Taylor and Francis",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Objections by Author(s)",
+       "Paper Mill",
+       "Unreliable Results and/or Conclusions"
+      ],
+      "record_id": 52811,
+      "subject_categories": [
+       "BLS",
+       "HSC",
+       "PHY"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "HSC: Medicine - Obstetrics/Gynecology",
+       "HSC: Medicine - Oncology",
+       "PHY: Materials Science"
+      ],
+      "title": "Synthesis and anti-breast cancer activity on osteogenic sarcoma of a in/Na heterometallic coordination polymer",
+      "url_record_counts": [
+       142
+      ],
+      "urls": [
+       "https://retractionwatch.com/2020/01/01/example-post-1/"
+      ]
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Synthesis and anti-breast cancer activity on osteogenic sarcoma of a in/Na heterometallic coordination polymer",
+       "value": "Synthesis and anti-breast cancer activity on osteogenic sarcoma of a in/Na heterometallic coordination polymer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "53285",
+      "institutions": [
+       "Affiliations Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Biofactors",
+      "notice_date": 1672531200,
+      "notice_doi": "10.1002/biof.1589",
+      "notice_pubmed_id": 31778242,
+      "notice_type": "Retraction",
+      "notice_year": 2023,
+      "original": {
+       "notice_date": "1/1/2023 0:00",
+       "notice_doi": "10.1002/biof.1589",
+       "notice_pubmed_id": "31778242",
+       "paper_date": "11/28/2019 0:00",
+       "paper_doi": "10.1002/biof.1589",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1574899200,
+      "paper_doi": "10.1002/biof.1589",
+      "paper_year": 2019,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Manipulation of Images",
+       "Paper Mill"
+      ],
+      "record_id": 53285,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Genetics",
+       "HSC: Medicine - Obstetrics/Gynecology",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "K-Ras G12V/T35S-ERK1/2 pathway regulates H2BS14ph through Mst1 to facilitate the advancement of breast cancer cells",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "K-Ras G12V/T35S-ERK1/2 pathway regulates H2BS14ph through Mst1 to facilitate the advancement of breast cancer cells",
+       "value": "K-Ras G12V/T35S-ERK1/2 pathway regulates H2BS14ph through Mst1 to facilitate the advancement of breast cancer cells"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Conference Abstract/Paper"
+      ],
+      "authors": [
+       "Maria Example"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "37503",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "FASEB Journal",
+      "notice_date": 1653609600,
+      "notice_doi": "10.1096/fsb2.22386",
+      "notice_pubmed_id": 35621522,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "5/27/2022 0:00",
+       "notice_doi": "10.1096/fsb2.22386",
+       "notice_pubmed_id": "35621522",
+       "paper_date": "5/3/2022 0:00",
+       "paper_doi": "10.1096/fasebj.2022.36.S1.R3009",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1651536000,
+      "paper_doi": "10.1096/fasebj.2022.36.s1.r3009",
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Error by Journal/Publisher"
+      ],
+      "record_id": 37503,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Genetics"
+      ],
+      "title": "Genetic Variations in PTEN and their Potential Link to Breast Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Genetic Variations in PTEN and their Potential Link to Breast Cancer",
+       "value": "Genetic Variations in PTEN and their Potential Link to Breast Cancer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Conference Abstract/Paper"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "37500",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "FASEB Journal",
+      "notice_date": 1653609600,
+      "notice_doi": "10.1096/fsb2.22386",
+      "notice_pubmed_id": 35621522,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "5/27/2022 0:00",
+       "notice_doi": "10.1096/fsb2.22386",
+       "notice_pubmed_id": "35621522",
+       "paper_date": "5/3/2022 0:00",
+       "paper_doi": "10.1096/fasebj.2022.36.S1.R4552",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1651536000,
+      "paper_doi": "10.1096/fasebj.2022.36.s1.r4552",
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Error by Journal/Publisher"
+      ],
+      "record_id": 37500,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Molecular",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "AXL/PLCγ1/PKCα as a Central Axis for PD-L1 Regulation in Triple-Negative Breast Cancer",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "AXL/PLCγ1/PKCα as a Central Axis for PD-L1 Regulation in Triple-Negative Breast Cancer",
+       "value": "AXL/PLCγ1/PKCα as a Central Axis for PD-L1 Regulation in Triple-Negative Breast Cancer"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Conference Abstract/Paper"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "37499",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "FASEB Journal",
+      "notice_date": 1653609600,
+      "notice_doi": "10.1096/fsb2.22386",
+      "notice_pubmed_id": 35621522,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "5/27/2022 0:00",
+       "notice_doi": "10.1096/fsb2.22386",
+       "notice_pubmed_id": "35621522",
+       "paper_date": "5/3/2022 0:00",
+       "paper_doi": "10.1096/fasebj.2022.36.S1.R6013",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1651536000,
+      "paper_doi": "10.1096/fasebj.2022.36.s1.r6013",
+      "paper_year": 2022,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Error by Journal/Publisher"
+      ],
+      "record_id": 37499,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "miRNA and green tea catechins interactions in breast cancer: a bioinformatics approach",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "miRNA and green tea catechins interactions in breast cancer: a bioinformatics approach",
+       "value": "miRNA and green tea catechins interactions in breast cancer: a bioinformatics approach"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "38953",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Cellular Biochemistry",
+      "notice_date": 1651363200,
+      "notice_doi": "10.1002/jcb.26629",
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "notice_date": "5/1/2022 0:00",
+       "notice_doi": "10.1002/jcb.26629",
+       "notice_pubmed_id": "0",
+       "paper_date": "12/21/2017 0:00",
+       "paper_doi": "10.1002/jcb.26629",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1513814400,
+      "paper_doi": "10.1002/jcb.26629",
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Concerns/Issues about Image",
+       "Investigation by Journal/Publisher",
+       "Investigation by Third Party",
+       "Paper Mill",
+       "Unreliable Results and/or Conclusions",
+       "Removed"
+      ],
+      "record_id": 38953,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics",
+       "HSC: Medicine - Oncology",
+       "HSC: Medicine - Pulmonology"
+      ],
+      "title": "Effect of microRNA-145 on proliferation and apoptosis of human non-small cell lung cancer A549 cells by regulating mTOR signaling pathway",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Effect of microRNA-145 on proliferation and apoptosis of human non-small cell lung cancer A549 cells by regulating mTOR signaling pathway",
+       "value": "Effect of microRNA-145 on proliferation and apoptosis of human non-small cell lung cancer A549 cells by regulating mTOR signaling pathway"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "40204",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Drug Development Research",
+      "notice_date": 1648771200,
+      "notice_doi": "10.1002/ddr.21876",
+      "notice_pubmed_id": 34523739,
+      "notice_type": "Retraction",
+      "notice_year": 2022,
+      "original": {
+       "notice_date": "4/1/2022 0:00",
+       "notice_doi": "10.1002/ddr.21876",
+       "notice_pubmed_id": "34523739",
+       "paper_date": "9/15/2021 0:00",
+       "paper_doi": "10.1002/ddr.21876",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1631664000,
+      "paper_doi": "10.1002/ddr.21876",
+      "paper_year": 2021,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Results and/or Conclusions",
+       "Contamination of Cell Lines/Tissues",
+       "Removed"
+      ],
+      "record_id": 40204,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics",
+       "HSC: Medicine - Oncology",
+       "HSC: Medicine - Pulmonology"
+      ],
+      "title": "Downregulation of miR-487a-3p suppresses the progression of non-small cell lung cancer via targeting Smad7",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Downregulation of miR-487a-3p suppresses the progression of non-small cell lung cancer via targeting Smad7",
+       "value": "Downregulation of miR-487a-3p suppresses the progression of non-small cell lung cancer via targeting Smad7"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "40115",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "FEBS Open Bio",
+      "notice_date": 1612224000,
+      "notice_doi": "10.1002/2211-5463.13103",
+      "notice_pubmed_id": 33527767,
+      "notice_type": "Retraction",
+      "notice_year": 2021,
+      "original": {
+       "institution": "Unavailable",
+       "notice_date": "2/2/2021 0:00",
+       "notice_doi": "10.1002/2211-5463.13103",
+       "notice_pubmed_id": "33527767",
+       "paper_date": "2/2/2021 0:00",
+       "paper_doi": "10.1002/2211-5463.13103",
+       "paper_pubmed_id": "33527767"
+      },
+      "paper_date": 1612224000,
+      "paper_doi": "10.1002/2211-5463.13103",
+      "paper_pubmed_id": 33527767,
+      "paper_year": 2021,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Author Unresponsive",
+       "Date of Article and/or Notice Unknown"
+      ],
+      "record_id": 40115,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics"
+      ],
+      "title": "The LncRNA H19/microRNA-29b-3p/HMGB1 signaling axis contributes to the regulation of lung cancer cell growth",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "The LncRNA H19/microRNA-29b-3p/HMGB1 signaling axis contributes to the regulation of lung cancer cell growth",
+       "value": "The LncRNA H19/microRNA-29b-3p/HMGB1 signaling axis contributes to the regulation of lung cancer cell growth"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Article in Press",
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "21546",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "American Journal of Physiology - Gastrointestinal and Liver Physiology",
+      "notice_date": 1570406400,
+      "notice_doi": "10.1152/ajpgi.00106.2019",
+      "notice_pubmed_id": 31393786,
+      "notice_type": "Retraction",
+      "notice_year": 2019,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "10/7/2019 0:00",
+       "notice_doi": "10.1152/ajpgi.00106.2019",
+       "notice_pubmed_id": "31393786",
+       "paper_date": "8/8/2019 0:00",
+       "paper_doi": "10.1152/ajpgi.00106.2019",
+       "paper_pubmed_id": "0"
+      },
+      "paper_date": 1565222400,
+      "paper_doi": "10.1152/ajpgi.00106.2019",
+      "paper_year": 2019,
+      "paywalled": "No",
+      "publisher": "APS: American Physiological Society",
+      "reasons": [
+       "Duplication of/in Article",
+       "Removed"
+      ],
+      "record_id": 21546,
+      "subject_categories": [
+       "BLS",
+       "HSC"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "HSC: Medicine - Gastroenterology",
+       "HSC: Medicine - Oncology"
+      ],
+      "title": "Silencing of long non-coding RNA FOXD2-AS1 inhibits the progression of gallbladder cancer by mediating methylation-dependent induction of MLH1",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Silencing of long non-coding RNA FOXD2-AS1 inhibits the progression of gallbladder cancer by mediating methylation-dependent induction of MLH1",
+       "value": "Silencing of long non-coding RNA FOXD2-AS1 inhibits the progression of gallbladder cancer by mediating methylation-dependent induction of MLH1"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "19708",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Cellular Physiology",
+      "notice_date": 1543449600,
+      "notice_doi": "10.1002/jcp.26340",
+      "notice_pubmed_id": 29215719,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "11/29/2018 0:00",
+       "notice_doi": "10.1002/jcp.26340",
+       "notice_pubmed_id": "29215719",
+       "paper_date": "12/7/2017 0:00",
+       "paper_doi": "10.1002/jcp.26340",
+       "paper_pubmed_id": "29215719"
+      },
+      "paper_date": 1512604800,
+      "paper_doi": "10.1002/jcp.26340",
+      "paper_pubmed_id": 29215719,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Date of Article and/or Notice Unknown",
+       "Lack of Approval from Third Party"
+      ],
+      "record_id": 19708,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Genetics"
+      ],
+      "title": "LncRNA SNHG1 negatively regulates miR-145a-5p to enhance NUAK1 expression and promote cancer cell metastasis and invasion in nasopharyngeal carcinoma",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "LncRNA SNHG1 negatively regulates miR-145a-5p to enhance NUAK1 expression and promote cancer cell metastasis and invasion in nasopharyngeal carcinoma",
+       "value": "LncRNA SNHG1 negatively regulates miR-145a-5p to enhance NUAK1 expression and promote cancer cell metastasis and invasion in nasopharyngeal carcinoma"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7",
+       "Jun Sample 8"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "45082",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Medical Physics",
+      "notice_date": 1536019200,
+      "notice_doi": "10.1002/mp.13166",
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "notice_date": "9/4/2018 0:00",
+       "notice_doi": "10.1002/mp.13166",
+       "notice_pubmed_id": "0",
+       "paper_date": "9/4/2018 0:00",
+       "paper_doi": "10.1002/mp.13166",
+       "paper_pubmed_id": "30179263"
+      },
+      "paper_date": 1536019200,
+      "paper_doi": "10.1002/mp.13166",
+      "paper_pubmed_id": 30179263,
+      "paper_year": 2018,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Date of Article and/or Notice Unknown",
+       "Duplication of/in Article",
+       "Euphemisms for Duplication"
+      ],
+      "record_id": 45082,
+      "subject_categories": [
+       "HSC"
+      ],
+      "subjects": [
+       "HSC: Medicine - Oncology",
+       "HSC: Radiology/Imaging"
+      ],
+      "title": "Magnetic resonance image markers to improve patient-specific prediction of IMRT-induced rectal toxicity in prostate cancer patients",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "Magnetic resonance image markers to improve patient-specific prediction of IMRT-induced rectal toxicity in prostate cancer patients",
+       "value": "Magnetic resonance image markers to improve patient-specific prediction of IMRT-induced rectal toxicity in prostate cancer patients"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance",
+       "Kim Template",
+       "Maria Example 7"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "18367",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Cellular Biochemistry",
+      "notice_date": 1527465600,
+      "notice_doi": "10.1002/jcb.26711",
+      "notice_pubmed_id": 29377239,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "5/28/2018 0:00",
+       "notice_doi": "10.1002/jcb.26711",
+       "notice_pubmed_id": "29377239",
+       "paper_date": "1/27/2018 0:00",
+       "paper_doi": "10.1002/jcb.26711",
+       "paper_pubmed_id": "29377239"
+      },
+      "paper_date": 1517011200,
+      "paper_doi": "10.1002/jcb.26711",
+      "paper_pubmed_id": 29377239,
+      "paper_year": 2018,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Concerns/Issues about Results and/or Conclusions",
+       "Investigation by Third Party",
+       "Paper Mill"
+      ],
+      "record_id": 18367,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Biology - Molecular",
+       "BLS: Genetics"
+      ],
+      "title": "Effect of Long Non-Coding RNA LINC01116 on Biological Behaviors of Non-Small Cell Lung Cancer Cells via the Hippo Signaling Pathway",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "Cancer"
+       ],
+       "snippet": "Effect of Long Non-Coding RNA LINC01116 on Biological Behaviors of Non-Small Cell Lung Cancer Cells via the Hippo Signaling Pathway",
+       "value": "Effect of Long Non-Coding RNA LINC01116 on Biological Behaviors of Non-Small Cell Lung Cancer Cells via the Hippo Signaling Pathway"
+      }
+     }
+    },
+    {
+     "document": {
+      "article_types": [
+       "Research Article"
+      ],
+      "authors": [
+       "Maria Example",
+       "Jun Sample",
+       "Ana Placeholder",
+       "Lee Specimen",
+       "Sam Instance"
+      ],
+      "countries": [
+       "Unknown"
+      ],
+      "has_editorial_staff_author": false,
+      "id": "18366",
+      "institutions": [
+       "Unknown"
+      ],
+      "is_revision": false,
+      "journal": "Journal of Cellular Biochemistry",
+      "notice_date": 1527465600,
+      "notice_doi": "10.1002/jcb.26549",
+      "notice_pubmed_id": 29227537,
+      "notice_type": "Retraction",
+      "notice_year": 2018,
+      "original": {
+       "institution": "unavailable",
+       "notice_date": "5/28/2018 0:00",
+       "notice_doi": "10.1002/jcb.26549",
+       "notice_pubmed_id": "29227537",
+       "paper_date": "12/11/2017 0:00",
+       "paper_doi": "10.1002/jcb.26549",
+       "paper_pubmed_id": "29227537"
+      },
+      "paper_date": 1512950400,
+      "paper_doi": "10.1002/jcb.26549",
+      "paper_pubmed_id": 29227537,
+      "paper_year": 2017,
+      "paywalled": "No",
+      "publisher": "Wiley",
+      "reasons": [
+       "Concerns/Issues about Data",
+       "Concerns/Issues about Results and/or Conclusions",
+       "Removed"
+      ],
+      "record_id": 18366,
+      "subject_categories": [
+       "BLS"
+      ],
+      "subjects": [
+       "BLS: Biochemistry",
+       "BLS: Biology - Cancer",
+       "BLS: Biology - Cellular",
+       "BLS: Biology - Molecular"
+      ],
+      "title": "NGAL gene silencing inhibits proliferation and promotes apoptosis of human gastric cancer cells: an in vivo and in vitro study",
+      "url_record_counts": [],
+      "urls": []
+     },
+     "highlight": {
+      "title": {
+       "matched_tokens": [
+        "cancer"
+       ],
+       "snippet": "NGAL gene silencing inhibits proliferation and promotes apoptosis of human gastric cancer cells: an in vivo and in vitro study",
+       "value": "NGAL gene silencing inhibits proliferation and promotes apoptosis of human gastric cancer cells: an in vivo and in vitro study"
+      }
+     }
+    }
+   ],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 4,
+       "highlighted": "Cancer Genetics",
+       "value": "Cancer Genetics"
+      },
+      {
+       "count": 4,
+       "highlighted": "Journal of Cellular Biochemistry",
+       "value": "Journal of Cellular Biochemistry"
+      },
+      {
+       "count": 3,
+       "highlighted": "FASEB Journal",
+       "value": "FASEB Journal"
+      },
+      {
+       "count": 2,
+       "highlighted": "FEBS Open Bio",
+       "value": "FEBS Open Bio"
+      },
+      {
+       "count": 2,
+       "highlighted": "Drug Development Research",
+       "value": "Drug Development Research"
+      },
+      {
+       "count": 2,
+       "highlighted": "Journal of Cellular Physiology",
+       "value": "Journal of Cellular Physiology"
+      },
+      {
+       "count": 2,
+       "highlighted": "Inorganic and Nano-Metal Chemistry",
+       "value": "Inorganic and Nano-Metal Chemistry"
+      },
+      {
+       "count": 1,
+       "highlighted": "Cancer",
+       "value": "Cancer"
+      },
+      {
+       "count": 1,
+       "highlighted": "Biofactors",
+       "value": "Biofactors"
+      },
+      {
+       "count": 1,
+       "highlighted": "Breast Journal",
+       "value": "Breast Journal"
+      },
+      {
+       "count": 1,
+       "highlighted": "Medical Physics",
+       "value": "Medical Physics"
+      },
+      {
+       "count": 1,
+       "highlighted": "Molecular Oncology",
+       "value": "Molecular Oncology"
+      },
+      {
+       "count": 1,
+       "highlighted": "Clinical Laboratory",
+       "value": "Clinical Laboratory"
+      },
+      {
+       "count": 1,
+       "highlighted": "Frontiers in Oncology",
+       "value": "Frontiers in Oncology"
+      },
+      {
+       "count": 1,
+       "highlighted": "International Journal of Cancer",
+       "value": "International Journal of Cancer"
+      },
+      {
+       "count": 1,
+       "highlighted": "Journal of Clinical Pharmacology",
+       "value": "Journal of Clinical Pharmacology"
+      },
+      {
+       "count": 1,
+       "highlighted": "Indian Journal of Medical Ethics",
+       "value": "Indian Journal of Medical Ethics"
+      },
+      {
+       "count": 1,
+       "highlighted": "Journal of Cancer Research and Therapeutics",
+       "value": "Journal of Cancer Research and Therapeutics"
+      },
+      {
+       "count": 1,
+       "highlighted": "Journal of Obstetrics and Gynaecology Canada",
+       "value": "Journal of Obstetrics and Gynaecology Canada"
+      },
+      {
+       "count": 1,
+       "highlighted": "International Journal of Clinical and Experimental Medicine",
+       "value": "International Journal of Clinical and Experimental Medicine"
+      },
+      {
+       "count": 1,
+       "highlighted": "International Journal of Clinical and Experimental Pathology",
+       "value": "International Journal of Clinical and Experimental Pathology"
+      },
+      {
+       "count": 1,
+       "highlighted": "American Journal of Physiology - Gastrointestinal and Liver Physiology",
+       "value": "American Journal of Physiology - Gastrointestinal and Liver Physiology"
+      }
+     ],
+     "field_name": "journal",
+     "sampled": false,
+     "stats": {
+      "total_values": 22
+     }
+    },
+    {
+     "counts": [
+      {
+       "count": 20,
+       "highlighted": "Wiley",
+       "value": "Wiley"
+      },
+      {
+       "count": 5,
+       "highlighted": "Elsevier",
+       "value": "Elsevier"
+      },
+      {
+       "count": 2,
+       "highlighted": "Taylor and Francis",
+       "value": "Taylor and Francis"
+      },
+      {
+       "count": 2,
+       "highlighted": "e-Century Publishing Corporation",
+       "value": "e-Century Publishing Corporation"
+      },
+      {
+       "count": 1,
+       "highlighted": "Frontiers",
+       "value": "Frontiers"
+      },
+      {
+       "count": 1,
+       "highlighted": "Wolters Kluwer - Medknow",
+       "value": "Wolters Kluwer - Medknow"
+      },
+      {
+       "count": 1,
+       "highlighted": "Forum for Medical Ethics Society",
+       "value": "Forum for Medical Ethics Society"
+      },
+      {
+       "count": 1,
+       "highlighted": "APS: American Physiological Society",
+       "value": "APS: American Physiological Society"
+      },
+      {
+       "count": 1,
+       "highlighted": "Clinical Laboratory Publications GmbH",
+       "value": "Clinical Laboratory Publications GmbH"
+      }
+     ],
+     "field_name": "publisher",
+     "sampled": false,
+     "stats": {
+      "total_values": 9
+     }
+    }
+   ],
+   "found": 34,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 34,
+       "highlighted": "Retraction",
+       "value": "Retraction"
+      },
+      {
+       "count": 1,
+       "highlighted": "Correction",
+       "value": "Correction"
+      }
+     ],
+     "field_name": "notice_type",
+     "sampled": false,
+     "stats": {
+      "total_values": 2
+     }
+    }
+   ],
+   "found": 35,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [
+    {
+     "counts": [
+      {
+       "count": 34,
+       "highlighted": "false",
+       "value": "false"
+      }
+     ],
+     "field_name": "is_revision",
+     "sampled": false,
+     "stats": {
+      "total_values": 1
+     }
+    }
+   ],
+   "found": 34,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  },
+  {
+   "facet_counts": [],
+   "found": 34,
+   "hits": [],
+   "out_of": 73100,
+   "page": 1
+  }
+ ]
+}
