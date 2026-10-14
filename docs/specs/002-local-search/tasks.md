@@ -113,7 +113,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tas
   (AC23)
   - Done when: the downloaded file has the same records and count as the page for a filter-only query and a text query. List fields also split back exactly.
 
-- [ ] **19. Rate limits.** A fixed-window counter in Redis per salted visitor hash: 60 searches a minute and 6 downloads an hour. Pages show the limit notice and keep the query; route handlers return 429 with `Retry-After`. If Redis is down, searches continue and the failure is logged. (AC28, AC29)
+- [x] **19. Rate limits.** A fixed-window counter in Redis per salted visitor hash: 60 searches a minute and 6 downloads an hour. Pages show the limit notice and keep the query; route handlers return 429 with `Retry-After`. If Redis is down, searches continue and the failure is logged. (AC28, AC29)
   - Done when: tests with a low limit show the notice and the 429, and stopping Redis doesn't stop search.
 
 - [ ] **20. Attribution, issue link and About page.** On every page:

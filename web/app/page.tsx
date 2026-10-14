@@ -1,13 +1,16 @@
 import { FilterDrawer } from '@/components/filters/filter-drawer';
 import { DimWhilePending, PendingProvider } from '@/components/filters/pending';
 import { FilterSidebar } from '@/components/filters/sidebar';
+import { SearchLimitReached } from '@/components/search/limit-reached';
 import { Results } from '@/components/search/results';
 import { SearchHeader } from '@/components/search/search-header';
 import { Unavailable } from '@/components/search/unavailable';
 import { ui } from '@/components/ui';
 import { DEFAULT_NOTICE_TYPE, FILTER_KEYS, type Query } from '@/lib/query/types';
+import { describeQuery } from '@/lib/query/describe';
 import { parseQuery, queryHref } from '@/lib/query/url';
 import { siteOrigin } from '@/lib/server/origin';
+import { checkLimit } from '@/lib/server/rate-limit';
 import { getMeta, runSearch } from '@/lib/server/search';
 
 // How many filter choices differ from the defaults, for the phone's Filters button.
@@ -31,12 +34,13 @@ function activeFilters(query: Query): number {
 // HTML, and the Typesense key never leaves the server (AC16, AC27).
 export default async function SearchPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = parseQuery(await searchParams);
-  const meta = await getMeta();
-  const result = await runSearch(query, undefined, meta);
+  // Each search page counts toward the visitor's limit; over it, no search runs (AC28).
+  const [limit, meta] = await Promise.all([checkLimit('searches'), getMeta()]);
+  const result = limit.status === 'ok' ? await runSearch(query, undefined, meta) : null;
   const href = queryHref(query);
   const lastYear = meta ? Number(meta.dataDate.slice(0, 4)) : new Date().getUTCFullYear();
   // Identifier lookups ignore the filters, so they're not offered.
-  const filters = result.status === 'ok' && !result.lookup ? <FilterSidebar query={query} counts={result.counts} lastYear={lastYear} /> : null;
+  const filters = result?.status === 'ok' && !result.lookup ? <FilterSidebar query={query} counts={result.counts} lastYear={lastYear} /> : null;
 
   return (
     <PendingProvider>
@@ -47,7 +51,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         </aside>
         <main className={`${ui.mainCol} flex flex-col gap-3.5`}>
           {filters && <FilterDrawer active={activeFilters(query)}>{filters}</FilterDrawer>}
-          {result.status === 'ok' ? (
+          {limit.status === 'limited' ? (
+            <SearchLimitReached retryAfter={limit.retryAfter} sentence={describeQuery(query).sentence} retryHref={href} />
+          ) : result?.status === 'ok' ? (
             <DimWhilePending>
               <Results query={query} result={result} searchUrl={`${await siteOrigin()}${href}`} dataDate={meta?.dataDate ?? null} />
             </DimWhilePending>

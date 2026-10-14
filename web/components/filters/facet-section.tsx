@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ui } from '@/components/ui';
 import { formatNumber } from '@/lib/format/numbers';
+import { formatWait } from '@/lib/rate-limit';
 import { clearFilter, setMatch } from '@/lib/query/changes';
 import type { FilterKey, Query } from '@/lib/query/types';
 import { queryHref, serializeQuery } from '@/lib/query/url';
@@ -14,7 +15,7 @@ export const MORE_LIMIT = 40;
 // Typed names are sent after this pause, so each keystroke isn't a search.
 const TYPING_PAUSE_MS = 250;
 
-type RemoteResult = { find: string; values: FacetValue[] } | { find: string; error: true };
+type RemoteResult = { find: string; values: FacetValue[] } | { find: string; error: 'unavailable' } | { find: string; error: 'limited'; retryAfter: number };
 
 // Asks the site's route handler for values matching the typed text, for
 // filters with too many values to send to the page (journals and publishers).
@@ -33,6 +34,10 @@ function useRemoteValues(facet: 'journal' | 'publisher' | undefined, find: strin
         params.set('facet', facet);
         params.set('facet_find', text);
         const response = await fetch(`/api/facet-values?${params}`, { signal: controller.signal });
+        if (response.status === 429) {
+          setResult({ find: text, error: 'limited', retryAfter: Number(response.headers.get('Retry-After')) || 60 });
+          return;
+        }
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -40,7 +45,7 @@ function useRemoteValues(facet: 'journal' | 'publisher' | undefined, find: strin
         setResult({ find: text, values: body.values.map(({ value, count }) => ({ value, label: value, count })) });
       } catch {
         if (!controller.signal.aborted) {
-          setResult({ find: text, error: true });
+          setResult({ find: text, error: 'unavailable' });
         }
       }
     }, TYPING_PAUSE_MS);
@@ -215,7 +220,9 @@ export function FacetSection({
             : remoteText && !remoteResult
               ? 'Searching…'
               : remoteResult && 'error' in remoteResult
-                ? 'Search is unavailable right now.'
+                ? remoteResult.error === 'limited'
+                  ? `Too many searches in a short time. Try again in ${formatWait(remoteResult.retryAfter)}.`
+                  : 'Search is unavailable right now.'
                 : `No ${title.toLowerCase()} values match “${find.trim()}”.`}
         </p>
       )}

@@ -7,9 +7,15 @@ import type { NextRequest } from 'next/server';
 import { parseQuery } from '@/lib/query/url';
 import { startExport } from '@/lib/server/export';
 import { siteOrigin } from '@/lib/server/origin';
+import { checkLimit, limitedResponse } from '@/lib/server/rate-limit';
 
 export async function GET(request: NextRequest) {
   const query = parseQuery(request.nextUrl.searchParams);
+  // Downloads have a stricter limit of their own (AC28).
+  const limit = await checkLimit('downloads');
+  if (limit.status === 'limited') {
+    return limitedResponse(limit, 'Download limit reached.');
+  }
   // request.signal aborts when the visitor cancels, which stops the reads from Typesense.
   const result = await startExport(query, await siteOrigin(), { signal: request.signal });
   if (result.status === 'unavailable') {

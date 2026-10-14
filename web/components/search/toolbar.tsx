@@ -1,10 +1,11 @@
 'use client';
 
 // The toolbar above the results: sort, "Cite this search" and its panel, and
-// "Download CSV", as in the prototype (spec 002 AC19, AC23, AC24).
+// "Download CSV", as in the prototype (spec 002 AC19, AC23, AC24, AC28).
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { DownloadIcon } from '@/components/icons';
 import { ui } from '@/components/ui';
+import { formatClockTime, formatPeriod } from '@/lib/rate-limit';
 
 const DOWNLOAD_UNAVAILABLE = 'Search is unavailable right now, so the file can’t be made. Try again in a few minutes.';
 const DOWNLOAD_FAILED = 'The download stopped before the file was complete. Try again.';
@@ -12,6 +13,19 @@ const DOWNLOAD_FAILED = 'The download stopped before the file was complete. Try 
 // retraction-search-2026-10-09.csv, from `attachment; filename="…"`.
 function fileName(disposition: string | null): string {
   return disposition?.match(/filename="([^"]+)"/)?.[1] ?? 'retraction-search.csv';
+}
+
+// Over the download limit: when the visitor can download again, and the limit to state.
+interface DownloadLimit {
+  until: number;
+  max: number;
+  windowSeconds: number;
+}
+
+async function readLimit(response: Response): Promise<DownloadLimit> {
+  const body = (await response.json().catch(() => ({}))) as { max?: number; windowSeconds?: number };
+  const retryAfter = Number(response.headers.get('Retry-After')) || 3600;
+  return { until: Date.now() + retryAfter * 1000, max: body.max ?? 6, windowSeconds: body.windowSeconds ?? 3600 };
 }
 
 function save(blob: Blob, name: string) {
@@ -32,6 +46,7 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
   const [downloading, setDownloading] = useState(false);
   // Megabytes received so far. Shown, but not announced, so a screen reader hears only the start and the end.
   const [received, setReceived] = useState<number | null>(null);
+  const [limit, setLimit] = useState<DownloadLimit | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const download = useRef<AbortController | null>(null);
   useEffect(
@@ -43,6 +58,14 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
     },
     [],
   );
+  // The button works again once the limit's window ends.
+  useEffect(() => {
+    if (!limit) {
+      return;
+    }
+    const wait = setTimeout(() => setLimit(null), Math.max(0, limit.until - Date.now()));
+    return () => clearTimeout(wait);
+  }, [limit]);
   // A note that stays until the next one.
   const show = (text: string) => {
     if (timer.current) {
@@ -67,7 +90,7 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
   // the file itself, so a failure shows here instead of replacing the page.
   const startDownload = async (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    if (!downloadHref || downloading) {
+    if (!downloadHref || downloading || limit) {
       return;
     }
     const controller = new AbortController();
@@ -76,6 +99,11 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
     show('Preparing the file…');
     try {
       const response = await fetch(downloadHref, { signal: controller.signal });
+      if (response.status === 429) {
+        show('');
+        setLimit(await readLimit(response));
+        return;
+      }
       if (!response.ok || !response.body) {
         flash(response.status === 503 ? DOWNLOAD_UNAVAILABLE : DOWNLOAD_FAILED);
         return;
@@ -115,12 +143,26 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
           Cite this search
         </button>
         {downloadHref && (
-          <a href={downloadHref} onClick={startDownload} aria-disabled={downloading || undefined} className={`${ui.btnPrimary} ${downloading ? 'cursor-progress opacity-70' : ''}`}>
+          <a
+            href={downloadHref}
+            onClick={startDownload}
+            aria-disabled={downloading || Boolean(limit) || undefined}
+            className={`${ui.btnPrimary} ${limit ? 'cursor-default opacity-50' : downloading ? 'cursor-progress opacity-70' : ''}`}
+          >
             <DownloadIcon />
             Download CSV
           </a>
         )}
       </div>
+      {limit && (
+        <div role="status" className="rounded-lg border border-accent-line bg-accent-soft px-4 py-3.5 text-[#1b3f6e]">
+          <p className="font-bold">Download limit reached</p>
+          <p className="mt-1 text-sm">
+            Each visitor can download {limit.max} files per {formatPeriod({ max: limit.max, windowSeconds: limit.windowSeconds })}. You can download again
+            at {formatClockTime(new Date(limit.until))}. Searching still works.
+          </p>
+        </div>
+      )}
       <p role="status" className={note ? ui.note : 'sr-only'}>
         {note}
         {downloading && Boolean(received) && <span aria-hidden="true"> {received} MB so far.</span>}
