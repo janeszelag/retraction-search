@@ -10,7 +10,7 @@ import './globals.css';
 // next/font downloads the fonts at build time and serves them from this site,
 // so visitors' browsers never contact Google.
 const publicSans = Public_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-public-sans' });
-const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-plex-mono' });
+const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-plex-mono', preload: false });
 
 export const metadata: Metadata = {
   title: 'Retraction search',
