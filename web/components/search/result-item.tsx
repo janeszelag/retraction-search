@@ -1,15 +1,22 @@
 import Link from 'next/link';
 import { ui } from '@/components/ui';
 import { formatApDate } from '@/lib/format/dates';
+import { describeLink } from '@/lib/format/links';
 import { noticeTypeClasses } from '@/lib/format/notice-types';
 import { reasonGroup } from '@/lib/format/reasons';
+import { onlyValue } from '@/lib/query/changes';
 import type { IdentifierLookup } from '@/lib/query/identifier';
-import type { ResultRecord, Segment } from '@/lib/search/types';
+import { subjectLabel } from '@/lib/query/subjects';
+import type { Query } from '@/lib/query/types';
+import { queryHref } from '@/lib/query/url';
+import type { ResultRecord } from '@/lib/search/types';
+import { AuthorList } from './author-list';
+import { Highlighted } from './highlighted';
+import { ResultFields } from './result-fields';
 
-// Matched words become <mark> elements; nothing is inserted as HTML.
-export function Highlighted({ segments }: { segments: Segment[] }) {
-  return segments.map((segment, index) => (segment.mark ? <mark key={index}>{segment.text}</mark> : <span key={index}>{segment.text}</span>));
-}
+export { Highlighted };
+
+const PAYWALL_LABELS: Record<string, string> = { No: 'Not paywalled', Yes: 'Paywalled', Unknown: 'Unknown' };
 
 // Which identifier a lookup matched, as the prototype words it (spec 002 AC12).
 function lookupMatch(record: ResultRecord, lookup: IdentifierLookup | null): string | null {
@@ -24,14 +31,16 @@ function lookupMatch(record: ResultRecord, lookup: IdentifierLookup | null): str
   return which ? `Matched the ${which} ${noun}` : null;
 }
 
-// The first ten author names, plus any further down that matched the search (spec 002 AC18).
-const SHOWN_AUTHORS = 10;
+// Journal and publisher filter the search to themselves (spec 002 AC18b).
+const filterLink = 'text-inherit decoration-[#c3cad3] underline-offset-[3px] hover:text-accent hover:decoration-accent';
 
-export function ResultItem({ record, lookup }: { record: ResultRecord; lookup: IdentifierLookup | null }) {
+export function ResultItem({ record, query, lookup }: { record: ResultRecord; query: Query; lookup: IdentifierLookup | null }) {
   const match = lookupMatch(record, lookup);
-  const later = record.matchedAuthors.filter((index) => index >= SHOWN_AUTHORS);
-  const shown = [...record.authors.keys()].slice(0, SHOWN_AUTHORS);
-  const listed = [...shown, ...later];
+  const links = record.urls.map((url, index) => describeLink(url, record.urlRecordCounts[index]));
+  const onlyJournal = query.filters.journal.include.length === 1 && query.filters.journal.include[0] === record.journal;
+  const onlyPublisher = query.filters.publisher.include.length === 1 && query.filters.publisher.include[0] === record.publisher;
+  const none = (list: string[]) => (list.length > 0 ? list.join('; ') : 'None listed');
+
   return (
     <li className="border-b border-[#e3e6ea] pt-4 pb-[18px]">
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-600">
@@ -48,31 +57,34 @@ export function ResultItem({ record, lookup }: { record: ResultRecord; lookup: I
         </Link>
       </h2>
       <p className="text-sm text-ink-800">
-        {record.journal && <span className="italic">{record.journal}</span>}
+        {record.journal && (
+          <Link
+            href={queryHref(onlyValue(query, 'journal', record.journal))}
+            title="Show only this journal"
+            aria-label={`Show only the journal ${record.journal}${onlyJournal ? ', selected' : ''}`}
+            className={`italic ${filterLink} ${onlyJournal ? 'font-[650] text-accent decoration-accent' : ''}`}
+            prefetch={false}
+          >
+            {record.journal}
+          </Link>
+        )}
         <span aria-hidden="true" className="px-1.5">
           ·
         </span>
-        {record.publisher && <span>{record.publisher}</span>}
+        {record.publisher && (
+          <Link
+            href={queryHref(onlyValue(query, 'publisher', record.publisher))}
+            title="Show only this publisher"
+            aria-label={`Show only the publisher ${record.publisher}${onlyPublisher ? ', selected' : ''}`}
+            className={`${filterLink} ${onlyPublisher ? 'font-[650] text-accent decoration-accent' : ''}`}
+            prefetch={false}
+          >
+            {record.publisher}
+          </Link>
+        )}
       </p>
       {record.authors.length > 0 && (
-        <p className="mt-1 text-sm text-ink-800">
-          <span className="text-ink-600">Author names: </span>
-          {listed.map((index, position) => (
-            <span key={index}>
-              {position === shown.length && later.length > 0 && <span>… </span>}
-              <Highlighted segments={record.authorSegments[index]} />
-              {position < listed.length - 1 && ', '}
-            </span>
-          ))}
-          {record.matchedAuthors.length > 0 && (
-            <span
-              className={`${ui.tag} ml-2 border-accent-line bg-accent-soft text-[#1b3f6e]`}
-              title="The search matched a name. Names are not identities."
-            >
-              Name match
-            </span>
-          )}
-        </p>
+        <AuthorList query={query} authors={record.authors} segments={record.authorSegments} matched={record.matchedAuthors} />
       )}
       <div className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1">
         <span className="text-[13px] text-ink-600">Retraction Watch’s reasons:</span>
@@ -86,21 +98,34 @@ export function ResultItem({ record, lookup }: { record: ResultRecord; lookup: I
         })}
       </div>
       <p className="mt-1.5 text-[13px] text-ink-600">Countries: {record.countries.join(', ') || 'None listed'}</p>
-      <div className="mt-1.5 flex flex-wrap items-center gap-x-[18px] text-sm">
-        {record.noticeDoi && (
-          <a href={`https://doi.org/${record.noticeDoi}`} target="_blank" rel="noopener">
-            Notice
-          </a>
-        )}
-        {record.paperDoi && (
-          <a href={`https://doi.org/${record.paperDoi}`} target="_blank" rel="noopener">
-            Paper
-          </a>
-        )}
-        <Link href={`/record/${record.recordId}`} className={ui.link}>
-          Record page
-        </Link>
-      </div>
+      {links.length > 0 && (
+        <ul className="mt-2 flex list-none flex-col gap-[3px]">
+          {links.map((link, index) => (
+            <li key={`${link.href}-${index}`} className="text-sm leading-[1.4]">
+              <span className="font-[650] text-ink-800">{link.source}: </span>
+              <a href={link.href} target="_blank" rel="noopener">
+                {link.text}
+              </a>
+              {link.shared && <span className="ml-2 text-[12.5px] whitespace-nowrap text-ink-600">{link.shared}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+      <ResultFields
+        recordId={record.recordId}
+        noticeDoi={record.noticeDoi}
+        paperDoi={record.paperDoi}
+        fields={[
+          { label: 'Record ID', value: String(record.recordId), mono: true },
+          { label: 'Subjects', value: none(record.subjects.map(subjectLabel)) },
+          { label: 'Article type', value: none(record.articleTypes) },
+          { label: 'Notice paywalled', value: PAYWALL_LABELS[record.paywalled] ?? 'Not recorded' },
+          { label: 'Notice DOI', value: record.noticeDoi ?? 'None', mono: true },
+          { label: 'Paper DOI', value: record.paperDoi ?? 'None', mono: true },
+          { label: 'Notice PubMed ID', value: record.noticePubmedId ? String(record.noticePubmedId) : 'None', mono: true },
+          { label: 'Paper PubMed ID', value: record.paperPubmedId ? String(record.paperPubmedId) : 'None', mono: true },
+        ]}
+      />
     </li>
   );
 }

@@ -19,6 +19,11 @@ export function formatApDate(unixSeconds: number | null | undefined): string {
   return `${AP_MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }
 
+// A calendar date in AP style: (2020, 1, 2) → "Jan. 2, 2020".
+export function formatApYmd(year: number, month: number, day: number): string {
+  return `${AP_MONTHS[month - 1]} ${day}, ${year}`;
+}
+
 // A value as Retraction Watch published it, for record pages (spec 002 AC22).
 export function formatAsPublished(text: string | null | undefined): string | null {
   if (text === null || text === undefined) {

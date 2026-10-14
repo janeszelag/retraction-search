@@ -84,7 +84,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 - [x] **14. Search box and field search.** Client components update the URL after a 300 ms pause. Field-search rows have the helper text and "Add a row". DOI and PubMed ID lookups say that filters don't apply. (AC10, AC11, AC12)
   - Done when: a misspelled title word still finds the record, a two-row field search matches the plan, and pasting the DOI of an expression of concern finds it under the default filters. A search whose filters leave no exact match shows the close-spellings notice, with counts that agree with the results.
 
-- [ ] **15. Result details.** In each result:
+- [x] **15. Result details.** In each result:
   - the first ten author names, plus any further down that matched, and "Show all N names"
   - names that link to an exact name search, with the yellow name-match warning
   - Retraction Watch links with their dates and counts

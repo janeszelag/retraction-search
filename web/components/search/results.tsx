@@ -149,7 +149,7 @@ export function Results({
       {result.records.length > 0 && (
         <ol className="list-none">
           {result.records.map((record) => (
-            <ResultItem key={record.recordId} record={record} lookup={result.lookup} />
+            <ResultItem key={record.recordId} record={record} query={query} lookup={result.lookup} />
           ))}
         </ol>
       )}
