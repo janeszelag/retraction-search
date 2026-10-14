@@ -1,6 +1,6 @@
 # Tasks 002: Local search MVP
 
-Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tasks 18–25 follow in a second. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 **Local stack and data**
 

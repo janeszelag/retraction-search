@@ -54,9 +54,13 @@ Run from the repository root:
 | Command | What it does |
 |---|---|
 | `npm install` | Installs dependencies |
-| `npm test` | Runs the pipeline tests (Vitest) on the committed fixtures; needs no network or full data |
+| `npm test` | Runs the pipeline and web tests (Vitest) on the committed fixtures; needs no network or full data |
 | `npm run download` | Saves the latest snapshot to `data/raw/`, pinned by its upstream commit (`-- --commit <sha>` for a specific one) |
 | `npm run clean` | Cleans the newest snapshot into `data/clean/<data date>-<short sha>/` (`-- --input <file>` for another) |
 | `npm run check` | Cleans the newest snapshot twice and checks the outputs (`-- --input <file>` for another) |
+| `npm run search:up` | Starts Typesense and Redis in Docker, with the keys from `.env.local` (copy `.env.example` to make one) |
+| `npm run search:down` | Stops them |
+| `npm run load` | Loads the newest cleaned snapshot into Typesense (`-- --input <folder>` for another) and saves the site's key to `.env.local` |
+| `npm run web` | Starts the site at http://localhost:3000 |
 
 The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.
