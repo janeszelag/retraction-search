@@ -56,7 +56,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
 - [x] **8. Typesense mapping.** `toTypesense(query)` builds the `multi_search` body: the main search, one counts search per "any" filter with a selection, and searches for the year and option counts. It also covers field terms and exclusions, exact author names, identifier lookups that ignore the filters, sort orders with the `record_id` tie-breaker, and paging. Searches with text set `num_typos` 2,1,1,2,1 and `drop_tokens_threshold` 0, and add the exact-match count. A second form of the body turns typos on for every search. (AC4, AC5, AC8, AC10, AC11, AC12, AC13, AC14, AC19, AC20)
   - Done when: tests check the body for each case in the plan's mapping table, including values with commas and parentheses.
 
-- [ ] **9. Reason groups and dates.** One module maps reasons to their color groups by the plan's rules. One formats dates in AP style, plus the "as published" form. (AC9, AC18)
+- [x] **9. Reason groups and dates.** One module maps reasons to their color groups by the plan's rules. One formats dates in AP style, plus the "as published" form. (AC9, AC18)
   - Done when: tests put each of the 112 reasons in the 2026-10-09 snapshot in its expected group, two in "Other", and format "Sept. 24, 2026" and "Aug. 1, 2013".
 
 **Pages and server code**
