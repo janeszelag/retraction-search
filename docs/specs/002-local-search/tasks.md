@@ -31,7 +31,7 @@ Status: in progress, 2026-10-13. Follows [plan 002](plan.md). Spike S1 ran durin
   (AC4, AC8, AC13, AC14, AC20, AC23, AC27, AC30)
   - Done when: every spike has a recorded result, and any that fail have a spec change proposed and agreed.
 
-- [ ] **4a. Clean names for exact filters.** `pipeline/sql/10_records.sql` merges journal and publisher spellings that differ only in capitals or accents into the most common one, and fixes backticks in author names. `original` keeps the published text. The hashed name keys from the first version of this task are removed, and the load's value check covers journals and publishers too. (AC4, AC14, AC22, AC30)
+- [x] **4a. Clean names for exact filters.** `pipeline/sql/10_records.sql` merges journal and publisher spellings that differ only in capitals or accents into the most common one, and fixes backticks in author names. `original` keeps the published text. The hashed name keys from the first version of this task are removed, and the load's value check covers journals and publishers too. (AC4, AC14, AC22, AC30)
   - Done when: fixture tests cover the merged spellings, the backtick rule and the original values. After a load, filtering on each of the 6 merged journals and on "Springer" gives its DuckDB count, and each of the 6 author names that had a backtick finds its records.
 
 - [x] **4b. Load: full names, value check and the site's key.** `npm run load`:

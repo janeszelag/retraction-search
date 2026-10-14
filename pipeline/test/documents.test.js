@@ -1,8 +1,7 @@
-import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { buildDocuments, cleanRecords, documentLines, loadSource } from '../src/clean.js';
-import { openDatabase, queryRows, sqlString } from '../src/duckdb.js';
+import { openDatabase } from '../src/duckdb.js';
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
 
@@ -15,9 +14,6 @@ const REQUIRED = {
   institutions: 'array',
   journal: 'string',
   publisher: 'string',
-  author_keys: 'array',
-  journal_key: 'string',
-  publisher_key: 'string',
   countries: 'array',
   subject_categories: 'array',
   subjects: 'array',
@@ -144,25 +140,6 @@ describe('search documents (AC13)', () => {
     const docs = new Map((await documentLines(db)).map((line) => JSON.parse(line)).map((doc) => [doc.record_id, doc]));
     expect(docs.get(34181).url_record_counts).toEqual([2]);
     expect(docs.get(34394).url_record_counts).toEqual([2]);
-  });
-
-  it('keys each exact name by the start of its SHA-256 (spec 002, spike S8)', async () => {
-    const key = (name) => createHash('sha256').update(name, 'utf8').digest('hex').slice(0, 16);
-    for (const doc of documents.values()) {
-      expect(doc.author_keys, `record ${doc.id}`).toEqual(doc.authors.map(key));
-      expect(doc.journal_key, `record ${doc.id}`).toBe(key(doc.journal));
-      expect(doc.publisher_key, `record ${doc.id}`).toBe(key(doc.publisher));
-    }
-    // Names that Typesense's exact filters would merge get different keys,
-    // and DuckDB hashes non-English text the same way Node does.
-    const db = await openDatabase();
-    const names = ['Maria Example', 'maria example', 'María Example', "Maria O`Example", 'Мария Пример'];
-    const [row] = await queryRows(
-      db,
-      `SELECT ${names.map((name, i) => `left(sha256(${sqlString(name)}), 16) AS k${i}`).join(', ')}`,
-    );
-    expect(Object.values(row)).toEqual(names.map(key));
-    expect(new Set(Object.values(row)).size).toBe(names.length);
   });
 
   it('keeps the original values for record pages', () => {

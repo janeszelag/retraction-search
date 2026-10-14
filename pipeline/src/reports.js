@@ -22,6 +22,8 @@ const REVIEW_ISSUES = [
   'Dated 1 January 1970',
   'DOI whose source text does not start with "10."',
   'Subject without a code',
+  'Backtick in an author name',
+  'Journal or publisher spelling merged',
 ];
 
 const formatNumber = (value) => value.toLocaleString('en-US');

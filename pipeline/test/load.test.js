@@ -178,7 +178,7 @@ describe('filter values that differ only in capitals or accents (spike S8)', () 
     expect(valuesDifferingInCaseOrAccents('reasons', ['Error in Data', 'Error in Text'])).toEqual([]);
   });
 
-  it('stops the load when a field without keys has them', () => {
+  it('stops the load when a filter field has them', () => {
     const values = {
       journal: new Set(['J']),
       publisher: new Set(['P']),
@@ -193,6 +193,9 @@ describe('filter values that differ only in capitals or accents (spike S8)', () 
     expect(() => checkValues(values)).toThrow('reasons: "Error in Data", "Error in data"');
     values.reasons = new Set(['Error in Data']);
     expect(checkValues(values)).toEqual({ journal: {}, publisher: {} });
+    // Journals and publishers too: the cleaning should have merged these.
+    values.journal = new Set(['medRxiv', 'medrxiv']);
+    expect(() => checkValues(values)).toThrow('journal: "medRxiv", "medrxiv"');
   });
 
   it('passes the fixture documents', () => {

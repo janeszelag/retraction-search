@@ -34,13 +34,9 @@ export function collectionSchema(name) {
       { name: 'title', type: 'string' },
       { name: 'authors', type: 'string[]' },
       { name: 'institutions', type: 'string[]' },
-      // Searched, and filter counts.
+      // Searched, and filters.
       facet('journal', 'string'),
       facet('publisher', 'string'),
-      // Exact name filters (spike S8): Typesense's exact filters ignore capitals and accents.
-      { name: 'author_keys', type: 'string[]' },
-      { name: 'journal_key', type: 'string' },
-      { name: 'publisher_key', type: 'string' },
       // Filters.
       facet('notice_type', 'string'),
       facet('paywalled', 'string'),
@@ -161,9 +157,20 @@ export function unexpectedFacetValues(facetValues, names, cut) {
   ];
 }
 
-// Filter fields without keys. Typesense's exact filters ignore capitals and
-// accents (spike S8), so values that differ only in those would be merged.
-export const UNKEYED_FILTER_FIELDS = ['notice_type', 'paywalled', 'reasons', 'subjects', 'subject_categories', 'countries', 'article_types'];
+// Typesense's exact filters ignore capitals and accents (spike S8), so values
+// of these fields that differ only in those would be merged. The cleaning
+// merges journal and publisher spellings; the check makes sure of it.
+export const STRING_FILTER_FIELDS = [
+  'journal',
+  'publisher',
+  'notice_type',
+  'paywalled',
+  'reasons',
+  'subjects',
+  'subject_categories',
+  'countries',
+  'article_types',
+];
 
 const fold = (value) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
 
@@ -180,12 +187,11 @@ export function valuesDifferingInCaseOrAccents(field, values) {
 
 // Reads the documents once to collect the values the checks need.
 async function scanDocuments(file) {
-  const fields = ['journal', 'publisher', ...UNKEYED_FILTER_FIELDS];
-  const values = Object.fromEntries(fields.map((field) => [field, new Set()]));
+  const values = Object.fromEntries(STRING_FILTER_FIELDS.map((field) => [field, new Set()]));
   for await (const batch of batchesOf(file, BATCH_SIZE)) {
     for (const line of batch) {
       const doc = JSON.parse(line);
-      for (const field of fields) {
+      for (const field of STRING_FILTER_FIELDS) {
         for (const value of [doc[field] ?? []].flat()) {
           values[field].add(value);
         }
@@ -197,7 +203,7 @@ async function scanDocuments(file) {
 
 // Checks the documents before anything is loaded.
 export function checkValues(values) {
-  const problems = UNKEYED_FILTER_FIELDS.flatMap((field) => valuesDifferingInCaseOrAccents(field, values[field]));
+  const problems = STRING_FILTER_FIELDS.flatMap((field) => valuesDifferingInCaseOrAccents(field, values[field]));
   if (problems.length > 0) {
     throw new ValueCheckError(
       `Some filter values differ only in capitals or accents, so Typesense's filters would merge them: ${problems.join('; ')}.`,
