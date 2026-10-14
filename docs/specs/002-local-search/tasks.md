@@ -1,6 +1,6 @@
 # Tasks 002: Local search MVP
 
-Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tasks 18–25 follow in a second. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, and tasks 18–25 in a second. Tasks 23 (running the VoiceOver check) and 24 (the owner's confirmation of the budgets) wait on the owner. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 **Local stack and data**
 
@@ -148,7 +148,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 go up in a first pull request; tas
 - [ ] **24. Speed.** A script times the server response for the fixed query set (p95), and Lighthouse's mobile test runs on a shared URL. Confirm the budgets with the owner. (AC33)
   - Done when: both meet the agreed budgets, or the plan records why not and what changes.
 
-- [ ] **25. End-to-end on a fresh clone.** In a fresh clone, run:
+- [x] **25. End-to-end on a fresh clone.** In a fresh clone, run:
   - `npm install`
   - `npm run download`, then `npm run clean`
   - `npm run search:up`, then `npm run load`
