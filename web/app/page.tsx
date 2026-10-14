@@ -21,8 +21,8 @@ const reasonGroups = [
 
 export default function Home() {
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1440px] flex-col px-4 sm:px-6">
-      <main className="flex-1 py-10">
+    <div className="mx-auto max-w-[1440px] px-4 min-[821px]:px-6">
+      <main className="py-10">
         <h1 className="text-2xl font-bold">Retraction search</h1>
         <p className="mt-2 text-ink-600">The search page is being built.</p>
 
@@ -45,12 +45,6 @@ export default function Home() {
         </ul>
         <p className="mt-4 font-mono text-sm text-ink-600">Record 1 · 10.1002/jcb.23190</p>
       </main>
-
-      <footer className="border-t border-ink-150 py-6 text-sm text-ink-600">
-        Data from the{' '}
-        <a href="https://gitlab.com/crossref/retraction-watch-data">Retraction Watch Database</a>, distributed by
-        Crossref under CC0. This site isn&apos;t affiliated with Retraction Watch or Crossref.
-      </footer>
     </div>
   );
 }
