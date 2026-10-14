@@ -208,6 +208,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 - the value search in long filters
 - the phone filter drawer (Radix Dialog)
 - tooltips (Radix Tooltip)
+- the sort menu and the field-search menus (Radix Select): the owner prefers them to the browser's built-in list, and Radix keeps the keyboard and screen-reader behavior
 - the copy-citation button
 - "Copy link to this record" on record pages
 - "Back to results" on record pages, shown only when the previous page was a search on this site (a same-site referrer on the search page). It calls the browser's back, so the results and scroll position come back as they were.

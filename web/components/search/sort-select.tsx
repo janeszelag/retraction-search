@@ -1,10 +1,9 @@
 'use client';
 
-// The sort menu. A client component, because changing a select needs a
+// The sort menu. A client component, because choosing an order needs a
 // browser event; it navigates to the URL the server worked out for each order.
 import { useSearchNavigation } from '@/components/filters/pending';
-import { ChevronDownIcon } from '@/components/icons';
-import { ui } from '@/components/ui';
+import { SelectMenu } from '@/components/select-menu';
 import type { Sort } from '@/lib/query/types';
 
 const LABELS: Record<Sort, string> = {
@@ -22,23 +21,17 @@ export function SortSelect({ value, hrefs, hasText }: { value: Sort; hrefs: Reco
       <label htmlFor="sort" className="text-sm text-ink-700">
         Sort
       </label>
-      <span className="relative inline-flex flex-none items-center">
-        <select
-          id="sort"
-          value={value}
-          onChange={(event) => navigate(hrefs[event.target.value as Sort])}
-          className={`${ui.input} min-h-[38px] w-auto cursor-pointer appearance-none pr-9`}
-        >
-          {(Object.keys(LABELS) as Sort[]).map((sort) => (
-            <option key={sort} value={sort} disabled={sort === 'relevance' && !hasText}>
-              {LABELS[sort]}
-            </option>
-          ))}
-        </select>
-        <span className="pointer-events-none absolute right-3 text-ink-700">
-          <ChevronDownIcon />
-        </span>
-      </span>
+      <SelectMenu
+        id="sort"
+        value={value}
+        onValueChange={(sort) => navigate(hrefs[sort as Sort])}
+        options={(Object.keys(LABELS) as Sort[]).map((sort) => ({
+          value: sort,
+          label: LABELS[sort],
+          disabled: sort === 'relevance' && !hasText,
+        }))}
+        className="min-h-[38px] min-w-[236px]"
+      />
     </>
   );
 }

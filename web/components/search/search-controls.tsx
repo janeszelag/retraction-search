@@ -7,7 +7,8 @@ import Form from 'next/form';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchNavigation } from '@/components/filters/pending';
-import { ChevronDownIcon, CloseIcon } from '@/components/icons';
+import { CloseIcon } from '@/components/icons';
+import { SelectMenu } from '@/components/select-menu';
 import { ui } from '@/components/ui';
 import { TERM_FIELDS, type Match, type Query, type TermField } from '@/lib/query/types';
 import { queryHref, serializeQuery } from '@/lib/query/url';
@@ -38,36 +39,6 @@ function withRows(query: Query, rows: Row[], termMatch = query.termMatch): Query
     termMatch,
     page: 1,
   };
-}
-
-function Select({
-  value,
-  onChange,
-  label,
-  width,
-  children,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  label: string;
-  width: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="relative inline-flex flex-none items-center">
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        aria-label={label}
-        className={`${ui.input} ${width} cursor-pointer appearance-none pr-9`}
-      >
-        {children}
-      </select>
-      <span className="pointer-events-none absolute right-3 text-ink-700">
-        <ChevronDownIcon />
-      </span>
-    </span>
-  );
 }
 
 export function SearchControls({ query }: { query: Query }) {
@@ -134,7 +105,7 @@ export function SearchControls({ query }: { query: Query }) {
   const kept = [...new URLSearchParams(serializeQuery({ ...query, q: '', page: 1 }))];
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 mt-10">
       <Form
         action="/"
         role="search"
@@ -156,7 +127,7 @@ export function SearchControls({ query }: { query: Query }) {
             go({ ...withRows(query, rows), q: event.target.value.trim() }, true);
           }}
           placeholder="Search titles, author names, journals and publishers, or paste a DOI or PubMed ID"
-          className={`${ui.input} min-h-11`}
+          className={`${ui.input} min-h-12 text-base`}
         />
         {kept.map(([name, value], index) => (
           <input key={`${name}-${index}`} type="hidden" name={name} value={value} />
@@ -199,34 +170,30 @@ export function SearchControls({ query }: { query: Query }) {
 
       {open && (
         <div className="flex flex-col gap-2.5 rounded-lg border border-ink-150 bg-ink-25 px-4 py-3.5">
-          <p className="max-w-[720px] text-[13.5px] leading-[1.45] text-ink-700">
+          <p className="text-[13.5px] leading-[1.45] text-ink-700">
             Look for words in one field, such as a title word, an author’s name or an institution. A row matches records where all its words
             appear somewhere in that field, in any order. Add a row for each term. Results must match every row; when two rows use the same
             field, choose whether results need any or all of them. The filters on the left narrow the results further.
           </p>
           {rows.map((row, index) => (
             <div key={index} className="flex flex-wrap items-center gap-2">
-              <Select
+              <SelectMenu
                 value={row.field}
                 label={`Field, row ${index + 1}`}
-                width="w-[150px]"
-                onChange={(field) => changeRows(rows.map((other, at) => (at === index ? { ...other, field: field as TermField } : other)), false)}
-              >
-                {TERM_FIELDS.map((field) => (
-                  <option key={field} value={field}>
-                    {FIELD_LABELS[field]}
-                  </option>
-                ))}
-              </Select>
-              <Select
+                className="w-[150px]"
+                onValueChange={(field) => changeRows(rows.map((other, at) => (at === index ? { ...other, field: field as TermField } : other)), false)}
+                options={TERM_FIELDS.map((field) => ({ value: field, label: FIELD_LABELS[field] }))}
+              />
+              <SelectMenu
                 value={row.exclude ? 'exclude' : 'include'}
                 label={`Contains or not, row ${index + 1}`}
-                width="w-[172px]"
-                onChange={(mode) => changeRows(rows.map((other, at) => (at === index ? { ...other, exclude: mode === 'exclude' } : other)), false)}
-              >
-                <option value="include">contains</option>
-                <option value="exclude">doesn’t contain</option>
-              </Select>
+                className="w-[172px]"
+                onValueChange={(mode) => changeRows(rows.map((other, at) => (at === index ? { ...other, exclude: mode === 'exclude' } : other)), false)}
+                options={[
+                  { value: 'include', label: 'contains' },
+                  { value: 'exclude', label: 'doesn’t contain' },
+                ]}
+              />
               <input
                 value={row.words}
                 aria-label={`Word or phrase, row ${index + 1}`}
@@ -269,19 +236,10 @@ export function SearchControls({ query }: { query: Query }) {
               of these terms
             </div>
           ))}
+          {/* "Hide field search" above closes the panel, so it needs no Done button of its own. */}
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" className={ui.btn} onClick={() => setRows([...rows, { field: 'title', words: '', exclude: false }])}>
               Add a row
-            </button>
-            <button
-              type="button"
-              className={ui.link}
-              onClick={() => {
-                setRows(rows.filter((row) => row.words.trim()));
-                setOpen(false);
-              }}
-            >
-              Done
             </button>
           </div>
         </div>

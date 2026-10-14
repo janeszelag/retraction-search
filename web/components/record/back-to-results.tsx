@@ -5,6 +5,7 @@
 // history, so the results and the scroll position return as they were.
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { ChevronLeftIcon } from '@/components/icons';
 import { cameFromSearch } from '@/components/navigation-memory';
 import { ui } from '@/components/ui';
 
@@ -16,7 +17,8 @@ export function BackToResults() {
     return null;
   }
   return (
-    <button type="button" onClick={() => router.back()} className={`${ui.link} self-start`}>
+    <button type="button" onClick={() => router.back()} className={`${ui.link} gap-1.5 self-start`}>
+      <ChevronLeftIcon />
       Back to results
     </button>
   );

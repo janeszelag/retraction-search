@@ -9,8 +9,8 @@ import { SearchControls } from './search-controls';
 export function SearchHeader({ query, dataDate }: { query: Query; dataDate: string | null }) {
   return (
     <header className="border-b border-ink-150">
-      <div className={`${ui.wrap} ${ui.cols} items-start py-4`}>
-        <div className={`${ui.sideCol} flex flex-col gap-0.5 pt-0.5`}>
+      <div className={`${ui.wrap} ${ui.cols} items-start py-6`}>
+        <div className={`${ui.sideCol} flex flex-col gap-0.5 pt-1`}>
           <Link href="/" className="text-xl leading-tight font-extrabold tracking-[-0.01em] text-ink-950 no-underline hover:text-ink-950">
             Retraction search
           </Link>
