@@ -257,7 +257,7 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 | No key in the browser | A test that builds the app, then searches the built browser files, page HTML and responses for the key | AC27 |
 | Speed | A script timing the server response for the fixed query set (p95), and Lighthouse's mobile test on a shared URL | AC33 |
 | Commands | Run from a fresh clone | AC34 |
-| Screen reader | A written manual VoiceOver check covering one full search | AC32 |
+| Screen reader | A written manual VoiceOver check covering one full search: [voiceover-check.md](voiceover-check.md) | AC32 |
 
 `npm test` stays network-free. The checks that need Docker and the full snapshot run through their own commands.
 
