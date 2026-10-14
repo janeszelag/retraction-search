@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ui } from '@/components/ui';
 import { formatNumber, formatRecords } from '@/lib/format/numbers';
@@ -10,7 +9,7 @@ import type { Query, YearRange } from '@/lib/query/types';
 import { queryHref } from '@/lib/query/url';
 import type { ValueCount } from '@/lib/search/types';
 import { SectionHead } from './facet-section';
-import { ReportPending } from './pending';
+import { ReportPending, useSearchNavigation } from './pending';
 import { filterLink } from './value-row';
 
 // Bars start here; earlier years share one bar (as in the prototype).
@@ -40,7 +39,7 @@ export function YearSection({
   counts: ValueCount[];
   lastYear: number;
 }) {
-  const router = useRouter();
+  const navigate = useSearchNavigation();
   const range = query[which];
   const [from, setFrom] = useState(yearText(range.from));
   const [to, setTo] = useState(yearText(range.to));
@@ -67,7 +66,7 @@ export function YearSection({
     if (a === undefined || b === undefined) {
       return;
     }
-    timer.current = setTimeout(() => router.push(queryHref(setYears(query, which, { from: a, to: b })), { scroll: false }), TYPING_PAUSE_MS);
+    timer.current = setTimeout(() => navigate(queryHref(setYears(query, which, { from: a, to: b }))), TYPING_PAUSE_MS);
   };
 
   const byYear = new Map(counts.map((entry) => [Number(entry.value), entry.count]));

@@ -191,6 +191,18 @@ describe('field terms (AC11)', () => {
     );
   });
 
+  it('splits an excluded term at hyphens and slashes, as Typesense indexes words', () => {
+    expect(main(plan('not_in_title=non-small+cell%2Flung')).filter_by).toBe(
+      `${DEFAULTS} && (title:!\`non\` || title:!\`small\` || title:!\`cell\` || title:!\`lung\`)`,
+    );
+  });
+
+  it('keeps hyphens in author names, which Typesense indexes whole', () => {
+    expect(main(plan('not_in_author=Jean-Pierre+Example')).filter_by).toBe(
+      `${DEFAULTS} && (authors:!\`Jean-Pierre\` || authors:!\`Example\`)`,
+    );
+  });
+
   it('keeps field terms in every counts search', () => {
     const result = plan('in_title=mouse&reason=A');
     expect(counts(result, 'reason').filter_by).toBe(`${DEFAULTS} && title:\`mouse\``);

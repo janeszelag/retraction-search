@@ -79,6 +79,12 @@ describe('collection schema', () => {
     ]);
   });
 
+  it('splits words at hyphens and slashes in searched text, but not in names or filter lists', () => {
+    const split = schema.fields.filter((field) => field.token_separators).map((field) => field.name);
+    expect(split).toEqual(['title', 'institutions', 'journal', 'publisher']);
+    expect(schema.fields.find((field) => field.name === 'title').token_separators).toEqual(['-', '/']);
+  });
+
   it('makes only the identifiers optional', () => {
     const optional = schema.fields.filter((field) => field.optional).map((field) => field.name).sort();
     expect(optional).toEqual(['notice_doi', 'notice_pubmed_id', 'paper_doi', 'paper_pubmed_id']);

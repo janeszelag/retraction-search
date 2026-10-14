@@ -23,20 +23,28 @@ export const SITE_KEY = {
 const BATCH_SIZE = 5000;
 const envFile = path.join(repoRoot, '.env.local');
 
+export const TOKEN_SEPARATORS = ['-', '/'];
+
 // Fields outside the schema are stored and returned but not indexed:
 // urls, url_record_counts, notes and original (decision record 002).
 export function collectionSchema(name) {
   const facet = (fieldName, type) => ({ name: fieldName, type, facet: true });
+  // Hyphens and slashes split words in these fields, so "cancer" finds
+  // "cancer-associated" and "Wnt/beta-catenin". Without this, Typesense joins
+  // them into one word ("cancerassociated"), and a third of titles hold one.
+  // Author names and the filter lists keep the default: on a list field,
+  // Typesense's exact filter then matches names that share only some words.
+  const split = { token_separators: TOKEN_SEPARATORS };
   return {
     name,
     fields: [
       // Searched by the search box and field terms.
-      { name: 'title', type: 'string' },
+      { name: 'title', type: 'string', ...split },
       { name: 'authors', type: 'string[]' },
-      { name: 'institutions', type: 'string[]' },
+      { name: 'institutions', type: 'string[]', ...split },
       // Searched, and filters.
-      facet('journal', 'string'),
-      facet('publisher', 'string'),
+      { ...facet('journal', 'string'), ...split },
+      { ...facet('publisher', 'string'), ...split },
       // Filters.
       facet('notice_type', 'string'),
       facet('paywalled', 'string'),

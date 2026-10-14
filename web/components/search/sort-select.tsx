@@ -2,7 +2,7 @@
 
 // The sort menu. A client component, because changing a select needs a
 // browser event; it navigates to the URL the server worked out for each order.
-import { useRouter } from 'next/navigation';
+import { useSearchNavigation } from '@/components/filters/pending';
 import { ChevronDownIcon } from '@/components/icons';
 import { ui } from '@/components/ui';
 import type { Sort } from '@/lib/query/types';
@@ -16,7 +16,7 @@ const LABELS: Record<Sort, string> = {
 };
 
 export function SortSelect({ value, hrefs, hasText }: { value: Sort; hrefs: Record<Sort, string>; hasText: boolean }) {
-  const router = useRouter();
+  const navigate = useSearchNavigation();
   return (
     <>
       <label htmlFor="sort" className="text-sm text-ink-700">
@@ -26,7 +26,7 @@ export function SortSelect({ value, hrefs, hasText }: { value: Sort; hrefs: Reco
         <select
           id="sort"
           value={value}
-          onChange={(event) => router.push(hrefs[event.target.value as Sort])}
+          onChange={(event) => navigate(hrefs[event.target.value as Sort])}
           className={`${ui.input} min-h-[38px] w-auto cursor-pointer appearance-none pr-9`}
         >
           {(Object.keys(LABELS) as Sort[]).map((sort) => (

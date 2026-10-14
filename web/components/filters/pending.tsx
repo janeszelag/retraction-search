@@ -4,7 +4,8 @@
 // state and the old results dim, until the server's new page arrives
 // (decision record 003).
 import { useLinkStatus } from 'next/link';
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { createContext, useCallback, useContext, useEffect, useState, useTransition, type ReactNode } from 'react';
 
 const PendingContext = createContext<{ change: (delta: number) => void; pending: boolean }>({ change: () => {}, pending: false });
 
@@ -41,4 +42,20 @@ export function DimWhilePending({ children }: { children: ReactNode }) {
       {children}
     </div>
   );
+}
+
+// For typed input: navigates to a new search, and dims the old results while
+// the server works on it, as filter links do.
+export function useSearchNavigation(): (href: string) => void {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const { change } = useContext(PendingContext);
+  useEffect(() => {
+    if (!isPending) {
+      return;
+    }
+    change(1);
+    return () => change(-1);
+  }, [isPending, change]);
+  return useCallback((href: string) => startTransition(() => router.push(href, { scroll: false })), [router]);
 }

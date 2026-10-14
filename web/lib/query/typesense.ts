@@ -172,22 +172,28 @@ function yearClause(field: string, range: { from: number | null; to: number | nu
   return clauses.length > 0 ? clauses.join(' && ') : null;
 }
 
-const words = (text: string) => text.replaceAll('`', '').split(/\s+/).filter(Boolean);
+// Words split where Typesense splits them: at spaces, and also at hyphens and
+// slashes in the fields the load gives token_separators (all but author names).
+const words = (text: string, field: TermField) =>
+  text
+    .replaceAll('`', '')
+    .split(field === 'author' ? /\s+/ : /[\s/-]+/)
+    .filter(Boolean);
 
 // A term matches when all its words appear somewhere in the field (spec 002 AC11).
 function termsClause(query: Query): string | null {
   const clauses: string[] = [];
   for (const field of TERM_FIELDS) {
     const name = TERM_FIELD_NAMES[field];
-    const included = query.terms.filter((term) => term.field === field && !term.exclude && words(term.words).length > 0);
+    const included = query.terms.filter((term) => term.field === field && !term.exclude && words(term.words, field).length > 0);
     if (included.length > 0) {
-      const matches = included.map((term) => `${name}:${literal(words(term.words).join(' '))}`);
+      const matches = included.map((term) => `${name}:${literal(words(term.words, field).join(' '))}`);
       clauses.push(query.termMatch[field] === 'all' ? matches.join(' && ') : grouped(matches, '||'));
     }
     // An excluded term keeps records missing any of its words. Typesense can't
     // negate a group, so the negation is spelled out word by word (spike S1).
     for (const term of query.terms.filter((candidate) => candidate.field === field && candidate.exclude)) {
-      const termWords = words(term.words);
+      const termWords = words(term.words, field);
       if (termWords.length > 0) {
         clauses.push(grouped(termWords.map((word) => `${name}:!${literal(word)}`), '||'));
       }

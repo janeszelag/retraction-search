@@ -101,7 +101,7 @@ New and changed files:
 
 Spec 003 reuses this script for the daily run.
 
-**Schema.** Fields outside the schema are stored and returned but not indexed (decision record 002).
+**Schema.** Fields outside the schema are stored and returned but not indexed (decision record 002). Title, institutions, journal and publisher split words at hyphens and slashes as well as spaces (`token_separators`). Typesense otherwise joins "cancer-associated" into one word, so "cancer" missed it, and 24,804 of the 73,100 titles hold a hyphenated word (checked 2026-10-13). Author names and the filter lists keep the default, because with the split, Typesense's exact filter on a list matched different names that share some words. Field terms split the same way, except author names.
 
 | Field | Type | Indexed for |
 |---|---|---|
@@ -277,6 +277,7 @@ Each is a short experiment against the local stack before the matching tasks sta
   See proposed changes P3 and P4, and the proposed change to AC13.
 - **S7, dates before 1970 (AC8). Run 2026-10-13: passes.** Sorting by paper date or notice date, either way, gives the same first 250 records as DuckDB, starting with record 18930 (paper 1753, notice 1756). The 49 papers from before 1970 fall in 22 years, with the same count per year as DuckDB, and the 7 notices dated before 1970 filter correctly.
 - **S8, exact author names (AC14). Run 2026-10-13: exact filters ignore capitalization and accents, and can't hold a backtick.** ``authors:=`…` `` matches whole list entries: a name that starts a longer listed name doesn't match the longer one. But it ignores capitalization and accents. Of the 21 names tested, 5 matched more records than DuckDB: 8 extra records listed the name in different capitals and 1 with a different accent. On the snapshot, 1,945 author names fall into 967 groups that differ only in that way. Every exact filter behaves the same: 13 journal names in 6 groups and one pair of publishers differ only in capitals or accents, and filtering on one returns them all (one journal's facet count is 4, but filtering on it returns 62). Six author names contain a backtick, which ends a backtick literal early. Neither a backslash nor leaving out the backticks helped, and those filters match unrelated records. See proposed change P2.
+  - Rechecked 2026-10-13 with the 100 most common hyphenated author names: the exact filter also ignores punctuation, so it matches the same name with a dropped hyphen, a non-breaking hyphen or a trailing comma. Of 1,271 matches, 1,149 listed the name exactly and 122 listed it with only capitals, accents or punctuation changed; none listed a different name.
 
 ## Changes agreed from spikes S2–S8
 
