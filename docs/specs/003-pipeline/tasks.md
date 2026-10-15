@@ -58,7 +58,7 @@ The work goes up in three pull requests:
   If any check fails, put the alias and meta document back and delete the new collection. (AC9, AC10)
   - Done when: the plan's tests for AC9 and AC10 pass, and the summary reports each retry.
 
-- [ ] **11. Local end to end.** Run `npm test`, then `npm run update` on the local stack from an empty Typesense, then again, then with a forced reload. Add `npm run update` and `npm run diff` to `CLAUDE.md`. (AC1, AC2, AC3)
+- [x] **11. Local end to end.** Run `npm test`, then `npm run update` on the local stack from an empty Typesense, then again, then with a forced reload. Add `npm run update` and `npm run diff` to `CLAUDE.md`. (AC1, AC2, AC3)
   - Done when: each run does what the spec says, and the site at `npm run web` shows the new data date. Tasks 1–11 go up as a pull request.
 
 **Hosted server**
