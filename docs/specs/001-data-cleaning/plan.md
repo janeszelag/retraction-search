@@ -67,6 +67,7 @@ data/                         not committed
 - `00_load.sql` reads the CSV with every column as text (`all_varchar = true`), so DuckDB guesses nothing.
 - `columns.js` lists the 20 expected column names. The loader compares them with the file's columns. A missing or renamed column stops the run with an error that names it. An extra column also stops the run unless it's completely empty, which is the case for the column created by the header's trailing comma.
 - The check runs before anything is written.
+- Changed 2026-10-14 (AC2): `05_empty_rows.sql` runs right after `00_load.sql`, before the column check. It drops rows where every column is empty or only spaces, and keeps their count for the profile report's Snapshot section. Spec 003 builds it; [plan 003](../003-pipeline/plan.md#empty-rows-spec-001-change) has the details.
 
 ## Cleaning rules (`10_records.sql`)
 
@@ -105,7 +106,7 @@ The documents are shaped for Typesense, the leading candidate. If decision recor
 
 ## Profile report (`profile.md`)
 
-1. **Snapshot:** commit, data date, rows, file size and checksum.
+1. **Snapshot:** commit, data date, rows, file size and checksum, and the number of empty rows dropped (AC2, changed 2026-10-14).
 2. **Empty values** in every source column (AC1).
 3. **Distinct values with counts** for every filter field (AC1): notice type, paywalled, reasons, subject categories, subjects, countries, article types, publishers (1,718 of them), and notice and paper years.
 4. **Review lists:** unparseable dates, notices dated before their paper and records dated 1 January 1970 (AC6), DOIs whose source text doesn't start with "10." (AC7), and subjects without a code (AC11).

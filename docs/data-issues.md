@@ -1,6 +1,6 @@
 # Data issues and how the pipeline handles them
 
-Status: summary as of 2026-10-13. Numbers are from the 2026-10-09 snapshot (upstream commit `bc5648dd`, 73,100 records) unless a line says otherwise. The rules come from [spec 001](specs/001-data-cleaning/spec.md) (cleaning) and [plan 002](specs/002-local-search/plan.md) (search). `npm run clean` writes a profile report (`profile.md`) with the current numbers for any snapshot.
+Status: summary as of 2026-10-14. Numbers are from the 2026-10-09 snapshot (upstream commit `bc5648dd`, 73,100 records) unless a line says otherwise. The rules come from [spec 001](specs/001-data-cleaning/spec.md) (cleaning) and [plan 002](specs/002-local-search/plan.md) (search). `npm run clean` writes a profile report (`profile.md`) with the current numbers for any snapshot.
 
 This page covers problems in how the data is written down: formats, placeholders, spellings. What the data means, and why counts need care, is covered by the [data caveats](product-brief.md#data-caveats) in the product brief. Examples include selective coverage of expressions of concern, countries that cover every author, and approximate dates.
 
@@ -17,6 +17,7 @@ This page covers problems in how the data is written down: formats, placeholders
 |---|---|
 | The header ends with a comma, so parsers see a 21st, always-empty column. | Ignored. |
 | A column could go missing, be renamed, or appear with data in a future snapshot. | The cleaning stops, names the column and writes no output (spec 001 AC3). |
+| Some files end with rows of 20 commas and nothing else. They aren't in the 2026-10-09 snapshot. Every daily file from 2026-08-18 to 2026-09-22 had them, 130 to 317 rows, and so did the monthly samples from 2026-02-13 (78) and 2026-06-12 to 2026-08-14 (192 to 279). None have appeared since 2026-09-23 (checked 2026-10-14, spec 003 spike S1). | Today the cleaning stops, because these rows have no record ID. Agreed 2026-10-14, to be built in spec 003: drop rows where every field is empty, and give their number in the profile report (a change to spec 001 AC2). |
 
 ## Dates
 

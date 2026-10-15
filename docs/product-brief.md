@@ -138,8 +138,8 @@ Once the site is public, nothing depends on the owner's computer. Three hosted p
 | 0. Framing | This brief, `CLAUDE.md`, decision record 001 | Reviewed and approved |
 | 1. Data cleaning (spec 001) | DuckDB cleaning of the CSV, and the measured size of the search documents | Decision record 002 chooses the search engine and host, with its worst-case monthly cost |
 | 2. Local search MVP (spec 002) | Next.js app and a local search server, with facets, counts and record pages | Spec 002's acceptance criteria pass locally |
-| 3. Pipeline (spec 003) | Download → clean → diff → publish, locally and then on GitHub Actions | Runs unattended and fails loudly on schema changes |
-| 4. Launch | The site and its search server, within the cost guardrail, with analytics | Live, updating daily, recording metrics |
+| 3. Pipeline (spec 003) | Download → clean → diff → publish, locally and then on GitHub Actions, into the hosted search server (moved here from Phase 4 on 2026-10-14) | Runs unattended and fails loudly on schema changes |
+| 4. Launch | The site, its rate limits and analytics, within the cost guardrail | Live, updating daily, recording metrics |
 | 5. Natural-language filters | An LLM turns a typed sentence into filters the user can edit | A decision record picks an LLM provider whose spending can be hard-capped, and the feature's spec passes |
 | 6+. Chosen from launch data | Candidates below | |
 
