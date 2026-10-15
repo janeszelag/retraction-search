@@ -176,7 +176,7 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 - **`timeout-minutes: 30`.** A job may run for up to 6 hours, but a run that takes 30 minutes has gone wrong.
 - **Steps:**
   1. checkout and Node setup
-  2. `npm ci --workspace pipeline`, so the site's dependencies aren't installed (confirm on the first run)
+  2. `npm ci --workspace pipeline`, so the site's dependencies aren't installed. Checked on a clean copy of the repository on 2026-10-15: it added 44 packages, none of the site's (Next.js, React, TypeScript, Playwright), and `npm run update` and the pipeline's tests ran with them. The first run on GitHub confirms it on Linux.
   3. `npm run update`
   4. always: append `summary.md` to the job summary, and upload `data/diff/` and `data/runs/` as an artifact kept for 30 days
   5. alert or resolve

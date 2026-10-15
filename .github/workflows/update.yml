@@ -1,0 +1,86 @@
+# Brings the hosted Typesense server up to the newest upstream snapshot every
+# day (spec 003, AC12, AC13 and AC17). Upstream commits at about 23:00 UTC on
+# working days. The second schedule covers a first run that was delayed,
+# dropped or failed; on most days it finds the server up to date.
+name: Update
+
+on:
+  schedule:
+    - cron: '17 1 * * *'
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Load this upstream commit instead of the newest (to reproduce a day or roll back)
+        type: string
+        default: ''
+      force:
+        description: Load the snapshot even if the server has it
+        type: boolean
+        default: false
+      accept_changes:
+        description: Let this run past the change limits (read the diff first)
+        type: boolean
+        default: false
+
+# A second run waits for the first instead of overlapping it.
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write # alerts (task 15)
+  actions: write # keepalive (task 16)
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # Holds TYPESENSE_URL and TYPESENSE_ADMIN_KEY, and only main can use it.
+    environment: search
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      # The pipeline's dependencies only, not the site's.
+      - run: npm ci --workspace pipeline
+      # The inputs arrive as environment variables and are only ever quoted,
+      # so their text can't run as shell code. They're empty on scheduled runs.
+      - name: Update the hosted server
+        env:
+          TYPESENSE_URL: ${{ secrets.TYPESENSE_URL }}
+          TYPESENSE_ADMIN_KEY: ${{ secrets.TYPESENSE_ADMIN_KEY }}
+          COMMIT: ${{ inputs.commit }}
+          FORCE: ${{ inputs.force }}
+          ACCEPT_CHANGES: ${{ inputs.accept_changes }}
+        run: |
+          args=()
+          if [ -n "$COMMIT" ]; then args+=(--commit "$COMMIT"); fi
+          if [ "$FORCE" = true ]; then args+=(--force); fi
+          if [ "$ACCEPT_CHANGES" = true ]; then args+=(--accept-changes); fi
+          npm run update -- "${args[@]}"
+      # summary.md already hides the server's address and key (AC17).
+      - name: Add the run's summary to the job summary
+        if: always()
+        run: |
+          shopt -s nullglob
+          summaries=(data/runs/*/summary.md)
+          if [ ${#summaries[@]} -eq 0 ]; then
+            echo "The update wrote no summary. The step above shows the error." >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "${summaries[@]}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: update-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/diff/
+            data/runs/
+          retention-days: 30
+          if-no-files-found: ignore
