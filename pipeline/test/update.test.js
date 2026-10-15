@@ -1,9 +1,18 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { checkChangeLimits, MAX_EMPTIED, MAX_REMOVED, redact, runUpdate } from '../src/update.js';
+import { runCleaning } from '../src/clean.js';
+import {
+  checkChangeLimits,
+  DEFAULT_VIEW_FILTER,
+  expectedCounts,
+  MAX_EMPTIED,
+  MAX_REMOVED,
+  redact,
+  runUpdate,
+} from '../src/update.js';
 import { TypesenseError } from '../src/typesense.js';
 import { fakeGitlab } from './helpers/fake-gitlab.js';
 import { fakeTypesense } from './helpers/fake-typesense.js';
@@ -341,5 +350,118 @@ describe('staleness (AC11)', () => {
     const typesense = fakeTypesense();
     const { result } = await update(typesense, [NEWER, OLDER], { now: late, commit: 'bbbbbbbb' });
     expect(result.outcome).toBe('updated');
+  });
+});
+
+describe('retrying the import (AC9)', () => {
+  // Drops the first character of record 1's title in the first collection only, or in every one.
+  function dropLetter(typesense, { always = false } = {}) {
+    let first = null;
+    typesense.onImport = (doc, collection) => {
+      first ??= collection;
+      return doc.id === '1' && (always || collection === first) ? { ...doc, title: doc.title.slice(1) } : doc;
+    };
+  }
+
+  it('imports once more when a stored document differs, and reports the retry', async () => {
+    const typesense = fakeTypesense();
+    dropLetter(typesense);
+    const { result } = await update(typesense, [OLDER]);
+
+    expect(result.outcome).toBe('updated');
+    expect(result.retries).toEqual([{ at: expect.any(String), step: 'import', message: expect.stringContaining('record 1 (title)') }]);
+    expect([...typesense.collections.keys()].sort()).toEqual(['meta', result.after.collection]);
+    const summary = await readFile(path.join(result.run_folder, 'summary.md'), 'utf8');
+    expect(summary).toContain('| Retries | 1 |');
+    expect(summary).toContain('## Retries (AC9)');
+  });
+
+  it('fails when the second import is damaged too', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    const before = served(typesense);
+    dropLetter(typesense, { always: true });
+    const { result } = await update(typesense, [NEWER, OLDER]);
+
+    expect(result).toMatchObject({ outcome: 'failed', step: 'import' });
+    expect(result.retries).toHaveLength(1);
+    expect(result.message).toContain('record 1 (title)');
+    expect(served(typesense)).toEqual(before);
+    expect(typesense.collections.size).toBe(2);
+  });
+
+  it('does not retry the checks before the import, which depend only on the data', async () => {
+    // sample.csv plus a row whose reason differs from another only in capitals.
+    const file = path.join(root, 'case.csv');
+    const sample = await readFile(fixture('sample.csv'), 'utf8');
+    const row2 = sample.split('\n').find((line) => line.startsWith('2,'));
+    await writeFile(file, `${sample}${row2.replace(/^2,/, '900000401,').replace('Duplication of/in Image;', 'duplication of/in image;')}\n`);
+    const typesense = fakeTypesense();
+    const { result } = await update(typesense, [{ ...OLDER, file }]);
+
+    expect(result).toMatchObject({ outcome: 'failed', step: 'import', retries: [] });
+    expect(result.message).toContain('differ only in capitals or accents');
+    expect(typesense.importBodies).toEqual([]);
+  });
+});
+
+describe('checks after the switch (AC10)', () => {
+  it('counts the cleaned records with DuckDB, as the documents have them', async () => {
+    const outputDir = path.join(root, 'clean', '2026-10-13-aaaaaaaa');
+    await runCleaning({ inputPath: fixture('sample.csv'), outputDir });
+    const docs = (await readFile(path.join(outputDir, 'search-documents.jsonl'), 'utf8')).trim().split('\n').map((line) => JSON.parse(line));
+    const noticeTypes = {};
+    for (const doc of docs) {
+      noticeTypes[doc.notice_type] = (noticeTypes[doc.notice_type] ?? 0) + 1;
+    }
+    expect(await expectedCounts(path.join(outputDir, 'records.parquet'))).toEqual({
+      documents: 37,
+      defaultView: docs.filter((doc) => doc.notice_type === 'Retraction' && !doc.is_revision).length,
+      noticeTypes,
+    });
+  });
+
+  it('puts the alias and meta document back and deletes the new collection when a count is wrong', async () => {
+    const typesense = fakeTypesense();
+    const first = await update(typesense, [OLDER]);
+    const before = served(typesense);
+    typesense.onSearch = (query, found) => (query.filter_by === DEFAULT_VIEW_FILTER ? { ...found, found: found.found + 1 } : found);
+    const { result } = await update(typesense, [NEWER, OLDER]);
+
+    expect(result).toMatchObject({ outcome: 'failed', step: 'checks after the switch', switched_back: true, after: null });
+    expect(result.message).toMatch(/the default view finds \d+ records, not \d+\. Search is back on the previous snapshot\.$/);
+    expect(served(typesense)).toEqual(before);
+    expect([...typesense.collections.keys()].sort()).toEqual(['meta', first.result.after.collection]);
+  });
+
+  it('fails when a notice type count differs', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    typesense.onSearch = (query, found) =>
+      query.facet_by === 'notice_type'
+        ? {
+            ...found,
+            facet_counts: found.facet_counts.map((facet) => ({
+              ...facet,
+              counts: facet.counts.map((count) => (count.value === 'Correction' ? { ...count, count: count.count - 1 } : count)),
+            })),
+          }
+        : found;
+    const { result } = await update(typesense, [NEWER, OLDER]);
+    expect(result).toMatchObject({ outcome: 'failed', step: 'checks after the switch' });
+    expect(result.message).toMatch(/Correction: \d+ in search, \d+ in DuckDB/);
+  });
+
+  it('keeps the new collection after a first load, with nothing to go back to, and still fails', async () => {
+    const typesense = fakeTypesense();
+    typesense.onSearch = (query, found) => ({ ...found, found: found.found - 1 });
+    const { result } = await update(typesense, [OLDER]);
+
+    expect(result).toMatchObject({ outcome: 'failed', step: 'checks after the switch', switched_back: false });
+    expect(result.message).toContain('There was no previous snapshot to go back to, so search serves the new one.');
+    expect(typesense.aliases.get('retractions')).toMatch(/^retractions_2026-10-13_aaaaaaaa_/);
+    expect(await readFile(path.join(result.run_folder, 'summary.md'), 'utf8')).toContain(
+      'There was no previous snapshot to go back to, so search serves the new one.',
+    );
   });
 });

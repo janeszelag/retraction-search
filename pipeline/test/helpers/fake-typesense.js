@@ -59,6 +59,8 @@ export function fakeTypesense() {
     onImport: null,
     // Set to a function (method, pathname, collectionName) → Error, or null, to fail a request.
     failRequest: null,
+    // Set to a function (query, result, collectionName) → result to change what a search returns.
+    onSearch: null,
   };
 
   const notFound = (what) => new TypesenseError(`Typesense: ${what} not found`, 404);
@@ -148,7 +150,7 @@ export function fakeTypesense() {
     if (action === 'search' && method === 'GET') {
       const hits = [...found.docs.values()].filter((doc) => matches(doc, query.filter_by));
       const facetFields = query.facet_by ? query.facet_by.split(',') : [];
-      return {
+      const result = {
         found: hits.length,
         hits: [],
         facet_counts: facetFields.map((field) => {
@@ -162,12 +164,19 @@ export function fakeTypesense() {
           return { field_name: field, counts: [...counts].map(([value, count]) => ({ value, count })) };
         }),
       };
+      return state.onSearch ? state.onSearch(query, result, resolve(name)) : result;
     }
     if (action === '' && method === 'POST') {
       if (query.action === 'upsert' || !found.docs.has(String(json.id))) {
         found.docs.set(String(json.id), json);
         return json;
       }
+    }
+    if (parts.length === 4 && method === 'DELETE') {
+      if (!found.docs.delete(parts[3])) {
+        throw notFound(`document ${parts[3]}`);
+      }
+      return { id: parts[3] };
     }
     if (parts.length === 4 && method === 'GET') {
       const doc = found.docs.get(parts[3]);

@@ -50,7 +50,7 @@ The work goes up in three pull requests:
 - [x] **9. Failing loudly.** Every failed step stops the run before the switch and names the step. The change limits (`MAX_REMOVED` 50, `MAX_EMPTIED` 100, `MAX_CHANGED_SHARE` one half, and no fall in records) stop it after the diff, with `--accept-changes` to let one run through. The staleness check from task 4 runs too. (AC7, AC8, AC11)
   - Done when: the plan's tests for AC7, AC8 and AC11 pass, including values one below each limit passing. A stopped run still writes the diff and `result.json`.
 
-- [ ] **10. Retry, and the checks after the switch.** Retry the import once on `DocumentCheckError` or `FacetCheckError` only. After the switch, check through the alias:
+- [x] **10. Retry, and the checks after the switch.** Retry the import once on `DocumentCheckError` or `FacetCheckError` only. After the switch, check through the alias:
   - the meta document's data date and commit
   - the document count
   - the default view's count and the count for each notice type, against DuckDB

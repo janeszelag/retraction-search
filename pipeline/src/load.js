@@ -501,12 +501,40 @@ export async function switchTo({ request, imported, upstreamCommit = null, now =
     // Full names for the journal and publisher facet values Typesense cut short.
     cut_names: imported.cut,
   };
-  await writeMeta(request, meta);
+  try {
+    await writeMeta(request, meta);
+  } catch (error) {
+    // The alias and the meta document must agree, so put the alias back.
+    if (previous) {
+      await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: previous } }).catch(() => {});
+    }
+    throw error;
+  }
   log(`Pointed the ${ALIAS} alias at ${imported.collection}${previous ? ` (it was ${previous})` : ''}.`);
   log(
     `Stored full names for ${Object.keys(imported.cut.journal).length} journal and ${Object.keys(imported.cut.publisher).length} publisher values cut at 255 bytes.`,
   );
   return { previous, previousMeta, meta };
+}
+
+// Undoes switchTo: points the alias back at the previous collection, puts
+// back the previous meta document and deletes the new collection. After a
+// first load there's nothing to go back to, so search keeps the new one.
+// Returns whether it went back.
+export async function switchBack({ request, switched, collection, log = console.log }) {
+  if (!switched.previous) {
+    log(`There was no previous collection to go back to, so the ${ALIAS} alias stays on ${collection}.`);
+    return false;
+  }
+  await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: switched.previous } });
+  if (switched.previousMeta) {
+    await writeMeta(request, switched.previousMeta);
+  } else {
+    await request('DELETE', `/collections/${META_COLLECTION}/documents/current`);
+  }
+  await request('DELETE', `/collections/${encodeURIComponent(collection)}`);
+  log(`Pointed the ${ALIAS} alias back at ${switched.previous}, restored the meta document and deleted ${collection}.`);
+  return true;
 }
 
 // Step 3: deletes snapshot collections other than the current and previous ones.

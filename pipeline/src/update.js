@@ -11,7 +11,8 @@ import { ColumnCheckError, IntegrityError, runCleaning } from './clean.js';
 import { diffMarkdown, runDiff, snapshotName } from './diff.js';
 import { downloadSnapshot } from './download.js';
 import { fileExists } from './files.js';
-import { cleanUp, importSnapshot, readMeta, switchTo } from './load.js';
+import { openDatabase, queryRows, sqlString } from './duckdb.js';
+import { ALIAS, cleanUp, DocumentCheckError, FacetCheckError, importSnapshot, readMeta, switchBack, switchTo } from './load.js';
 import {
   cleanDir as defaultCleanDir,
   diffDir as defaultDiffDir,
@@ -91,6 +92,58 @@ function describeBrokenLimits(limits) {
     .join('; ');
 }
 
+// Counts from DuckDB on the cleaned records, for the checks after the switch (AC10).
+// The default view is what the site shows first: retractions, without revised versions.
+export async function expectedCounts(recordsParquet) {
+  const rows = await queryRows(
+    await openDatabase(),
+    `SELECT notice_type, CAST(count(*) AS INTEGER) AS records,
+       CAST(count(*) FILTER (WHERE notice_type = 'Retraction' AND NOT is_revision) AS INTEGER) AS default_view
+     FROM read_parquet(${sqlString(recordsParquet)})
+     GROUP BY notice_type ORDER BY notice_type`,
+  );
+  return {
+    documents: rows.reduce((sum, row) => sum + row.records, 0),
+    defaultView: rows.reduce((sum, row) => sum + row.default_view, 0),
+    noticeTypes: Object.fromEntries(rows.map((row) => [row.notice_type, row.records])),
+  };
+}
+
+export const DEFAULT_VIEW_FILTER = 'notice_type:=Retraction && is_revision:=false';
+
+// Asks Typesense through the alias, as the site does, and compares with
+// the new meta document and DuckDB's counts. Throws with every difference.
+export async function checkThroughAlias(request, { meta, expected }) {
+  const search = (query) =>
+    request('GET', `/collections/${ALIAS}/documents/search`, { query: { q: '*', per_page: 0, ...query } });
+  const problems = [];
+  const served = await readMeta(request);
+  if (served?.data_date !== meta.data_date || served?.upstream_commit !== meta.upstream_commit) {
+    problems.push(
+      `the meta document names ${served?.data_date ?? 'nothing'} (${served?.upstream_commit?.slice(0, 8) ?? 'no commit'}), not ${meta.data_date} (${meta.upstream_commit?.slice(0, 8)})`,
+    );
+  }
+  const all = await search({ facet_by: 'notice_type', max_facet_values: 100 });
+  if (all.found !== expected.documents) {
+    problems.push(`search finds ${all.found} documents, not ${expected.documents}`);
+  }
+  const defaultView = await search({ filter_by: DEFAULT_VIEW_FILTER });
+  if (defaultView.found !== expected.defaultView) {
+    problems.push(`the default view finds ${defaultView.found} records, not ${expected.defaultView}`);
+  }
+  const servedTypes = Object.fromEntries(
+    (all.facet_counts.find((facet) => facet.field_name === 'notice_type')?.counts ?? []).map((count) => [count.value, count.count]),
+  );
+  for (const type of new Set([...Object.keys(expected.noticeTypes), ...Object.keys(servedTypes)])) {
+    if ((servedTypes[type] ?? 0) !== (expected.noticeTypes[type] ?? 0)) {
+      problems.push(`${type}: ${servedTypes[type] ?? 0} in search, ${expected.noticeTypes[type] ?? 0} in DuckDB`);
+    }
+  }
+  if (problems.length > 0) {
+    throw new Error(`Search through the ${ALIAS} alias doesn't match the new snapshot: ${problems.join('; ')}.`);
+  }
+}
+
 const cleaningStep = (error) =>
   error instanceof ColumnCheckError ? 'column check' : error instanceof IntegrityError ? 'cleaning checks' : 'cleaning';
 
@@ -135,12 +188,29 @@ export function summaryMarkdown(result, diff) {
         .join(', ') || 'none',
     ],
     ['Change limits', describeLimitsOutcome(result)],
+    ['Retries', result.retries.length === 0 ? 'none' : String(result.retries.length)],
     ['Started', result.started_at],
     ['Took', `${formatNumber(result.seconds)} s`],
   ];
   const sections = [`# ${heading}`, table(['', ''], rows)];
   if (result.outcome === 'failed') {
-    sections.push('## What failed', `Step: ${result.step}`, `Message: ${result.message}`, 'Search still serves the snapshot it had before the run.');
+    sections.push(
+      '## What failed',
+      `Step: ${result.step}`,
+      `Message: ${result.message}`,
+      result.switched_back === false
+        ? 'There was no previous snapshot to go back to, so search serves the new one.'
+        : 'Search still serves the snapshot it had before the run.',
+    );
+  }
+  if (result.retries.length > 0) {
+    sections.push(
+      '## Retries (AC9)',
+      table(
+        ['Time', 'Step', 'Why'],
+        result.retries.map((retry) => [retry.at, retry.step, retry.message]),
+      ),
+    );
   }
   if (result.limits) {
     sections.push(
@@ -196,6 +266,8 @@ export async function runUpdate({
     accept_changes: acceptChanges,
     limits: null,
     limits_overridden: false,
+    retries: [],
+    switched_back: null,
     before: null,
     target: null,
     after: null,
@@ -264,10 +336,42 @@ export async function runUpdate({
       log(result.diff_note);
     }
 
-    const imported = await step('import', () => importSnapshot({ snapshotDir: cleaned.outputDir, request, log, now: now() }));
+    // A check of what Typesense stored can fail where a new import passes, so
+    // those two checks get one more import (AC9). Other failures don't.
+    const imported = await step('import', async () => {
+      try {
+        return await importSnapshot({ snapshotDir: cleaned.outputDir, request, log, now: now() });
+      } catch (error) {
+        if (!(error instanceof DocumentCheckError || error instanceof FacetCheckError)) {
+          throw error;
+        }
+        result.retries.push({ at: now().toISOString(), step: 'import', message: redact(error.message, secrets) });
+        log(`Importing once more, because ${redact(error.message, secrets)}`);
+        return importSnapshot({ snapshotDir: cleaned.outputDir, request, log, now: now() });
+      }
+    });
+
+    const expected = await step('count the new snapshot', () => expectedCounts(path.join(cleaned.outputDir, 'records.parquet')));
     const switched = await step('switch', () =>
       switchTo({ request, imported, upstreamCommit: commit.id, now: now(), log }),
     );
+    await step('checks after the switch', async () => {
+      try {
+        await checkThroughAlias(request, { meta: switched.meta, expected });
+      } catch (error) {
+        try {
+          result.switched_back = await switchBack({ request, switched, collection: imported.collection, log });
+        } catch (undoError) {
+          throw new Error(`${error.message} Going back to the previous collection also failed: ${undoError.message}`);
+        }
+        throw new Error(
+          result.switched_back
+            ? `${error.message} Search is back on the previous snapshot.`
+            : `${error.message} There was no previous snapshot to go back to, so search serves the new one.`,
+        );
+      }
+      log(`Search through the ${ALIAS} alias matches the new snapshot: ${expected.documents} documents, ${expected.defaultView} in the default view.`);
+    });
     result.after = describeLoaded(switched.meta);
     await step('clean up', () => cleanUp({ request, current: imported.collection, previous: switched.previous, log }));
     result.outcome = 'updated';
