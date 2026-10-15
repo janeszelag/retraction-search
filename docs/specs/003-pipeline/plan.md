@@ -1,6 +1,6 @@
 # Plan 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB) and [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) apply.
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
 
 External facts below were checked on 2026-10-14 unless marked otherwise.
 
@@ -17,7 +17,7 @@ GitHub Actions: update.yml (01:17 and 07:17 UTC, or started by hand)
        5. diff loaded ─► new                              sql/40_diff.sql, diff.js
        6. change limits (AC8) ─► stop unless --accept-changes
        7. import into a new collection, with its checks          load.js
-          └─ facet-value check fails ─► delete it and import once more (AC9)
+          └─ a stored document differs ─► delete it and import once more (AC9)
        8. switch the alias, write meta, check through the alias (AC10)
           └─ a check fails ─► alias and meta go back, run fails
        9. delete collections older than the previous one
@@ -41,7 +41,8 @@ pipeline/
   src/diff.js               runs the diff, writes diff.json and diff.md
   src/update.js             the whole update (steps 1–10)
   src/upstream.js           newest upstream commit and working-day staleness, moved out of download.js
-  src/load.js               split into import, switch and clean-up steps; keys made optional
+  src/load.js               split into import, switch and clean-up steps; escaped imports and a check
+                            of stored documents; keys made optional
   test/diff.test.js, test/update.test.js
   test/fixtures/sample-next.csv   sample.csv with rows added, removed and changed
   test/fixtures/empty-rows.csv    sample.csv followed by empty rows, as upstream wrote them
@@ -139,7 +140,12 @@ Some upstream files end with rows where every field is empty: 20 commas and noth
 
 `runLoad` in `load.js` becomes three steps that `npm run load` and `npm run update` both call:
 
-1. **`importSnapshot`:** creates the collection, imports, and runs the count and facet-value checks (plan 002). On failure it deletes the collection, as now. The facet-value check throws a new `FacetCheckError`, a kind of `ValueCheckError`. The update retries only that error, once. The checks before import (spellings that differ only in capitals or accents, names sharing 255 bytes) depend only on the data, so a retry can't fix them.
+1. **`importSnapshot`:** creates the collection and imports it, with every non-ASCII character written as a `\uXXXX` escape (decision record 004). It then runs three checks, and on a failure deletes the collection, as now:
+   - **Count (plan 002):** the collection holds as many documents as were imported.
+   - **Stored documents (new):** it exports the collection and compares every field of every document with `search-documents.jsonl`, ignoring the order of keys inside the `original` object, which Typesense changes. A difference throws a new `DocumentCheckError`, naming the record and field.
+   - **Facet values (plan 002):** it still confirms how Typesense cut names longer than 255 bytes, and throws a new `FacetCheckError`.
+
+   Both new errors are kinds of `ValueCheckError`. The update retries only these two, once. The checks before import (spellings that differ only in capitals or accents, names sharing 255 bytes) depend only on the data, so a retry can't fix them.
 2. **`switchTo`:** reads the current meta document, points the alias at the new collection and writes the new meta document. It returns the previous alias target and meta document, so the update can undo it.
 3. **`cleanUp`:** deletes collections older than the previous one, as now.
 
@@ -218,7 +224,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - After the first load, restarting the service keeps the collections.
 - Deleting the collections, then running the workflow by hand, rebuilds them. The volume itself isn't deleted for this check: a run that starts from an empty server is the same case as a lost volume.
 
-**Cost:** decision record 002 expects about $5 a month in all, with a worst case of $50. Steady memory of about 450 MB is about $4.50 a month at Railway's prices. CPU is mostly idle apart from a short load each day. The daily upload of about 110 MB of documents is incoming data, which the pricing page doesn't charge for (unverified, since it doesn't say so outright). Egress is small, since nothing searches the hosted server until Phase 4. The success metric compares the first full week with this estimate.
+**Cost:** decision record 002 expects about $5 a month in all, with a worst case of $50. Steady memory of about 450 MB is about $4.50 a month at Railway's prices. CPU is mostly idle apart from a short load each day. The daily upload of about 110 MB of documents is incoming data, which the pricing page doesn't charge for (unverified, since it doesn't say so outright). Egress is small, since nothing searches the hosted server until Phase 4. The check of stored documents exports about 113 MB after each load, about 3.4 GB a month, or about $0.17 (decision record 004). The success metric compares the first full week with this estimate.
 
 ## Runbook (AC21)
 
@@ -236,7 +242,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | AC7 | A broken fixture (missing column), a failed download and a failed import each stop the run, name the step, and leave the fake server's alias and meta unchanged |
 | AC8 | Fewer records, 51 removals, 101 emptied records and changes to more than half the records each stop the run. Values one below each limit pass. `--accept-changes` lets a stopped run through and is recorded. |
 | Spec 001 AC2 (changed 2026-10-14) | `empty-rows.csv` cleans to the same output as `sample.csv`, and the profile reports the empty rows dropped. A row with only a Record ID is kept. A row with a title but no Record ID still stops the cleaning. |
-| AC9 | A fake server that fails the facet-value check once: the run retries and succeeds, and the summary reports the retry. Failing twice fails the run. Failing the checks before import isn't retried. |
+| AC9 | `load.test.js`: the import body is pure ASCII and parses back to the same documents, including characters outside the Basic Multilingual Plane. A stored document with one letter missing fails the check and names the record and field, while a reordered `original` object passes. `update.test.js`: a fake server that drops a letter on the first import only: the run retries and succeeds, and the summary reports the retry. Failing twice fails the run. Failing the checks before import isn't retried. |
 | AC10 | A fake server whose post-switch count is wrong: the alias and meta go back, the new collection is deleted, and the run fails |
 | AC11 | Working-day staleness, with dates around weekends and the three-day limit |
 | AC12, AC13 | Manual: the workflow runs on its schedule for the done-when week. `tasks.md` records the hosted data date each day against upstream's newest commit. |
@@ -283,6 +289,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
   - **Cost of escaping:** the upload grows from 112.7 MB to 114.2 MB (1.3%), and the import time is unchanged (median 6.4 s against 6.2 s).
   - **Cost of the full comparison:** exporting the whole collection is 112.7 MB and took 3 s locally.
   - **Data loaded before:** the collection the local site served on 2026-10-15 (loaded 2026-10-14) matched the cleaned file exactly.
+  - **Decision:** escape every import and check every stored document, with one retry. Agreed with the owner on 2026-10-15 and recorded in decision record [004](../../decisions/004-typesense-import-escaping.md). AC9 changed to match.
 - **S3, Railway (AC16, AC19), once the owner has set up the account.** Confirm the port, HTTPS, 401 and restart behavior. Load from the laptop with `--env-file .env.hosted`, timing the upload. Read Railway's memory graph with one, two and three collections loaded.
 
 ## Trade-offs
@@ -296,6 +303,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 7. **A staleness limit without a holiday calendar.** It's simpler, at the cost of a likely false alarm in late December.
 8. **Limits on lost data, not on changed values.** A tight limit on changes would have stopped the 2026-10-09 journal batch and the 2025 reason reclassification, both real edits. The cost is that a broken file that changes values without emptying or removing anything, on fewer than half the records, gets through. The diff still reports it, so a reader can spot it.
 9. **Dropping empty rows instead of stopping on them.** They carry no data, and they appeared for weeks at a time, so stopping would have kept the site stale for weeks. A row with any value at all still goes through every check.
+10. **Checking every stored document after each load.** It costs one export of about 113 MB per load, about $0.17 a month on Railway. In return it catches any change Typesense makes to stored text, not only the import bug that escaping avoids (decision record 004).
 
 ## Changes to other documents
 
@@ -304,6 +312,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - **Data issues:** empty rows under "File format" (in this pull request), and the change limits under "Checks that stop a run" once they're built.
 - **`CLAUDE.md`:** `npm run update` and `npm run diff` in the commands table, once they work.
 - **Decision record 002:** the first week's measured cost, added to "Expected cost", once known.
+- **Decision record 004:** the Typesense import bug and the fix, agreed 2026-10-15 (in the first pull request).
+- **Plan 002 and data issues:** the cause of the facet-check failure (in the first pull request). Data issues also gets the check of stored documents under "Checks that stop a run" once it's built.
 
 ## Commands
 
@@ -319,3 +329,4 @@ The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep w
 
 - Whether GitHub's "enable workflow" call alone keeps the schedule alive (see the spec's open questions).
 - Whether the hosted server keeps the previous collection, decided after spike S3 (trade-off 4).
+- When a Typesense release fixes the import bug. [typesense/typesense#3109](https://github.com/typesense/typesense/pull/3109) says it fixes it, and was open and unreviewed on 2026-10-15. Escaping and the check can stay either way (decision record 004).

@@ -101,7 +101,7 @@ A spelling that differs by a typo rather than by capitals, such as "Placenta" an
 - any document fails to import, or the number loaded differs from the number in the snapshot
 - two values of a filter field differ only in capitals or accents, which the cleaning should have merged
 - two journal or publisher names share their first 255 bytes, so Typesense would merge their counts
-- a journal or publisher value that Typesense returns doesn't match the documents. This happened once in nine loads on 2026-10-13: right after an import, Typesense returned a publisher name with one letter missing. It didn't happen again in eight more loads or in 1,435 repeated searches, and the cause is unknown. The daily run (spec 003) should retry once when it happens.
+- a journal or publisher value that Typesense returns doesn't match the documents. This happened once in nine loads on 2026-10-13: right after an import, Typesense returned a publisher name with one letter missing. Spike S2 of spec 003 found the cause on 2026-10-15: a Typesense bug ([typesense/typesense#3071](https://github.com/typesense/typesense/issues/3071)) drops a letter from imported text in about one import in three. See decision record [004](decisions/004-typesense-import-escaping.md) for the fix.
 
 ## Out of scope
 
