@@ -118,7 +118,7 @@ Every criterion is checked locally against one pinned snapshot. "List fields" ar
 
 - AC31: Every feature works at 375 pixels wide as well as on a desktop screen, without horizontal scrolling.
 - AC32: Every control works from the keyboard alone and has a label that screen readers announce, and each filter value is announced with its count. Notice types aren't told apart by color alone. An automated accessibility check finds no WCAG 2.2 AA violations on the start, results, no-results and record pages, and a manual VoiceOver check covers one full search.
-- AC33: Proposed budgets: on a laptop running the local search server, the site's server code returns results for a search or filter change in under 300 ms at the 95th percentile, over a fixed set of test queries. A shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test, the "good" threshold on web.dev (checked 2026-10-13).
+- AC33: Budgets, confirmed by the owner on 2026-10-14: on a laptop running the local search server, the site's server code returns results for a search or filter change in under 300 ms at the 95th percentile, over a fixed set of test queries. A shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test, the "good" threshold on web.dev (checked 2026-10-13).
 
 **Running it**
 
@@ -148,5 +148,5 @@ All acceptance criteria pass locally, and the chosen design is recorded in `plan
 ## Open questions
 
 - **Design:** where the filters sit, how dense the results are, how field terms are added, and whether results expand in place or open their record page. To be chosen from prototypes.
-- **Budgets:** the numbers in AC33 are proposals to confirm.
+- **Budgets:** the owner confirmed the numbers in AC33 on 2026-10-14.
 - **Retraction Watch URLs that aren't posts:** in the 2026-10-09 snapshot (checked 2026-10-13), 40,143 records list at least one retractionwatch.com URL. Most are dated blog posts (3,878 distinct). One post is linked from 10,855 records, and 2,589 posts are linked from a single record. 545 distinct URLs go to other Retraction Watch pages, such as its list of retracted COVID-19 papers, its leaderboard and site searches for a person's name. Decide how to label those so they don't read as this site's own ranking or profile. Post titles aren't in the data; the prototypes derive link text from each post's web address.
