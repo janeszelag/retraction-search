@@ -2,7 +2,7 @@
 // reads what the server has, finds the newest upstream commit, downloads,
 // cleans and diffs it, imports it into a new collection, and switches search
 // to it. Writes summary.md and result.json to data/runs/<start time>/.
-// Usage: npm run update [-- --force] [-- --commit <sha>] [-- --env-file <path>]
+// Usage: npm run update [-- --force] [-- --commit <sha>] [-- --accept-changes] [-- --env-file <path>]
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -22,7 +22,7 @@ import {
 } from './paths.js';
 import { formatNumber, table } from './reports.js';
 import { typesenseClient } from './typesense.js';
-import { dataDateFromCommit, findCommit } from './upstream.js';
+import { checkFreshness, dataDateFromCommit, findCommit } from './upstream.js';
 
 // A failed step. The run stops before search changes, and the message names the step (AC7).
 export class StepError extends Error {
@@ -45,6 +45,52 @@ async function step(name, run) {
   }
 }
 
+// The change limits (AC8), from spike S1. Over 40 updates, one update removed
+// at most 1 record, emptied a field in at most 1 and changed at most 655 (0.9%).
+export const MAX_REMOVED = 50;
+export const MAX_EMPTIED = 100;
+export const MAX_CHANGED_SHARE = 0.5;
+
+// Checks a diff against the limits. Each check has its value, its limit and whether it passed.
+export function checkChangeLimits(diff) {
+  const loaded = diff.from.records;
+  return [
+    {
+      check: 'records',
+      description: 'records in the new snapshot, which must not fall',
+      value: diff.to.records,
+      limit: loaded,
+      passed: diff.to.records >= loaded,
+    },
+    { check: 'removed', description: 'records removed', value: diff.counts.removed, limit: MAX_REMOVED, passed: diff.counts.removed <= MAX_REMOVED },
+    {
+      check: 'emptied',
+      description: 'records with a filled field now empty',
+      value: diff.counts.emptied,
+      limit: MAX_EMPTIED,
+      passed: diff.counts.emptied <= MAX_EMPTIED,
+    },
+    {
+      check: 'changed',
+      description: 'records changed, at most half of those loaded',
+      value: diff.counts.changed,
+      limit: Math.floor(loaded * MAX_CHANGED_SHARE),
+      passed: diff.counts.changed <= loaded * MAX_CHANGED_SHARE,
+    },
+  ];
+}
+
+function describeBrokenLimits(limits) {
+  return limits
+    .filter((limit) => !limit.passed)
+    .map((limit) =>
+      limit.check === 'records'
+        ? `the new snapshot has ${formatNumber(limit.value)} records, fewer than the ${formatNumber(limit.limit)} loaded`
+        : `${formatNumber(limit.value)} ${limit.description.split(',')[0]}, more than the limit of ${formatNumber(limit.limit)}`,
+    )
+    .join('; ');
+}
+
 const cleaningStep = (error) =>
   error instanceof ColumnCheckError ? 'column check' : error instanceof IntegrityError ? 'cleaning checks' : 'cleaning';
 
@@ -60,6 +106,16 @@ const describeLoaded = (meta) =>
 const describeSnapshot = (snapshot) =>
   snapshot ? `${snapshot.data_date} (upstream commit ${(snapshot.upstream_commit ?? snapshot.commit).slice(0, 8)})` : 'nothing';
 
+function describeLimitsOutcome(result) {
+  if (!result.limits) {
+    return 'not checked';
+  }
+  if (result.limits.every((limit) => limit.passed)) {
+    return 'passed';
+  }
+  return result.limits_overridden ? 'exceeded, and let through with --accept-changes' : 'exceeded';
+}
+
 // summary.md: what the run did, followed by the diff (AC6).
 export function summaryMarkdown(result, diff) {
   const heading = {
@@ -72,13 +128,28 @@ export function summaryMarkdown(result, diff) {
     ['Before', describeSnapshot(result.before)],
     ['After', describeSnapshot(result.after ?? result.before)],
     ['Upstream snapshot', result.target ? describeSnapshot(result.target) : 'not found'],
-    ['Options', [result.forced && '--force', result.requested_commit && `--commit ${result.requested_commit}`].filter(Boolean).join(', ') || 'none'],
+    [
+      'Options',
+      [result.forced && '--force', result.requested_commit && `--commit ${result.requested_commit}`, result.accept_changes && '--accept-changes']
+        .filter(Boolean)
+        .join(', ') || 'none',
+    ],
+    ['Change limits', describeLimitsOutcome(result)],
     ['Started', result.started_at],
     ['Took', `${formatNumber(result.seconds)} s`],
   ];
   const sections = [`# ${heading}`, table(['', ''], rows)];
   if (result.outcome === 'failed') {
     sections.push('## What failed', `Step: ${result.step}`, `Message: ${result.message}`, 'Search still serves the snapshot it had before the run.');
+  }
+  if (result.limits) {
+    sections.push(
+      '## Change limits (AC8)',
+      table(
+        ['Check', 'Value', 'Limit', 'Passed'],
+        result.limits.map((limit) => [limit.description, formatNumber(limit.value), formatNumber(limit.limit), limit.passed ? 'yes' : 'NO']),
+      ),
+    );
   }
   if (diff) {
     sections.push(diffMarkdown(diff, { level: 2 }));
@@ -103,6 +174,7 @@ export async function runUpdate({
   fetch: fetchImpl = globalThis.fetch,
   force = false,
   commit: requestedCommit = null,
+  acceptChanges = false,
   now = () => new Date(),
   rawDir = defaultRawDir,
   cleanDir = defaultCleanDir,
@@ -121,6 +193,9 @@ export async function runUpdate({
     seconds: null,
     forced: force,
     requested_commit: requestedCommit,
+    accept_changes: acceptChanges,
+    limits: null,
+    limits_overridden: false,
     before: null,
     target: null,
     after: null,
@@ -135,6 +210,10 @@ export async function runUpdate({
 
     const commit = await step('find the upstream snapshot', () => findCommit(requestedCommit, { fetch: fetchImpl }));
     result.target = { data_date: dataDateFromCommit(commit), commit: commit.short_id, upstream_commit: commit.id, committed_at: commit.committed_date };
+    // Whether or not the server is up to date. A given commit is old on purpose.
+    if (!requestedCommit) {
+      await step('staleness check', () => checkFreshness(commit, now()));
+    }
 
     if (!force && !requestedCommit && result.before?.upstream_commit === commit.id) {
       result.outcome = 'up-to-date';
@@ -165,6 +244,19 @@ export async function runUpdate({
       diff = written.diff;
       result.diff = { ...diff.counts, folder: relativeToRepo(written.outputDir) };
       log(`Diff: ${diff.counts.added} added, ${diff.counts.removed} removed, ${diff.counts.changed} changed.`);
+
+      result.limits = checkChangeLimits(diff);
+      if (result.limits.some((limit) => !limit.passed)) {
+        const broken = describeBrokenLimits(result.limits);
+        if (!acceptChanges) {
+          throw new StepError(
+            'change limits',
+            new Error(`Compared with the loaded snapshot, ${broken}. Read the diff, then rerun with --accept-changes to let this run through.`),
+          );
+        }
+        result.limits_overridden = true;
+        log(`Past the change limits (${broken}), and let through with --accept-changes.`);
+      }
     } else {
       result.diff_note = result.before
         ? 'Nothing to compare against: the server’s meta document doesn’t record the loaded snapshot’s upstream commit.'
@@ -216,6 +308,7 @@ async function main() {
     options: {
       force: { type: 'boolean', default: false },
       commit: { type: 'string' },
+      'accept-changes': { type: 'boolean', default: false },
       'env-file': { type: 'string' },
     },
   });
@@ -227,6 +320,7 @@ async function main() {
     request: typesenseClient({ url, key }),
     force: values.force,
     commit: values.commit ?? null,
+    acceptChanges: values['accept-changes'],
     secrets: [url, key],
   });
   console.log(`${result.outcome === 'failed' ? 'Failed' : 'Done'} in ${result.seconds} s. Wrote ${relativeToRepo(result.run_folder)}.`);

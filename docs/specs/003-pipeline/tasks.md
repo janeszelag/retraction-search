@@ -47,7 +47,7 @@ The work goes up in three pull requests:
 - [x] **8. Update command.** `src/update.js` and `npm run update`, with `--force`, `--commit` and `--env-file`. It reads the meta document, finds the newest commit, downloads both snapshots, cleans, diffs, loads and switches, and writes `result.json` and `summary.md`. A server with no meta document gets a full load and "nothing to compare against". (AC1, AC2, AC3, AC6, AC18)
   - Done when: the plan's tests for AC1, AC2, AC3 and AC18 pass against a fake Typesense client and fake GitLab responses. On the local stack, `npm run update -- --commit 2cf47753` and then `npm run update` move from the 2026-10-13 snapshot to the newest with a diff, and a third run says "up to date".
 
-- [ ] **9. Failing loudly.** Every failed step stops the run before the switch and names the step. The change limits (`MAX_REMOVED` 50, `MAX_EMPTIED` 100, `MAX_CHANGED_SHARE` one half, and no fall in records) stop it after the diff, with `--accept-changes` to let one run through. The staleness check from task 4 runs too. (AC7, AC8, AC11)
+- [x] **9. Failing loudly.** Every failed step stops the run before the switch and names the step. The change limits (`MAX_REMOVED` 50, `MAX_EMPTIED` 100, `MAX_CHANGED_SHARE` one half, and no fall in records) stop it after the diff, with `--accept-changes` to let one run through. The staleness check from task 4 runs too. (AC7, AC8, AC11)
   - Done when: the plan's tests for AC7, AC8 and AC11 pass, including values one below each limit passing. A stopped run still writes the diff and `result.json`.
 
 - [ ] **10. Retry, and the checks after the switch.** Retry the import once on `DocumentCheckError` or `FacetCheckError` only. After the switch, check through the alias:

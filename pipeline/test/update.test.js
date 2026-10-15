@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { redact, runUpdate } from '../src/update.js';
+import { checkChangeLimits, MAX_EMPTIED, MAX_REMOVED, redact, runUpdate } from '../src/update.js';
+import { TypesenseError } from '../src/typesense.js';
 import { fakeGitlab } from './helpers/fake-gitlab.js';
 import { fakeTypesense } from './helpers/fake-typesense.js';
 
@@ -147,12 +148,14 @@ describe('already up to date, --force and --commit (AC2)', () => {
   it('loads a given upstream commit with --commit, to roll back', async () => {
     const typesense = fakeTypesense();
     await update(typesense, [NEWER, OLDER]);
-    const { result } = await update(typesense, [NEWER, OLDER], { commit: 'aaaaaaaa' });
+    // Rolling back means fewer records, so it needs --accept-changes too (AC8).
+    const { result } = await update(typesense, [NEWER, OLDER], { commit: 'aaaaaaaa', acceptChanges: true });
 
     expect(result.outcome).toBe('updated');
     expect(result.requested_commit).toBe('aaaaaaaa');
     expect(result.after).toMatchObject({ data_date: '2026-10-13', upstream_commit: OLDER.id });
     expect(result.diff).toMatchObject({ added: 1, removed: 2 });
+    expect(result.limits_overridden).toBe(true);
   });
 });
 
@@ -176,11 +179,167 @@ describe('secrets in messages (AC17)', () => {
 
   it('hides them in a failed run’s result', async () => {
     const typesense = fakeTypesense();
-    const { TypesenseError } = await import('../src/typesense.js');
     typesense.failRequest = () => new TypesenseError("Can't reach Typesense at https://search.example.app (ECONNREFUSED).");
     const { result } = await update(typesense, [OLDER], { secrets: ['https://search.example.app'] });
     expect(result).toMatchObject({ outcome: 'failed', step: 'read the server' });
     expect(result.message).toBe("Can't reach Typesense at [hidden] (ECONNREFUSED).");
     expect(await readFile(path.join(result.run_folder, 'result.json'), 'utf8')).not.toContain('search.example.app');
+  });
+});
+
+// What search serves: the alias target and the meta document.
+const served = (typesense) => ({
+  alias: typesense.aliases.get('retractions'),
+  meta: JSON.stringify(typesense.collections.get('meta')?.docs.get('current') ?? null),
+});
+
+describe('failing loudly (AC7)', () => {
+  const BROKEN = { ...NEWER, id: 'd'.repeat(40), file: fixture('missing-column.csv') };
+
+  async function failedRun(setup, commits, options) {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    const before = served(typesense);
+    const collections = [...typesense.collections.keys()].sort();
+    setup?.(typesense);
+    const { result } = await update(typesense, commits, options);
+    expect(served(typesense)).toEqual(before);
+    expect([...typesense.collections.keys()].sort()).toEqual(collections);
+    expect(JSON.parse(await readFile(path.join(result.run_folder, 'result.json'), 'utf8'))).toMatchObject({
+      outcome: 'failed',
+      step: result.step,
+    });
+    expect(await readFile(path.join(result.run_folder, 'summary.md'), 'utf8')).toContain(`# Failed at the ${result.step} step`);
+    return result;
+  }
+
+  it('stops at the column check on a file with a missing column', async () => {
+    const result = await failedRun(null, [BROKEN, OLDER]);
+    expect(result).toMatchObject({ step: 'column check' });
+    expect(result.message).toContain('expected column "Journal" is missing');
+  });
+
+  it('stops at the download when GitLab fails', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    const before = served(typesense);
+    const gitlab = fakeGitlab([NEWER, OLDER]);
+    const failing = (url, init) => (String(url).includes('/-/raw/') ? Promise.resolve(new Response('busy', { status: 503 })) : gitlab.fetch(url, init));
+    const { result } = await update(typesense, [NEWER, OLDER], { fetch: failing });
+    expect(result).toMatchObject({ outcome: 'failed', step: 'download' });
+    expect(result.message).toContain('Download failed with status 503');
+    expect(served(typesense)).toEqual(before);
+  });
+
+  it('stops at the import when Typesense refuses it, and deletes the new collection', async () => {
+    const result = await failedRun(
+      (typesense) => {
+        typesense.failRequest = (method, pathname) =>
+          pathname.endsWith('/documents/import') ? new TypesenseError(`Typesense POST ${pathname} failed with HTTP 503: Not Ready or Lagging`, 503) : null;
+      },
+      [NEWER, OLDER],
+    );
+    expect(result).toMatchObject({ step: 'import' });
+    expect(result.message).toContain('HTTP 503');
+  });
+
+  it('stops when the given commit does not exist', async () => {
+    const result = await failedRun(null, [NEWER, OLDER], { commit: 'eeeeeeee' });
+    expect(result).toMatchObject({ step: 'find the upstream snapshot' });
+    expect(result.message).toContain('GitLab returned 404');
+  });
+});
+
+describe('change limits (AC8)', () => {
+  const diffOf = ({ from = 1000, to = 1000, removed = 0, emptied = 0, changed = 0 }) => ({
+    from: { records: from },
+    to: { records: to },
+    counts: { added: 0, removed, changed, emptied },
+  });
+  const broken = (counts) => checkChangeLimits(diffOf(counts)).filter((limit) => !limit.passed).map((limit) => limit.check);
+
+  it('stops on fewer records, not on the same number', () => {
+    expect(broken({ to: 999 })).toEqual(['records']);
+    expect(broken({ to: 1000 })).toEqual([]);
+  });
+
+  it(`stops on more than ${MAX_REMOVED} records removed`, () => {
+    expect(broken({ removed: MAX_REMOVED + 1 })).toEqual(['removed']);
+    expect(broken({ removed: MAX_REMOVED })).toEqual([]);
+  });
+
+  it(`stops on more than ${MAX_EMPTIED} records with a field emptied`, () => {
+    expect(broken({ emptied: MAX_EMPTIED + 1 })).toEqual(['emptied']);
+    expect(broken({ emptied: MAX_EMPTIED })).toEqual([]);
+  });
+
+  it('stops when more than half of the loaded records changed', () => {
+    expect(broken({ changed: 501 })).toEqual(['changed']);
+    expect(broken({ changed: 500 })).toEqual([]);
+    expect(broken({ from: 37, to: 37, changed: 19 })).toEqual(['changed']);
+    expect(broken({ from: 37, to: 37, changed: 18 })).toEqual([]);
+  });
+
+  // sample.csv again, as a newer commit after sample-next.csv: one record fewer.
+  const SHRUNK = { ...OLDER, id: 'c'.repeat(40), title: 'Retraction Watch data for 2026-10-15', committed_date: '2026-10-15T00:10:00.000+00:00' };
+
+  it('stops a run past a limit after the diff, and still writes the diff and result.json', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [NEWER, OLDER]);
+    const before = served(typesense);
+    const { result } = await update(typesense, [SHRUNK, NEWER, OLDER]);
+
+    expect(result).toMatchObject({ outcome: 'failed', step: 'change limits', limits_overridden: false });
+    expect(result.message).toBe(
+      'Compared with the loaded snapshot, the new snapshot has 37 records, fewer than the 38 loaded. Read the diff, then rerun with --accept-changes to let this run through.',
+    );
+    expect(served(typesense)).toEqual(before);
+    const diffFolder = path.join(root, `run-${runs}`, 'diff', '2026-10-14-bbbbbbbb_to_2026-10-15-cccccccc');
+    expect(JSON.parse(await readFile(path.join(diffFolder, 'diff.json'), 'utf8')).counts).toMatchObject({ removed: 2 });
+    expect(await readFile(path.join(diffFolder, 'diff.md'), 'utf8')).toContain('## Removed records (2)');
+    const summary = await readFile(path.join(result.run_folder, 'summary.md'), 'utf8');
+    expect(summary).toContain('| Change limits | exceeded |');
+    expect(summary).toContain('| records in the new snapshot, which must not fall | 37 | 38 | NO |');
+    expect(summary).toContain('## Changes from 2026-10-14');
+  });
+
+  it('lets one run through with --accept-changes, and records it', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [NEWER, OLDER]);
+    const { result } = await update(typesense, [SHRUNK, NEWER, OLDER], { acceptChanges: true });
+
+    expect(result).toMatchObject({ outcome: 'updated', accept_changes: true, limits_overridden: true });
+    expect(result.after.upstream_commit).toBe(SHRUNK.id);
+    const summary = await readFile(path.join(result.run_folder, 'summary.md'), 'utf8');
+    expect(summary).toContain('| Options | --accept-changes |');
+    expect(summary).toContain('| Change limits | exceeded, and let through with --accept-changes |');
+  });
+
+  it('records --accept-changes even when no limit was reached', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    const { result } = await update(typesense, [NEWER, OLDER], { acceptChanges: true });
+    expect(result).toMatchObject({ outcome: 'updated', accept_changes: true, limits_overridden: false });
+  });
+});
+
+describe('staleness (AC11)', () => {
+  // 2026-10-21 is a Wednesday: Thursday's 23:00 commit is five working days old by then.
+  const late = () => new Date('2026-10-21T01:17:00Z');
+
+  it('fails when the newest commit is more than three working days old, even when the server has it', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [NEWER, OLDER]);
+    typesense.requests.length = 0;
+    const { result } = await update(typesense, [NEWER, OLDER], { now: late });
+    expect(result).toMatchObject({ outcome: 'failed', step: 'staleness check' });
+    expect(result.message).toContain('is 5 working days old, more than the limit of 3');
+    expect(writes(typesense.requests)).toEqual([]);
+  });
+
+  it('skips the check for a given commit', async () => {
+    const typesense = fakeTypesense();
+    const { result } = await update(typesense, [NEWER, OLDER], { now: late, commit: 'bbbbbbbb' });
+    expect(result.outcome).toBe('updated');
   });
 });
