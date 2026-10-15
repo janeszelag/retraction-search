@@ -267,7 +267,22 @@ GitHub disables scheduled workflows in a public repository after 60 days without
     - **Where:** in the 2026-09-22 file, all 130 were the last lines.
     - **Effect:** spec 001's cleaning stops on them, which led to the AC2 change above.
   - **Caveat:** before 2026-08-18 only monthly snapshots were compared, so a large one-day change earlier than that would show only in its month's totals.
-- **S2, facet-value check (AC9).** Load the newest snapshot 30 times in a row into the local stack and count the facet-check failures. If there's more than one, look for the cause before relying on a single retry. For example, check whether waiting a few seconds and checking again passes without a new import.
+- **S2, facet-value check (AC9). Run 2026-10-15.** The 2026-10-09 snapshot was imported 70 times into fresh collections on the local stack, without touching the alias. That's 73,100 documents in 15 requests of 5,000 documents, about 7.5 MB each, to Typesense 30.2 in Docker on an Apple-silicon Mac. Two checks were used: the load's facet-value check, and an export of the whole collection compared field by field with `search-documents.jsonl`.
+
+  | Request body | Check | Imports | Imports with a damaged value | Damaged values |
+  |---|---|---:|---:|---:|
+  | JSON lines in UTF-8, as the load sends them now | facet values | 30 | 4 | 4 |
+  | The same | every field of every document | 20 | 6 | 7 |
+  | Every non-ASCII character written as `\uXXXX` | every field of every document | 20 | 0 | 0 |
+
+  - **What the damage is:** each damaged value was the cleaned value with exactly one non-ASCII letter missing. They were Cyrillic letters in journal, publisher and author names, and an "é" in an author name. That "é" was the same letter of the same name in two separate imports; every other loss was in a different place. The import reported success for every document.
+  - **Not transient:** after a failed facet check, checking the same collection again straight away, after 5 seconds and after 30 seconds returned the same damaged value. Waiting doesn't help; only a new import does.
+  - **The facet check sees about half of it:** it reads only journal and publisher values. Three of the six damaged imports in the full comparison had damage only in author names, which no check looks at today.
+  - **Cause:** a Typesense bug, open as [typesense/typesense#3071](https://github.com/typesense/typesense/issues/3071) since 2026-09-23. Typesense hands an import body to the import code in pieces of 196,605 bytes (`ACTIVE_STREAM_WINDOW_SIZE` in `include/http_server.h`), and turns each piece into text with an error handler that silently drops invalid UTF-8 (`error_handler_t::ignore` in `include/http_data.h`; both checked in the v30.2 source). When a piece ends inside a character of two or more bytes, the character is lost. The issue's reporters see it on 29.0, 30.1, 30.2 and the 31.0 release candidates.
+  - **Why escaping avoids it:** a body with every non-ASCII character written as `\uXXXX` is pure ASCII, so no piece can end inside a character. The issue's deterministic test found the same.
+  - **Cost of escaping:** the upload grows from 112.7 MB to 114.2 MB (1.3%), and the import time is unchanged (median 6.4 s against 6.2 s).
+  - **Cost of the full comparison:** exporting the whole collection is 112.7 MB and took 3 s locally.
+  - **Data loaded before:** the collection the local site served on 2026-10-15 (loaded 2026-10-14) matched the cleaned file exactly.
 - **S3, Railway (AC16, AC19), once the owner has set up the account.** Confirm the port, HTTPS, 401 and restart behavior. Load from the laptop with `--env-file .env.hosted`, timing the upload. Read Railway's memory graph with one, two and three collections loaded.
 
 ## Trade-offs
