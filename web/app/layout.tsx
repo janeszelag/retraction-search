@@ -3,15 +3,14 @@ import { IBM_Plex_Mono, Public_Sans } from 'next/font/google';
 import { connection } from 'next/server';
 import { NavigationMemory } from '@/components/navigation-memory';
 import { SiteFooter } from '@/components/site-footer';
-import { formatDataDate } from '@/lib/format/dates';
-import { issueUrl } from '@/lib/links';
+import { siteOrigin } from '@/lib/server/origin';
 import { getMeta } from '@/lib/server/search';
 import './globals.css';
 
 // next/font downloads the fonts at build time and serves them from this site,
 // so visitors' browsers never contact Google.
 const publicSans = Public_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-public-sans' });
-const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-plex-mono' });
+const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-plex-mono', preload: false });
 
 export const metadata: Metadata = {
   title: 'Retraction search',
@@ -24,12 +23,7 @@ async function Footer() {
   // Read at request time, not once at build time, so a new snapshot shows without a rebuild.
   await connection();
   const meta = await getMeta();
-  return (
-    <SiteFooter
-      snapshot={meta}
-      issueHref={issueUrl({ title: 'Problem with this site', dataDate: meta ? formatDataDate(meta.dataDate) : undefined })}
-    />
-  );
+  return <SiteFooter snapshot={meta} origin={await siteOrigin()} />;
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

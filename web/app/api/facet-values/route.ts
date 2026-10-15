@@ -4,6 +4,7 @@
 // the browser asks the site, and only the site asks Typesense (AC27).
 import type { NextRequest } from 'next/server';
 import { parseQuery } from '@/lib/query/url';
+import { checkLimit, limitedResponse } from '@/lib/server/rate-limit';
 import { runFacetValueSearch } from '@/lib/server/search';
 
 const MAX_FIND_LENGTH = 100;
@@ -18,6 +19,11 @@ export async function GET(request: NextRequest) {
   // One letter matches nothing in Typesense, and very long text is never a name.
   if (find.length < 2 || find.length > MAX_FIND_LENGTH) {
     return Response.json({ values: [] }, { headers: { 'Cache-Control': 'no-store' } });
+  }
+  // Each value search counts as a search toward the visitor's limit (AC28).
+  const limit = await checkLimit('searches');
+  if (limit.status === 'limited') {
+    return limitedResponse(limit, 'Too many searches in a short time.');
   }
   const result = await runFacetValueSearch(parseQuery(params), facet, find);
   if (result.status === 'unavailable') {

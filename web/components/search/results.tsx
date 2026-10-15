@@ -6,7 +6,7 @@ import { formatNumber } from '@/lib/format/numbers';
 import { issueUrl } from '@/lib/links';
 import { citation, describeQuery, totalPhrase } from '@/lib/query/describe';
 import { SORTS, effectiveSort, type Query, type Sort } from '@/lib/query/types';
-import { queryHref, serializeQuery } from '@/lib/query/url';
+import { exportHref, queryHref, serializeQuery } from '@/lib/query/url';
 import type { SearchOk } from '@/lib/search/types';
 import { ResultItem } from './result-item';
 import { SortSelect } from './sort-select';
@@ -91,7 +91,7 @@ export function Results({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div aria-live="polite" className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5">
         <h1 className="text-[30px] leading-[1.2] font-extrabold tracking-[-0.015em] tabular-nums">{totalPhrase(result.totals)}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
           {summary.parts.map((part) =>
@@ -125,7 +125,7 @@ export function Results({
           </div>
         )}
         {result.closeSpellings && (
-          <p role="status" className={ui.note}>
+          <p className={ui.note}>
             No exact matches for “{query.q}” with these filters. Showing close spellings, highlighted.
           </p>
         )}
@@ -137,6 +137,7 @@ export function Results({
           <SortSelect value={result.lookup ? 'newest' : effectiveSort(query)} hrefs={sortHrefs} hasText={Boolean(query.q) && !result.lookup} />
         }
         citation={dataDate ? citation({ query, totals: result.totals, dataDate, url: searchUrl }) : ''}
+        downloadHref={result.found > 0 ? exportHref(query) : undefined}
       />
 
       {result.found === 0 && <NoResults query={query} searchUrl={searchUrl} dataDate={dataDate} />}

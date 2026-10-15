@@ -1,5 +1,6 @@
 // Runs a search for a page (spec 002, task 10). Server-only, like the client it uses.
 import 'server-only';
+import { connection } from 'next/server';
 import { cache } from 'react';
 import { COLLECTION, toExactValueSearch, toFacetValueSearch, toTypesense } from '../query/typesense';
 import type { Query } from '../query/types';
@@ -7,7 +8,7 @@ import { onlyCloseSpellings, parseFacetValues, parseMeta, parseRecord, parseSear
 import type { Meta, ResultRecord, SearchResult, ValueCount } from '../search/types';
 import { typesenseClient, type TypesenseClient } from './typesense';
 
-function logFailure(what: string, error: unknown) {
+export function logFailure(what: string, error: unknown) {
   console.error(`${what} failed: ${error instanceof Error ? error.message : String(error)}`);
 }
 
@@ -20,8 +21,13 @@ export async function loadMeta(client: TypesenseClient = typesenseClient): Promi
   }
 }
 
-// Once per request: the layout and the page share it.
-export const getMeta = cache(() => loadMeta());
+// Once per request: the layout and the page share it. connection() marks the
+// read as request-time first. Otherwise Next.js tries it while building, stops
+// it by throwing, and loadMeta would log that as a failed read.
+export const getMeta = cache(async () => {
+  await connection();
+  return loadMeta();
+});
 
 export async function runSearch(query: Query, client: TypesenseClient = typesenseClient, meta?: Meta | null): Promise<SearchResult> {
   try {

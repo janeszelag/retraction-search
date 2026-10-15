@@ -23,7 +23,7 @@ Chosen from three interactive prototypes built on the 2026-10-09 snapshot: the l
   2. "Not affiliated with Retraction Watch or Crossref. Reasons are Retraction Watch’s classification. Author names are matched as names, not identified people."
   3. "About this data · Missing retraction? Tell Retraction Watch · Problem with this site? Open an issue on GitHub". "Tell Retraction Watch" links to the user guide.
 
-  The GitHub issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
+  The GitHub issue opens with the page's link and the data date filled in, through GitHub's `title` and `body` URL parameters, worded as in the prototype: "Problem with the search" with "Search link: …" on the search page, "Problem with a record page" with "Record page: …" (the prototype gave only the ID, and AC25 asks for the link), and "Problem with this site" with "Page: …" elsewhere. The layout can't see the page's address on the server, so a small client component fills it in and follows filter changes; until it loads, the link opens an issue without the address. The no-results state repeats the GitHub link. The link only works for others once the repository is public.
 
 **Filters**
 
@@ -198,7 +198,8 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 |---|---|
 | `app/page.tsx` | Server component. Parses the URL, checks the rate limit, runs the `multi_search`, renders everything. |
 | `app/record/[id]/page.tsx` | Fetches one record with a search filtered by `record_id`, because the site's key can't fetch documents directly. Shows every field, with the original values next to the cleaned ones. The URL is always just `/record/<id>`, so links to a record never carry a search. The header has the site name and data date but no search box. |
-| `app/about/page.tsx` | The data source, license, caveats, how counts work, and how to report a missing retraction (AC26). |
+| `app/about/page.tsx` | The data source, license, caveats, how counts work, and how to report a missing retraction (AC26). The prototype has no About page, so its text is new: one section per caveat in the brief, with the ids the filters' "Read more" links use. The license source is Crossref's metadata page, whose license table lists the Retraction Watch database under CC0 (checked 2026-10-14). Record pages and About share a header without a search box. |
+| `app/not-found.tsx`, `app/record/[id]/not-found.tsx` | 404 pages with the shared header and the footer: "Page not found" for an unknown address, and "No record with this ID" for a record ID that isn't in the snapshot. An unknown address is rendered on the server. A missing record is not: in Next.js 16.4, `notFound()` from a page reaches the browser as an empty error shell with HTTP 404 and `noindex`, and the browser then draws the not-found page, because React error boundaries don't run during server rendering (checked in development and in a production build, 2026-10-14). Without JavaScript the page is blank. Rendering it on the server would need a proxy that looks the record up before the page does, which doubles the Typesense searches for record pages; not done. |
 | `app/api/facet-values/route.ts` | Value search for long filters. |
 | `app/api/export/route.ts` | The CSV download (below). |
 
@@ -210,10 +211,13 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 - tooltips (Radix Tooltip)
 - the sort menu and the field-search menus (Radix Select): the owner prefers them to the browser's built-in list, and Radix keeps the keyboard and screen-reader behavior
 - the copy-citation button
+- "Download CSV": a link to `/api/export` that, with JavaScript, fetches the file and saves it from the page. A failure, or the download limit (task 19), then shows as a notice on the page instead of replacing it, as in the prototype's states. The file is held in the browser's memory until it's saved: 64 MB for the whole default view.
 - "Copy link to this record" on record pages
 - "Back to results" on record pages, shown only when the previous page was a search on this site (a same-site referrer on the search page). It calls the browser's back, so the results and scroll position come back as they were.
 
 **Filter links** are `<Link prefetch={false} scroll={false}>`. A clicked value shows as selected straight away, and the old results dim until the new ones arrive. Next.js 16's API for showing link status gets checked at setup.
+
+**Screen readers and the keyboard (AC32).** When the results change, screen readers hear one short sentence from a status message, such as "271 retractions, page 1 of 14.", or that the results are close spellings. It sits outside the part of the page marked busy while a search loads, and the results' heading and summary aren't a live region, so nothing else is announced over it. (In the VoiceOver check on 2026-10-14, the summary's new "matching" chip cut off the total.) The filter column comes before the results in the page, so a "Skip to results" link follows the search box, shown when it has focus; it moves focus to the results column.
 
 **Server-only code** lives in `web/lib/server/`, which imports `server-only` so it can't end up in browser code. The search key is read there from the environment and never passed to a component (AC27).
 
@@ -221,19 +225,22 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 
 **Rate limits (AC28).**
 - **Mechanism:** a fixed-window counter in Redis per visitor. A visitor is a salted hash of the first address in `x-forwarded-for`; no cookies.
-- **Limits:** 60 searches a minute and 6 downloads an hour per visitor (agreed 2026-10-13).
+- **Limits:** 60 searches a minute and 6 downloads an hour per visitor (agreed 2026-10-13). Windows start on the minute or the hour. `RATE_LIMIT_SEARCHES` and `RATE_LIMIT_DOWNLOADS` lower them for tests.
+- **What counts:** each search page and each journal or publisher value search counts as a search; each `/api/export` request counts as a download. Record pages don't count. Link prefetches don't count either: in a production build, scrolling through results prefetched `/` and the record pages without adding to the count (checked 2026-10-14).
 - **When a page is over the limit,** it renders the notice with the time to try again, and keeps the query.
-- **When a route handler is over the limit,** it returns HTTP 429 with `Retry-After`.
+- **When a route handler is over the limit,** it returns HTTP 429 with `Retry-After`, and the limit in the JSON body so the page can state it. The download button then shows the prototype's "Download limit reached" notice, with the time in the visitor's own time zone.
+- **Visitor address (unverified for hosting):** the first address in `x-forwarded-for` can only be trusted if the host's proxy replaces that header rather than appending to it. Phase 4 checks this for the chosen host.
 - **Production store:** Redis on Railway, under the same $50 hard limit. Its public access goes through a TCP proxy that's billed as data transfer. Phase 4 confirms the cost.
 
-**Failures (AC29).** If Typesense or Redis can't be reached, the page shows "Search is unavailable right now", with the attribution and the query kept, instead of an error page. If Redis alone is down, searches go ahead without rate limiting and the failure is logged, so a counter outage doesn't take search down with it.
+**Failures (AC29).** If Typesense or Redis can't be reached, the page shows "Search is unavailable right now", with the attribution and the query kept, instead of an error page. If Redis alone is down, searches go ahead without rate limiting and the failure is logged, so a counter outage doesn't take search down with it. A page waits at most 500 ms for its count. While Redis is disconnected the check fails at once; while it hangs, each request waits the 500 ms. A missing `REDIS_URL` or `VISITOR_HASH_SALT` is logged and treated the same way. The log says when limits go off, at most once a minute, and when Redis is back.
 
 ## CSV download
 
 `/api/export` takes the same URL parameters as the search page.
 
-- **Filters only:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks. The site's key has `documents:export` for this (spike S4).
-- **With search text or field terms:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives. In spike S4 the largest text search (65,691 records) took 14.6 s this way.
+- **Without search text:** it streams Typesense's export endpoint, which takes `filter_by` and `include_fields` and returns JSON lines in chunks. Field terms, author names and identifier lookups are filters, so they go this way too (spike S4). The site's key has `documents:export` for this. The endpoint can't sort, so these files come in record ID order.
+- **With search text:** the export endpoint has no search-text parameter, so the handler pages through search results 250 at a time (the per-page maximum) and streams each page as it arrives, in the page's order. In spike S4 the largest text search (65,691 records) took 14.6 s this way. When the page shows close spellings, the download pages with typos on for every search too, so it holds the same records.
+- **Checks:** before sending anything, the handler reads the data date and the total, so an unreachable Typesense still gets HTTP 503. Once the file has started, it can't change its status. So if it ends with a different number of records than the total, or a record twice, the handler breaks off the stream and the browser reports a failed download rather than saving a short file.
 - **Format:**
   - UTF-8 with a byte-order mark, so spreadsheet apps keep non-English characters.
   - A header row, and one column per field shown on record pages.
@@ -252,9 +259,19 @@ That's at most 17 searches. Every clause comes from `toTypesense`, which strips 
 | No key in the browser | A test that builds the app, then searches the built browser files, page HTML and responses for the key | AC27 |
 | Speed | A script timing the server response for the fixed query set (p95), and Lighthouse's mobile test on a shared URL | AC33 |
 | Commands | Run from a fresh clone | AC34 |
-| Screen reader | A written manual VoiceOver check covering one full search | AC32 |
+| Screen reader | A written manual VoiceOver check covering one full search: [voiceover-check.md](voiceover-check.md) | AC32 |
 
 `npm test` stays network-free. The checks that need Docker and the full snapshot run through their own commands.
+
+**How `npm run check:search` works (task 21).** It runs the site's own server code (`runSearch`, `startExport`) against the local Typesense, and reads the same snapshot's search documents into DuckDB, found through the `meta` document. The filters are written again in SQL from the spec, not from the Typesense mapping. For each of 17 filter-only queries it compares the total, the totals by notice type and every filter count shown. Long filters are checked to show their top values. The name pairs from spike S6 can't be compared by count: Typesense expands a prefix to only a few candidate words, so it skips rare ones such as "iran0". So the check models Typesense's words in DuckDB (split at spaces, and at hyphens and slashes outside author names, with other punctuation dropped, so "He'nan" is "henan") and asserts that every record with the exact word is found and every result has a word starting with it. On the 2026-10-09 snapshot all 49 cases pass in about 15 s (checked 2026-10-14).
+
+**How `npm run test:e2e` works (task 22).** It builds the site, and Playwright starts the build three times: on port 3100 with 40 searches a minute and 2 downloads an hour so the limit tests run quickly, on 3101 with Typesense unreachable, and on 3102 with Redis unreachable. The tests use the installed Google Chrome, so no browser is downloaded. Each test sends its own made-up `X-Forwarded-For` address (from 198.18.0.0/15, reserved for testing), so rate limits don't carry over between tests or runs. axe checks WCAG 2.2 AA on the start, results, no-results, record and About pages. The year bars are narrower than the 24px target size; WCAG 2.5.8 exempts a target when another control on the page does the same thing, as each year filter's "from" and "to" inputs do, so the bars skip only axe's target-size rule. The record page's author names were too small targets and now are 24px tall. 25 tests pass in about 20 s (checked 2026-10-14).
+
+**How `npm run check:speed` works (task 24).** It builds the site and starts it on port 3200, with the limits raised so one address can time many searches. It requests 14 searches 10 times each, from the default view to "of" across the five fields and the last page, timing the whole server response. Then it runs Lighthouse 13.5's mobile test (simulated phone and slow network) five times on the brief's example search, and reports the median Largest Contentful Paint, since single runs varied from 2.1 to 2.8 s. On a laptop with the local stack (2026-10-14): p95 107 ms against the 300 ms budget, and a median LCP of 2.26 s against 2.5 s. The LCP element is the first result's title. Preloading all six font files put the median at 2.56 s, so IBM Plex Mono, used only for record IDs and the commit, is no longer preloaded; it shows in the fallback monospace font until it arrives, with no layout shift. The budgets in AC33 are still proposed until the owner confirms them.
+
+**Fresh clone (task 25), 2026-10-14.** In a new clone with a new `.env.local`, every command succeeded: `npm install`, `npm run download` (the 2026-10-13 snapshot), `npm run clean` (73,184 records in 3.6 s), `npm run search:up`, `npm run load` (6.6 s), `npm run web` (67,467 retractions on the start page) and `npm run check:search` (49 of 49 on the new snapshot).
+
+**Known limit: author names in other scripts (AC14).** Typesense's exact filters ignore capitals only for Latin letters. On the 2026-10-09 snapshot, 3 of the 967 groups of author names that differ only in capitals or accents (6 names) differ in Cyrillic capitals, and a name link finds only its own spelling. The check covers the groups that differ in Latin capitals or accents.
 
 ## Spikes first
 

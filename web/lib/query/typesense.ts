@@ -74,6 +74,7 @@ export interface TypesenseSearch {
   facet_query?: string;
   max_facet_values?: number;
   sort_by?: string;
+  include_fields?: string;
   per_page: number;
   page?: number;
   highlight_fields?: string;

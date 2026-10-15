@@ -12,12 +12,18 @@
   ],
   "scripts": {
     "check": "npm run check -w pipeline --",
+    "check:search": "npm run check:search -w web",
+    "check:speed": "npm run check:speed -w web",
     "clean": "npm run clean -w pipeline --",
     "download": "npm run download -w pipeline --",
     "load": "npm run load -w pipeline --",
     "search:down": "docker compose --env-file .env.local down",
     "search:up": "docker compose --env-file .env.local up --detach --wait",
     "test": "npm test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e -w web",
     "web": "npm run dev -w web"
+  },
+  "overrides": {
+    "playwright-core": "1.63.0"
   }
 }

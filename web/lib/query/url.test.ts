@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultQuery, effectiveSort, type Query } from './types';
-import { LIMITS, parseQuery, queryHref, serializeQuery } from './url';
+import { LIMITS, exportHref, parseQuery, queryHref, serializeQuery } from './url';
 
 const parse = (search: string) => parseQuery(new URLSearchParams(search));
 
@@ -41,6 +41,11 @@ describe('the default view (AC2, AC16)', () => {
   it('serializes to no parameters', () => {
     expect(serializeQuery(defaultQuery())).toBe('');
     expect(queryHref(defaultQuery())).toBe('/');
+  });
+
+  it('downloads every page of the results (AC23)', () => {
+    expect(exportHref(defaultQuery())).toBe('/api/export');
+    expect(exportHref(parse('q=neuron&reason=Manipulation+of+Images&page=4'))).toBe('/api/export?q=neuron&reason=Manipulation+of+Images');
   });
 
   it('is what an empty URL gives', () => {

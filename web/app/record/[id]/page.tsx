@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { BackToResults } from '@/components/record/back-to-results';
 import { CopyLink } from '@/components/record/copy-link';
 import { Unavailable } from '@/components/search/unavailable';
 import { ui } from '@/components/ui';
-import { formatApDate, formatDataDate } from '@/lib/format/dates';
+import { formatApDate } from '@/lib/format/dates';
 import { describeLink } from '@/lib/format/links';
 import { noticeTypeClasses } from '@/lib/format/notice-types';
 import { publishedRows } from '@/lib/format/published';
@@ -28,17 +29,26 @@ const loadRecord = cache((id: number) => getRecord(id));
 
 type Props = { params: Promise<{ id: string }> };
 
+// Record IDs are positive whole numbers.
+const RECORD_ID = /^[1-9]\d{0,9}$/;
+
 async function recordId(params: Props['params']): Promise<number> {
   const { id } = await params;
-  if (!/^[1-9]\d{0,9}$/.test(id)) {
+  if (!RECORD_ID.test(id)) {
     notFound();
   }
   return Number(id);
 }
 
+// The not-found file can't set the title, so a missing record's comes from here.
+// This doesn't call notFound(): the page does.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const result = await loadRecord(await recordId(params));
-  return { title: result.status === 'ok' ? `${result.record.title} · Retraction search` : 'Retraction search' };
+  const { id } = await params;
+  const result = RECORD_ID.test(id) ? await loadRecord(Number(id)) : { status: 'not-found' as const };
+  if (result.status === 'ok') {
+    return { title: `${result.record.title} · Retraction search` };
+  }
+  return { title: result.status === 'not-found' ? 'No record with this ID · Retraction search' : 'Retraction search' };
 }
 
 const sectionTitle = 'text-lg font-[750]';
@@ -56,16 +66,7 @@ export default async function RecordPage({ params }: Props) {
   return (
     <>
       {/* No search box here, as in the design (AC22). */}
-      <header className="border-b border-ink-150">
-        <div className={`${ui.wrap} flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5 py-3.5`}>
-          <Link href="/" className="text-xl font-extrabold tracking-[-0.01em] text-ink-950 no-underline hover:text-ink-950">
-            Retraction search
-          </Link>
-          <span className="text-[13px] text-ink-600">
-            Retraction Watch Database{meta ? ` · Data as of ${formatDataDate(meta.dataDate)}` : ''}
-          </span>
-        </div>
-      </header>
+      <PageHeader dataDate={meta?.dataDate ?? null} />
       {result.status === 'unavailable' ? (
         <main className={`${ui.wrap} pt-6 pb-12`}>
           <Unavailable retryHref={`/record/${id}`} />
@@ -255,7 +256,8 @@ function RecordBody({ record }: { record: Extract<Awaited<ReturnType<typeof getR
                   href={queryHref(addAuthorName(base, name))}
                   title="Show records that list this name"
                   aria-label={`Show records that list the name ${name}`}
-                  className={nameLink}
+                  // A list, not a sentence, so each name is a 24px target (WCAG 2.2, 2.5.8).
+                  className={`${nameLink} inline-block py-[3px]`}
                   prefetch={false}
                 >
                   {name}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { citation, describeQuery, joinList, totalPhrase } from './describe';
+import { citation, describeQuery, joinList, resultsAnnouncement, totalPhrase } from './describe';
 import { identifierLookup } from './identifier';
 import { defaultQuery } from './types';
 import { parseQuery, serializeQuery } from './url';
@@ -193,5 +193,25 @@ describe('joinList', () => {
     expect(joinList(['A'], 'or')).toBe('A');
     expect(joinList(['A', 'B'], 'and')).toBe('A and B');
     expect(joinList(['A', 'B', 'C'], 'or')).toBe('A, B or C');
+  });
+});
+
+describe('what a screen reader hears when the results change (AC32)', () => {
+  it('says the total, and the page when there are several', () => {
+    expect(resultsAnnouncement({ totals: { Retraction: 271 }, page: 2, pageCount: 14, closeSpellings: false })).toBe('271 retractions, page 2 of 14.');
+    expect(resultsAnnouncement({ totals: { Retraction: 7 }, page: 1, pageCount: 1, closeSpellings: false })).toBe('7 retractions.');
+    expect(resultsAnnouncement({ totals: {}, page: 1, pageCount: 1, closeSpellings: false })).toBe('No matching records.');
+  });
+
+  it('says when the results are close spellings', () => {
+    expect(resultsAnnouncement({ totals: { Retraction: 3 }, page: 1, pageCount: 1, closeSpellings: true })).toBe(
+      'No exact matches. Close spellings: 3 retractions.',
+    );
+  });
+
+  it('counts mixed notice types as they are', () => {
+    expect(resultsAnnouncement({ totals: { Retraction: 338, Correction: 17 }, page: 1, pageCount: 18, closeSpellings: false })).toBe(
+      '338 retractions and 17 corrections, page 1 of 18.',
+    );
   });
 });
