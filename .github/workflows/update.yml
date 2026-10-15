@@ -51,7 +51,10 @@ jobs:
       - run: npm ci --workspace pipeline
       # The inputs arrive as environment variables and are only ever quoted,
       # so their text can't run as shell code. They're empty on scheduled runs.
+      # Shorter than the job's limit, so a stuck update is stopped with time
+      # left for the alert. GitHub cancels a job that hits its own limit.
       - name: Update the hosted server
+        timeout-minutes: 20
         env:
           TYPESENSE_URL: ${{ secrets.TYPESENSE_URL }}
           TYPESENSE_ADMIN_KEY: ${{ secrets.TYPESENSE_ADMIN_KEY }}
@@ -84,3 +87,34 @@ jobs:
             data/runs/
           retention-days: 30
           if-no-files-found: ignore
+      # One open issue labeled daily-update collects the failures until a run
+      # succeeds (AC14). New issues and comments notify the repository's
+      # watchers, whoever last edited this file. GitHub's docs don't say whether
+      # a step that hits its time limit counts as failed or cancelled, so both
+      # raise the alert.
+      - name: Open or update the alert issue
+        if: failure() || cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          body=$(node pipeline/src/alert.js failed --run-url "$RUN_URL") ||
+            body="The daily update failed before it could describe what went wrong. Run: $RUN_URL"
+          issue=$(gh issue list --label daily-update --state open --json number --jq '.[0].number // empty')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body "$body"
+          else
+            gh label create daily-update --color B60205 --description "The daily update failed" --force
+            gh issue create --title "Daily update failed" --label daily-update --body "$body"
+          fi
+      - name: Close the alert issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          for issue in $(gh issue list --label daily-update --state open --json number --jq '.[].number'); do
+            gh issue close "$issue" --comment "$(node pipeline/src/alert.js resolved --run-url "$RUN_URL")"
+          done

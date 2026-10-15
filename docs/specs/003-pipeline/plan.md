@@ -173,7 +173,7 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 - **`concurrency: daily-update`,** with `cancel-in-progress: false`, so a second run waits for the first instead of overlapping it.
 - **`environment: search`:** a GitHub environment holding the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`, with deployments limited to `main`. GitHub Free offers environments for public repositories only. Keeping the URL secret too means logs don't print it. GitHub masks secret values in logs.
 - **Permissions:** `contents: read`, `issues: write` (alerts) and `actions: write` (keepalive).
-- **`timeout-minutes: 30`.** A job may run for up to 6 hours, but a run that takes 30 minutes has gone wrong.
+- **`timeout-minutes: 30`.** A job may run for up to 6 hours, but a run that takes 30 minutes has gone wrong. GitHub cancels a job that reaches its limit (workflow syntax docs, checked 2026-10-15), so the update step has its own limit of 20 minutes, which leaves time for the alert.
 - **Steps:**
   1. checkout and Node setup
   2. `npm ci --workspace pipeline`, so the site's dependencies aren't installed. Checked on a clean copy of the repository on 2026-10-15: it added 44 packages, none of the site's (Next.js, React, TypeScript, Playwright), and `npm run update` and the pipeline's tests ran with them. The first run on GitHub confirms it on Linux.
@@ -188,6 +188,9 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 
 - **GitHub's own notifications** for scheduled workflows go to "the user who last modified the cron syntax in the workflow file". That's the owner, as long as they push every change to the schedule. The runbook says how to turn on email for failed workflows in GitHub's notification settings.
 - **A GitHub issue,** which doesn't depend on who edited the schedule. On failure, the workflow comments on the open issue labeled `daily-update`, or opens one titled "Daily update failed". The issue gives the step, the message from `result.json` and a link to the run. On the next successful run, the workflow comments with that run's link and closes the issue. It uses the `gh` command with the workflow's own token. The first run confirms that `gh` is on the runner.
+  - **The text** comes from `pipeline/src/alert.js`, which reads the run's `result.json`. It imports nothing outside Node, so it works even when installing failed, and the step falls back to a fixed sentence with the run's link if the script can't run at all. The message goes in a code block, so an @mention in it, for example from a journal name, doesn't notify anyone.
+  - **When it fires:** on a failed or cancelled run. GitHub's docs don't say whether a step that reaches its time limit counts as failed or cancelled, so both raise the alert. A run the owner cancels by hand opens an issue too, and the next successful run closes it.
+  - **The label** `daily-update` is created on the first failure. The keepalive warning (AC15) needs a different label, or a successful run would close it.
 - **The manual check for AC14:** start the workflow by hand with a commit that doesn't exist. Confirm that the issue opens and the owner gets an email. Then start a normal run and confirm that it closes the issue.
 
 ## Keeping the schedule alive (AC15)

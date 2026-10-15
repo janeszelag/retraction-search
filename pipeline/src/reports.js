@@ -28,6 +28,10 @@ const REVIEW_ISSUES = [
 
 export const formatNumber = (value) => value.toLocaleString('en-US');
 
+// A snapshot in the update's result.json, as people read it in summaries and alerts.
+export const describeSnapshot = (snapshot) =>
+  snapshot ? `${snapshot.data_date} (upstream commit ${(snapshot.upstream_commit ?? snapshot.commit).slice(0, 8)})` : 'nothing';
+
 export function cell(value) {
   if (value === null || value === undefined || value === '') {
     return '(empty)';

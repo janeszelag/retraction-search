@@ -21,7 +21,7 @@ import {
   repoRoot,
   runsDir as defaultRunsDir,
 } from './paths.js';
-import { formatNumber, table } from './reports.js';
+import { describeSnapshot, formatNumber, table } from './reports.js';
 import { typesenseClient } from './typesense.js';
 import { checkFreshness, dataDateFromCommit, findCommit } from './upstream.js';
 
@@ -155,9 +155,6 @@ const describeLoaded = (meta) =>
     upstream_commit: meta.upstream_commit ?? null,
     collection: meta.collection,
   };
-
-const describeSnapshot = (snapshot) =>
-  snapshot ? `${snapshot.data_date} (upstream commit ${(snapshot.upstream_commit ?? snapshot.commit).slice(0, 8)})` : 'nothing';
 
 function describeLimitsOutcome(result) {
   if (!result.limits) {
