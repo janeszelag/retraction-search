@@ -14,8 +14,9 @@ The work goes up in three pull requests:
   - Done when: the result is recorded. If there was more than one failure, the cause has been looked for, and a spec change is proposed if a single retry isn't enough.
   - Result, 2026-10-15: 4 failures in 30 loads, caused by a Typesense bug that drops a letter from imported text. The AC9 change and decision record 004 were agreed with the owner.
 
-- [ ] **2. Test workflow.** `.github/workflows/test.yml` runs `npm ci` and `npm test` on pull requests and pushes to `main`. It uses Node 22, `contents: read` and no secrets, with GitHub's own actions pinned to commit SHAs. (AC20)
+- [x] **2. Test workflow.** `.github/workflows/test.yml` runs `npm ci` and `npm test` on pull requests and pushes to `main`. It uses Node 22, `contents: read` and no secrets, with GitHub's own actions pinned to commit SHAs. (AC20)
   - Done when: the pull request shows the check passing, which also confirms that DuckDB's Linux binary installs from the lockfile. A temporary commit with a failing test shows it failing and is then reverted.
+  - Result, 2026-10-15: the Test check passed on pull request #10 (38 s) and on the push to `main`, so DuckDB's Linux binary installs from the lockfile. The failing case ran on a throwaway draft, pull request #11, instead of a commit and revert: a test failing on purpose turned the check red (33 s), and the draft was closed unmerged and its branch deleted.
 
 **Cleaning and diff**
 
