@@ -22,7 +22,7 @@ The work goes up in three pull requests:
 - [x] **3. Empty rows.** `pipeline/sql/05_empty_rows.sql` runs after `00_load.sql`. It drops rows where every column is empty or only spaces and keeps their count. The profile's Snapshot section gives the count, and `npm run check` compares records with the rows that have data. Add `test/fixtures/empty-rows.csv` and a line about it in the fixtures README. (Spec 001 AC2)
   - Done when: the plan's tests pass: the fixture cleans to the same output as `sample.csv`, a row with only a Record ID is kept, and a row with a title but no Record ID still stops the cleaning. `npm run check` passes on the 2026-10-09 snapshot and on the 2026-09-22 snapshot (`bd2763d6`), which has 130 empty rows.
 
-- [ ] **4. Upstream module.** Move the newest-commit lookup out of `download.js` into `src/upstream.js`, and add the working-day staleness check. (AC11)
+- [x] **4. Upstream module.** Move the newest-commit lookup out of `download.js` into `src/upstream.js`, and add the working-day staleness check. (AC11)
   - Done when: unit tests cover weekends, the three-working-day limit and the day after it, and `npm run download` still works.
 
 - [ ] **5. Diff.** `sql/40_diff.sql` and `src/diff.js` build `diff_records`, `diff_columns` and `diff_values`, including emptied columns, and write `diff.json`. Add `test/fixtures/sample-next.csv` and `npm run diff -- --from <csv> --to <csv>`. (AC4, AC5)

@@ -8,55 +8,11 @@ import { pipeline } from 'node:stream/promises';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { fileExists, sha256Of } from './files.js';
-import { rawDir, relativeToRepo } from './paths.js';
-
-const SOURCE = 'https://gitlab.com/crossref/retraction-watch-data';
-const PROJECT_API = 'https://gitlab.com/api/v4/projects/crossref%2Fretraction-watch-data';
-const FILE_NAME = 'retraction_watch.csv';
-
-export function rawFileUrl(commitSha) {
-  return `${SOURCE}/-/raw/${commitSha}/${FILE_NAME}`;
-}
-
-// Upstream commit titles read "Retraction Watch data for 2026-10-09".
-export function dataDateFromCommit(commit) {
-  const match = /\d{4}-\d{2}-\d{2}/.exec(commit.title ?? '');
-  return match ? match[0] : commit.committed_date.slice(0, 10);
-}
+import { rawDir as defaultRawDir, relativeToRepo } from './paths.js';
+import { dataDateFromCommit, FILE_NAME, findCommit, findUpstreamChecksum, rawFileUrl, SOURCE } from './upstream.js';
 
 export function snapshotBaseName(dataDate, shortSha) {
   return `retraction_watch-${dataDate}-${shortSha}`;
-}
-
-async function fetchJson(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`GitLab returned ${response.status} for ${url}`);
-  }
-  return response.json();
-}
-
-async function findCommit(requestedSha) {
-  if (requestedSha) {
-    return fetchJson(`${PROJECT_API}/repository/commits/${encodeURIComponent(requestedSha)}`);
-  }
-  const commits = await fetchJson(
-    `${PROJECT_API}/repository/commits?ref_name=main&path=${FILE_NAME}&per_page=1`,
-  );
-  if (commits.length === 0) {
-    throw new Error(`GitLab returned no commits for ${FILE_NAME}`);
-  }
-  return commits[0];
-}
-
-// GitLab reports the file's SHA-256 and size in the headers of this request.
-async function findUpstreamChecksum(commitSha) {
-  const url = `${PROJECT_API}/repository/files/${FILE_NAME}?ref=${commitSha}`;
-  const response = await fetch(url, { method: 'HEAD' });
-  if (!response.ok) {
-    throw new Error(`GitLab returned ${response.status} for ${url}`);
-  }
-  return response.headers.get('x-gitlab-content-sha256');
 }
 
 async function readFirstLine(file) {
@@ -73,14 +29,20 @@ async function writeManifest(manifestPath, manifest) {
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
-export async function downloadSnapshot({ commit: requestedSha } = {}) {
-  const commit = await findCommit(requestedSha);
+// Downloads the CSV at the given commit, or at the newest commit. `fetch` and
+// `rawDir` can be replaced for tests.
+export async function downloadSnapshot({
+  commit: requestedSha,
+  fetch: fetchImpl = globalThis.fetch,
+  rawDir = defaultRawDir,
+} = {}) {
+  const commit = await findCommit(requestedSha, { fetch: fetchImpl });
   const dataDate = dataDateFromCommit(commit);
   const baseName = snapshotBaseName(dataDate, commit.short_id);
   const csvPath = path.join(rawDir, `${baseName}.csv`);
   const manifestPath = path.join(rawDir, `${baseName}.json`);
   const url = rawFileUrl(commit.id);
-  const upstreamSha256 = await findUpstreamChecksum(commit.id);
+  const upstreamSha256 = await findUpstreamChecksum(commit.id, { fetch: fetchImpl });
   const manifest = {
     source: SOURCE,
     file: FILE_NAME,
@@ -104,12 +66,12 @@ export async function downloadSnapshot({ commit: requestedSha } = {}) {
         sha256: upstreamSha256,
       });
     }
-    return { csvPath, manifestPath, dataDate, commit: commit.short_id, skipped: true };
+    return { csvPath, manifestPath, dataDate, commit: commit.short_id, fullCommit: commit.id, skipped: true };
   }
 
   const partialPath = `${csvPath}.partial`;
   try {
-    const response = await fetch(url);
+    const response = await fetchImpl(url);
     if (!response.ok || !response.body) {
       throw new Error(`Download failed with status ${response.status}: ${url}`);
     }
@@ -135,7 +97,7 @@ export async function downloadSnapshot({ commit: requestedSha } = {}) {
       bytes: size,
       sha256,
     });
-    return { csvPath, manifestPath, dataDate, commit: commit.short_id, skipped: false };
+    return { csvPath, manifestPath, dataDate, commit: commit.short_id, fullCommit: commit.id, skipped: false };
   } finally {
     await rm(partialPath, { force: true });
   }
