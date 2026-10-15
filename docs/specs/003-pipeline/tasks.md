@@ -25,7 +25,7 @@ The work goes up in three pull requests:
 - [x] **4. Upstream module.** Move the newest-commit lookup out of `download.js` into `src/upstream.js`, and add the working-day staleness check. (AC11)
   - Done when: unit tests cover weekends, the three-working-day limit and the day after it, and `npm run download` still works.
 
-- [ ] **5. Diff.** `sql/40_diff.sql` and `src/diff.js` build `diff_records`, `diff_columns` and `diff_values`, including emptied columns, and write `diff.json`. Add `test/fixtures/sample-next.csv` and `npm run diff -- --from <csv> --to <csv>`. (AC4, AC5)
+- [x] **5. Diff.** `sql/40_diff.sql` and `src/diff.js` build `diff_records`, `diff_columns` and `diff_values`, including emptied columns, and write `diff.json`. Add `test/fixtures/sample-next.csv` and `npm run diff -- --from <csv> --to <csv>`. (AC4, AC5)
   - Done when: the plan's fixture tests pass. `npm run diff` from the 2026-10-13 snapshot to the 2026-10-14 one gives 30 added, 0 removed and 4 changed (URLS), as in spike S1.
 
 - [ ] **6. Diff report.** `diff.md` has the counts and per-column tables, notice-type and reason changes with their old and new values, and capped lists of record IDs. (AC5, AC6)

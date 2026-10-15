@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 export const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
 export const rawDir = path.join(repoRoot, 'data', 'raw');
 export const cleanDir = path.join(repoRoot, 'data', 'clean');
+export const diffDir = path.join(repoRoot, 'data', 'diff');
+export const runsDir = path.join(repoRoot, 'data', 'runs');
 export const sqlDir = fileURLToPath(new URL('../sql/', import.meta.url));
 
 export function relativeToRepo(file) {

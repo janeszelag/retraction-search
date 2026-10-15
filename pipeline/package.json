@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node src/check.js",
     "clean": "node src/clean.js",
+    "diff": "node src/diff.js",
     "download": "node src/download.js",
     "load": "node src/load.js",
     "test": "vitest run"

@@ -52,6 +52,7 @@ The other files are built from `sample.csv`:
 | `extra-column.csv` | An unexpected column, Extra, contains data |
 | `subject-without-code.csv` | One synthetic row (record ID 900000001) whose first subject has no category code |
 | `empty-rows.csv` | `sample.csv` followed by three rows of 20 commas and nothing else, as some upstream files end (spec 001 AC2) |
+| `sample-next.csv` | `sample.csv` as a next snapshot, for the diff (spec 003): record 102 removed, synthetic records 900000301 and 900000302 added (copies of record 2), a reason added to record 6, record 18 changed from an expression of concern to a retraction, one of record 4's two URLs removed, an institution added to record 34181, and record 69326's notes emptied. It has no trailing comma in the header. |
 | `names.csv` | Six synthetic rows (record IDs 900000101 to 900000106) with made-up names: author names with backticks, journal spellings that differ only in capitals or an accent, and a tie between two publisher spellings |
 
 ## Rebuilding
@@ -83,4 +84,18 @@ COPY (
   SELECT s.* REPLACE (r.id AS "Record ID", 'Synthetic row: name cleaning' AS Title, r.journal AS Journal, r.publisher AS Publisher, r.author AS Author)
   FROM s, r WHERE s."Record ID" = '2' ORDER BY r.id
 ) TO 'pipeline/test/fixtures/names.csv' (HEADER);
+COPY (
+  SELECT * FROM (
+    SELECT * REPLACE (
+      CASE "Record ID" WHEN '6' THEN 'Concerns/Issues about Data;Results Not Reproducible;' ELSE Reason END AS Reason,
+      CASE "Record ID" WHEN '18' THEN 'Retraction' ELSE RetractionNature END AS RetractionNature,
+      CASE "Record ID" WHEN '4' THEN split_part(URLS, ';', 1) ELSE URLS END AS URLS,
+      CASE "Record ID" WHEN '34181' THEN 'Example University, Example City, Exampleland' ELSE Institution END AS Institution,
+      CASE "Record ID" WHEN '69326' THEN NULL ELSE Notes END AS Notes
+    ) FROM s WHERE "Record ID" <> '102'
+    UNION ALL
+    SELECT s.* REPLACE (n.id AS "Record ID", 'Synthetic row: added in the next snapshot' AS Title)
+    FROM s, (VALUES ('900000301'), ('900000302')) AS n(id) WHERE s."Record ID" = '2'
+  ) ORDER BY CAST("Record ID" AS INTEGER)
+) TO 'pipeline/test/fixtures/sample-next.csv' (HEADER);
 ```
