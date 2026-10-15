@@ -1,6 +1,6 @@
 # Tasks 002: Local search MVP
 
-Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, and tasks 18–25 in a second. The VoiceOver check passed on 2026-10-14 (task 23). Task 24 waits on the owner's confirmation of the budgets. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: done, 2026-10-14. Tasks 1–17 went up in a first pull request, and tasks 18–25 in a second. The VoiceOver check passed and the owner confirmed the AC33 budgets on 2026-10-14. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 **Local stack and data**
 
@@ -145,7 +145,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, a
 - [x] **23. Screen reader check.** Write the manual VoiceOver check covering one full search, run it and record the result. (AC32)
   - Done when: the check is written down and passes.
 
-- [ ] **24. Speed.** A script times the server response for the fixed query set (p95), and Lighthouse's mobile test runs on a shared URL. Confirm the budgets with the owner. (AC33)
+- [x] **24. Speed.** A script times the server response for the fixed query set (p95), and Lighthouse's mobile test runs on a shared URL. Confirm the budgets with the owner. (AC33)
   - Done when: both meet the agreed budgets, or the plan records why not and what changes.
 
 - [x] **25. End-to-end on a fresh clone.** In a fresh clone, run:
