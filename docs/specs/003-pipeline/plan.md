@@ -197,8 +197,10 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 
 GitHub disables scheduled workflows in a public repository after 60 days without repository activity. Its docs don't say what counts as activity, and the page on enabling workflows doesn't say whether GitHub warns first. Community tools say the "enable workflow" API call resets the count, but that's unverified, and checking it takes 60 days. So two measures:
 
-1. **Every successful run calls the "enable workflow" endpoint** for `update.yml`. It's harmless if it does nothing.
+1. **Every successful run calls the "enable workflow" endpoint** for `update.yml` (`PUT …/actions/workflows/update.yml/enable`, which takes the file name and answers 204; GitHub's REST docs, checked 2026-10-15). It's harmless if it does nothing. The docs page doesn't name the token permission it needs, so the first run confirms that `actions: write` is enough.
 2. **Every run checks the date of the last commit on `main`.** From day 45 on, it opens one issue, "The daily update stops around <date> without a commit", unless one is open already. Any push resets the count. This warns at least two weeks ahead, whatever the first measure does.
+   - **Details:** `pipeline/src/keepalive.js` holds the date logic, with unit tests. It reads the committer date of the checked-out commit (`git log -1 --format=%cI`). The issue is labeled `schedule-keepalive`, so a successful update doesn't close it. A run under the threshold closes it, as after a newer commit. Without that, an issue left open after a push would hide the next warning 45 days later.
+   - **The `warn_after_days` input** (default 45) lowers the threshold for one run started by hand. Task 16's check uses it: a run with 0 opens the issue, a second run with 0 doesn't open another, and a normal run closes it.
 
 ## Hosted search server (AC16, AC17, AC19)
 

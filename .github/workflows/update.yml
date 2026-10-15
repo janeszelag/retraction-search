@@ -22,6 +22,10 @@ on:
         description: Let this run past the change limits (read the diff first)
         type: boolean
         default: false
+      warn_after_days:
+        description: Days after the last commit on main before the keepalive warning opens (lower it to test the warning)
+        type: number
+        default: 45
 
 # A second run waits for the first instead of overlapping it.
 concurrency:
@@ -118,3 +122,34 @@ jobs:
           for issue in $(gh issue list --label daily-update --state open --json number --jq '.[].number'); do
             gh issue close "$issue" --comment "$(node pipeline/src/alert.js resolved --run-url "$RUN_URL")"
           done
+      # GitHub turns off a public repository's schedules after 60 days without
+      # activity (AC15). Its docs don't say whether this call counts, so the
+      # next step warns from day 45 either way.
+      - name: Keep the schedule enabled
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh api --method PUT "repos/$GH_REPO/actions/workflows/update.yml/enable"
+      # One open issue labeled schedule-keepalive, not daily-update, so a
+      # successful run doesn't close it. A run under the threshold does, as
+      # after a newer commit.
+      - name: Warn before the schedule stops
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WARN_AFTER_DAYS: ${{ inputs.warn_after_days }}
+        run: |
+          warning=$(node pipeline/src/keepalive.js --last-commit "$(git log -1 --format=%cI)" --warn-after-days "${WARN_AFTER_DAYS:-45}")
+          open=$(gh issue list --label schedule-keepalive --state open --json number --jq '.[].number')
+          if [ "$(jq -r .due <<<"$warning")" = true ]; then
+            if [ -z "$open" ]; then
+              gh label create schedule-keepalive --color FBCA04 --description "The daily schedule needs a commit on main" --force
+              gh issue create --title "$(jq -r .title <<<"$warning")" --label schedule-keepalive --body "$(jq -r .body <<<"$warning")"
+            fi
+          else
+            for issue in $open; do
+              gh issue close "$issue" --comment "The last commit on main is $(jq -r .days <<<"$warning") days old, under the warning threshold, so the schedule isn't at risk now."
+            done
+          fi
