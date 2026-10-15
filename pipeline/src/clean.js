@@ -12,12 +12,13 @@ import { measureDocuments, profileMarkdown, sizeReportMarkdown } from './reports
 
 export class ColumnCheckError extends Error {}
 
-// Loads the CSV into the `source` table and checks its columns (AC3).
-// Extra columns are allowed only when completely empty, like the one the
-// header's trailing comma creates.
+// Loads the CSV into the `source` table, drops rows where every field is
+// empty (AC2) and checks the columns (AC3). Extra columns are allowed only
+// when completely empty, like the one the header's trailing comma creates.
 export async function loadSource(connection, inputPath) {
   await connection.run(`SET VARIABLE input_path = ${sqlString(inputPath)}`);
   await runSqlFile(connection, '00_load.sql');
+  await runSqlFile(connection, '05_empty_rows.sql');
 
   const columns = (await queryRows(connection, 'SELECT column_name FROM (DESCRIBE source)')).map(
     (row) => row.column_name,
@@ -120,12 +121,17 @@ async function describeSnapshot(connection, inputPath) {
     manifestPath !== inputPath && (await fileExists(manifestPath))
       ? JSON.parse(await readFile(manifestPath, 'utf8'))
       : null;
-  const [{ rows }] = await queryRows(connection, 'SELECT CAST(count(*) AS INTEGER) AS rows FROM source');
+  const [{ rows, emptyRows }] = await queryRows(
+    connection,
+    `SELECT CAST(count(*) AS INTEGER) AS rows, (SELECT CAST(count(*) AS INTEGER) FROM empty_rows) AS "emptyRows"
+     FROM source`,
+  );
   return {
     file: path.basename(inputPath),
     commit: manifest?.commit ?? null,
     dataDate: manifest?.data_date ?? null,
     rows,
+    emptyRows,
     bytes: (await stat(inputPath)).size,
     sha256: await sha256Of(inputPath),
     manifestSha256: manifest?.sha256 ?? null,

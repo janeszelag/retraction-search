@@ -19,7 +19,7 @@ The work goes up in three pull requests:
 
 **Cleaning and diff**
 
-- [ ] **3. Empty rows.** `pipeline/sql/05_empty_rows.sql` runs after `00_load.sql`. It drops rows where every column is empty or only spaces and keeps their count. The profile's Snapshot section gives the count, and `npm run check` compares records with the rows that have data. Add `test/fixtures/empty-rows.csv` and a line about it in the fixtures README. (Spec 001 AC2)
+- [x] **3. Empty rows.** `pipeline/sql/05_empty_rows.sql` runs after `00_load.sql`. It drops rows where every column is empty or only spaces and keeps their count. The profile's Snapshot section gives the count, and `npm run check` compares records with the rows that have data. Add `test/fixtures/empty-rows.csv` and a line about it in the fixtures README. (Spec 001 AC2)
   - Done when: the plan's tests pass: the fixture cleans to the same output as `sample.csv`, a row with only a Record ID is kept, and a row with a title but no Record ID still stops the cleaning. `npm run check` passes on the 2026-10-09 snapshot and on the 2026-09-22 snapshot (`bd2763d6`), which has 130 empty rows.
 
 - [ ] **4. Upstream module.** Move the newest-commit lookup out of `download.js` into `src/upstream.js`, and add the working-day staleness check. (AC11)
@@ -94,7 +94,7 @@ The work goes up in three pull requests:
 - [ ] **18. Recovery check.** Delete the hosted server's collections, then start the workflow by hand. (AC19)
   - Done when: the run rebuilds the index from the CSV with no other steps, and the runbook records the check with its date.
 
-- [ ] **19. Data issues.** Add the check of stored documents, the change limits and the checks after the switch to "Checks that stop a run" in `docs/data-issues.md`, and remove the empty-row row's "today the cleaning stops". (AC7, AC8, AC10)
+- [ ] **19. Data issues.** Add the check of stored documents, the change limits and the checks after the switch to "Checks that stop a run" in `docs/data-issues.md`. (The empty-row row was brought up to date with task 3.) (AC7, AC8, AC10)
   - Done when: the page matches what the code does.
 
 - [ ] **20. Unattended week.** Leave the schedule alone for seven consecutive days, including a weekend. Record each day below. Also record each run's length and any facet-check retries, for the success metrics. (AC12, AC13, done when)

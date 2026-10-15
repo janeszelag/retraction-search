@@ -44,11 +44,14 @@ export async function checkSnapshot(inputPath) {
 
     const parquetA = sqlString(path.join(first, 'records.parquet'));
     const parquetB = sqlString(path.join(second, 'records.parquet'));
+    const csv = `read_csv(${sqlString(inputPath)}, header = true, all_varchar = true, delim = ',', quote = '"', escape = '"')`;
     const [counts] = await queryRows(
       await openDatabase(),
       `SELECT
-         (SELECT CAST(count(*) AS INTEGER) FROM read_csv(${sqlString(inputPath)},
-            header = true, all_varchar = true, delim = ',', quote = '"', escape = '"')) AS source_rows,
+         (SELECT CAST(count(*) AS INTEGER) FROM ${csv}) AS source_rows,
+         -- Rows where every field is empty or only spaces, which the cleaning drops (AC2).
+         -- In a WHERE clause, COLUMNS(*) applies the condition to every column and joins them with AND.
+         (SELECT CAST(count(*) AS INTEGER) FROM ${csv} WHERE nullif(trim(COLUMNS(*)), '') IS NULL) AS empty_rows,
          (SELECT CAST(count(*) AS INTEGER) FROM read_parquet(${parquetA})) AS records,
          (SELECT CAST(count(DISTINCT record_id) AS INTEGER) FROM read_parquet(${parquetA})) AS distinct_ids,
          (SELECT CAST(count(*) FILTER (WHERE notice_type IS NULL OR contains(notice_type, ';')) AS INTEGER)
@@ -67,13 +70,14 @@ export async function checkSnapshot(inputPath) {
       identicalFiles.push(a.equals(b));
     }
 
+    const rowsWithData = counts.source_rows - counts.empty_rows;
     return {
       rows: counts.source_rows,
       results: [
         {
           label: 'AC2',
-          passed: counts.records === counts.source_rows && documents === counts.source_rows,
-          detail: `one record and one document per source row (${counts.records} records, ${documents} documents)`,
+          passed: counts.records === rowsWithData && documents === rowsWithData,
+          detail: `one record and one document per source row with data (${counts.records} records, ${documents} documents, ${counts.empty_rows} empty rows dropped)`,
         },
         {
           label: 'AC2',

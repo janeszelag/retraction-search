@@ -153,6 +153,7 @@ export function profileMarkdown({ snapshot, emptyValues, values, review, listInt
         ['Upstream commit', snapshot.commit ?? 'unknown (no manifest)'],
         ['Data date', snapshot.dataDate ?? 'unknown (no manifest)'],
         ['Rows', formatNumber(snapshot.rows)],
+        ['Empty rows dropped (AC2)', formatNumber(snapshot.emptyRows)],
         ['Size', `${formatNumber(snapshot.bytes)} bytes`],
         ['SHA-256', checksum],
       ],
