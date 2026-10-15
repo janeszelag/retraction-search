@@ -1,6 +1,6 @@
 # Plan 003: Daily pipeline
 
-Status: draft, 2026-10-14. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB) and [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) apply.
+Status: approved by the owner, 2026-10-14. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB) and [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) apply.
 
 External facts below were checked on 2026-10-14 unless marked otherwise.
 
@@ -129,7 +129,7 @@ A run stopped by a limit fails with the numbers and the limit. The diff is still
 
 ## Empty rows (spec 001 change)
 
-Some upstream files end with rows where every field is empty: 20 commas and nothing else (spike S1). Spec 001's integrity check stops on them, because they have no Record ID and no notice type. The proposed change to spec 001's AC2 drops them instead and counts them:
+Some upstream files end with rows where every field is empty: 20 commas and nothing else (spike S1). Spec 001's integrity check stops on them, because they have no Record ID and no notice type. The change to spec 001's AC2, agreed on 2026-10-14, drops them instead and counts them:
 
 - **`05_empty_rows.sql`** runs right after `00_load.sql`. It counts the rows where every column is empty or only spaces, keeps that count in a one-row table, and deletes those rows from `source`. Everything after it, including the column check, the cleaning, the diff and `npm run check`, sees only rows with data. The SQL files still run in order in the DuckDB CLI.
 - **The profile report's Snapshot section** gives the number of empty rows dropped, so a run on such a file says what it did.
@@ -235,7 +235,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | AC6 | `diff.md` caps its lists and contains no title or author text from the fixtures. With no meta document, the run reports nothing to compare against and loads. |
 | AC7 | A broken fixture (missing column), a failed download and a failed import each stop the run, name the step, and leave the fake server's alias and meta unchanged |
 | AC8 | Fewer records, 51 removals, 101 emptied records and changes to more than half the records each stop the run. Values one below each limit pass. `--accept-changes` lets a stopped run through and is recorded. |
-| Spec 001 AC2 (proposed change) | `empty-rows.csv` cleans to the same output as `sample.csv`, and the profile reports the empty rows dropped. A row with only a Record ID is kept. A row with a title but no Record ID still stops the cleaning. |
+| Spec 001 AC2 (changed 2026-10-14) | `empty-rows.csv` cleans to the same output as `sample.csv`, and the profile reports the empty rows dropped. A row with only a Record ID is kept. A row with a title but no Record ID still stops the cleaning. |
 | AC9 | A fake server that fails the facet-value check once: the run retries and succeeds, and the summary reports the retry. Failing twice fails the run. Failing the checks before import isn't retried. |
 | AC10 | A fake server whose post-switch count is wrong: the alias and meta go back, the new collection is deleted, and the run fails |
 | AC11 | Working-day staleness, with dates around weekends and the three-day limit |
@@ -265,7 +265,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
     - **When:** 78 in the 2026-02-13 file, 279 on 2026-06-12, 192 on 2026-07-14 and 264 on 2026-08-14. Every daily file from 2026-08-18 to 2026-09-22 had them, between 130 and 317.
     - **When not:** none in the other monthly samples, and none from 2026-09-23 on.
     - **Where:** in the 2026-09-22 file, all 130 were the last lines.
-    - **Effect:** spec 001's cleaning stops on them, so they lead to the proposed change above.
+    - **Effect:** spec 001's cleaning stops on them, which led to the AC2 change above.
   - **Caveat:** before 2026-08-18 only monthly snapshots were compared, so a large one-day change earlier than that would show only in its month's totals.
 - **S2, facet-value check (AC9).** Load the newest snapshot 30 times in a row into the local stack and count the facet-check failures. If there's more than one, look for the cause before relying on a single retry. For example, check whether waiting a few seconds and checking again passes without a new import.
 - **S3, Railway (AC16, AC19), once the owner has set up the account.** Confirm the port, HTTPS, 401 and restart behavior. Load from the laptop with `--env-file .env.hosted`, timing the upload. Read Railway's memory graph with one, two and three collections loaded.
@@ -285,7 +285,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 ## Changes to other documents
 
 - **Product brief:** the roadmap's Phase 3 and 4 rows, for the hosted search server's move (in this pull request).
-- **Spec 001 and plan 001:** the proposed change to AC2 for empty rows (in this pull request).
+- **Spec 001 and plan 001:** the AC2 change for empty rows (in this pull request).
 - **Data issues:** empty rows under "File format" (in this pull request), and the change limits under "Checks that stop a run" once they're built.
 - **`CLAUDE.md`:** `npm run update` and `npm run diff` in the commands table, once they work.
 - **Decision record 002:** the first week's measured cost, added to "Expected cost", once known.
@@ -302,5 +302,5 @@ The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep w
 
 ## Still open
 
-- **From the spec:** whether the keepalive call is enough on its own, the alert channel, and the done-when length.
-- **Empty rows:** the change to spec 001's AC2 is proposed, not yet agreed.
+- Whether GitHub's "enable workflow" call alone keeps the schedule alive (see the spec's open questions).
+- Whether the hosted server keeps the previous collection, decided after spike S3 (trade-off 4).

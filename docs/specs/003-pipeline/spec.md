@@ -1,6 +1,6 @@
 # Spec 003: Daily pipeline
 
-Status: draft, 2026-10-14. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
+Status: approved by the owner, 2026-10-14. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
 
 ## Problem
 
@@ -24,8 +24,11 @@ Made 2026-10-14:
 
 - The hosted search server (Typesense on Railway's Hobby plan, as decision record [002](../../decisions/002-search-engine.md) chose) is set up in this phase, not Phase 4. The scheduled run then has a real server to load into, and the brief's learning milestone (30 days of daily runs) can start. The website on Vercel, its rate-limit store and analytics stay in Phase 4.
 - The change limits (AC8) catch what a broken file does: fewer records, removed records, or filled fields going empty. Changed values get only a loose backstop, because Retraction Watch's own batch edits and reclassifications are real changes for the diff to report, not to block. The values come from spike S1 in the plan.
+- Failed runs open a GitHub issue, as well as GitHub's own notifications (AC14). Issues in a public repository are public.
+- The schedule is kept alive by the "enable workflow" call plus a warning issue from day 45 without a commit (AC15).
+- The spec is done after seven consecutive days of unattended runs, including a weekend.
 
-Proposed 2026-10-14, as a change to spec 001 that this spec builds:
+Agreed 2026-10-14, as a change to spec 001 that this spec builds:
 
 - Rows where every field is empty are dropped before cleaning and counted in the profile report ([spec 001](../001-data-cleaning/spec.md), AC2). Some upstream files end with such rows. Today's integrity check rejects them, because they have no Record ID, so without this change every daily run on those files would fail. See [data issues](../../data-issues.md#file-format).
 
@@ -96,12 +99,12 @@ From earlier documents:
 
 ## Done when
 
-All acceptance criteria pass, and the scheduled run has kept the hosted server current for seven consecutive days, including a weekend, with nobody touching it (proposed). The brief's learning milestone, 30 days of daily runs with alerts on failure, continues after this spec.
+All acceptance criteria pass, and the scheduled run has kept the hosted server current for seven consecutive days, including a weekend, with nobody touching it. The brief's learning milestone, 30 days of daily runs with alerts on failure, continues after this spec.
 
 ## Success metrics
 
 - Days behind upstream: zero on every working day of that week, measured as the hosted data date against upstream's newest commit.
-- A whole run finishes in under 10 minutes on GitHub's runner (proposed). Downloading, cleaning and loading take well under a minute each on a laptop.
+- A whole run finishes in under 10 minutes on GitHub's runner. Downloading, cleaning and loading take well under a minute each on a laptop.
 - The facet-check retry rate over the first 30 days is recorded, with the date of each retry.
 - After the first full week, the hosted server's memory, CPU and bill are compared with decision record 002's estimate of about $5 a month.
 
@@ -116,6 +119,4 @@ All acceptance criteria pass, and the scheduled run has kept the hosted server c
 
 ## Open questions
 
-- **Keeping the schedule alive (AC15):** GitHub's docs don't say what counts as repository activity, or whether its API's "enable workflow" call resets the 60-day count. The plan proposes a warning issue, which is verifiable, plus the API call, which might make the warning unnecessary.
-- **Alert channel (AC14):** GitHub sends notifications for scheduled workflows to whoever last changed the schedule (checked 2026-10-14). The plan proposes a GitHub issue on failure, which notifies the repository owner and keeps a record. Issues in a public repository are public.
-- **Done-when length:** seven days is proposed.
+- **Keeping the schedule alive (AC15):** GitHub's docs don't say what counts as repository activity, or whether its API's "enable workflow" call resets the 60-day count. The warning issue meets AC15 either way. Whether the call alone would be enough only becomes clear if the repository goes 60 days without a commit.
