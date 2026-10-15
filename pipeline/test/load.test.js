@@ -1,22 +1,34 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { beforeAll, describe, expect, it } from 'vitest';
-import { buildDocuments, cleanRecords, documentLines, loadSource } from '../src/clean.js';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { buildDocuments, cleanRecords, documentLines, loadSource, runCleaning } from '../src/clean.js';
 import { openDatabase } from '../src/duckdb.js';
 import {
+  DocumentCheckError,
   ImportError,
   ValueCheckError,
+  canonicalJson,
   checkValues,
+  cleanUp,
   collectionName,
   collectionSchema,
   collectionsToDelete,
   cutFacetValue,
   cutNames,
   describeSnapshotDir,
+  differingFields,
+  escapeNonAscii,
+  importSnapshot,
   readImportResults,
+  readMeta,
+  switchTo,
   unexpectedFacetValues,
   valuesDifferingInCaseOrAccents,
   withEnvValue,
 } from '../src/load.js';
+import { fakeTypesense } from './helpers/fake-typesense.js';
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
 
@@ -222,5 +234,136 @@ describe('env file', () => {
   it('adds a missing value', () => {
     expect(withEnvValue('A=1', 'TYPESENSE_SEARCH_KEY', 'abc')).toBe('A=1\nTYPESENSE_SEARCH_KEY=abc\n');
     expect(withEnvValue('', 'TYPESENSE_SEARCH_KEY', 'abc')).toBe('TYPESENSE_SEARCH_KEY=abc\n');
+  });
+});
+
+describe('escaped import bodies (decision record 004)', () => {
+  const text = JSON.stringify({ title: 'Ж é – β “quoted” 𝔅   plain', authors: ['Ana Ñandú'] });
+
+  it('writes every non-ASCII character as an escape', () => {
+    const escaped = escapeNonAscii(text);
+    expect(escaped).toMatch(/^[\x00-\x7f]*$/);
+    expect(escaped).toContain('\\u0416');
+  });
+
+  it('parses back to the same values, including characters outside the Basic Multilingual Plane', () => {
+    expect(JSON.parse(escapeNonAscii(text))).toEqual(JSON.parse(text));
+  });
+
+  it('leaves ASCII text alone', () => {
+    expect(escapeNonAscii('{"title":"Plain text, with \\"quotes\\""}')).toBe('{"title":"Plain text, with \\"quotes\\""}');
+  });
+});
+
+describe('comparing stored documents', () => {
+  it('ignores the order of keys inside objects', () => {
+    expect(canonicalJson({ b: 1, original: { y: 'b', x: 'a' } })).toBe(canonicalJson({ original: { x: 'a', y: 'b' }, b: 1 }));
+  });
+
+  it('names the fields that differ', () => {
+    const sent = { id: '1', authors: ['Ana Example'], original: { x: 'a', y: 'b' }, title: 'T' };
+    const stored = { id: '1', authors: ['Ana Exmple'], original: { y: 'b', x: 'a' }, title: 'T', extra: true };
+    expect(differingFields(sent, stored)).toEqual(['authors', 'extra']);
+  });
+});
+
+describe('import, switch and clean-up steps (spec 003, task 7)', () => {
+  let root;
+  let snapshotDir;
+  let documentLinesOfFixture;
+
+  beforeAll(async () => {
+    root = await mkdtemp(path.join(tmpdir(), 'retraction-search-load-'));
+    snapshotDir = path.join(root, '2026-10-14-bbbbbbbb');
+    await runCleaning({ inputPath: fixture('sample.csv'), outputDir: snapshotDir });
+    documentLinesOfFixture = (await readFile(path.join(snapshotDir, 'search-documents.jsonl'), 'utf8')).trim().split('\n');
+  });
+
+  afterAll(async () => {
+    await rm(root, { recursive: true, force: true });
+  });
+
+  const quiet = () => {};
+  const at = (iso) => new Date(iso);
+
+  it('imports pure-ASCII bodies and keeps a collection whose documents all match', async () => {
+    const typesense = fakeTypesense();
+    const imported = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet, now: at('2026-10-15T01:17:00Z') });
+    expect(imported).toMatchObject({
+      collection: 'retractions_2026-10-14_bbbbbbbb_20261015T011700Z',
+      documents: 37,
+      snapshot: { dataDate: '2026-10-14', commit: 'bbbbbbbb' },
+    });
+    expect(typesense.importBodies.length).toBeGreaterThan(0);
+    expect(typesense.importBodies.every((body) => /^[\x00-\x7f]*$/.test(body))).toBe(true);
+    expect(documentLinesOfFixture.some((line) => /[^\x00-\x7f]/.test(line))).toBe(true);
+    expect(typesense.requests).toContain(`GET /collections/${imported.collection}/documents/export`);
+    expect([...typesense.collections.keys()]).toEqual([imported.collection]);
+  });
+
+  it('fails when Typesense drops a letter, names the record and field but not the text, and deletes the collection', async () => {
+    const typesense = fakeTypesense();
+    const damaged = JSON.parse(documentLinesOfFixture.find((line) => JSON.parse(line).authors.length > 1));
+    const name = damaged.authors[1];
+    typesense.onImport = (doc) =>
+      doc.id === damaged.id ? { ...doc, authors: doc.authors.map((author, i) => (i === 1 ? author.slice(0, 2) + author.slice(3) : author)) } : doc;
+
+    const error = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet }).catch((caught) => caught);
+    expect(error).toBeInstanceOf(DocumentCheckError);
+    expect(error).toBeInstanceOf(ValueCheckError);
+    expect(error.message).toContain(`1 stored differently from the cleaned file: record ${damaged.id} (authors)`);
+    expect(error.message).not.toContain(name);
+    expect(error.message).not.toContain(name.slice(0, 2) + name.slice(3));
+    expect(typesense.collections.size).toBe(0);
+  });
+
+  it('fails when a document is missing or unexpected', async () => {
+    const typesense = fakeTypesense();
+    typesense.onImport = (doc) => (doc.id === '2' ? { ...doc, id: '999999999' } : doc);
+    await expect(importSnapshot({ snapshotDir, request: typesense.request, log: quiet })).rejects.toThrow(
+      /1 missing: record 2; 1 not in the cleaned file: record 999999999/,
+    );
+  });
+
+  it('switches the alias, writes the meta document with the upstream commit, and returns what was there before', async () => {
+    const typesense = fakeTypesense();
+    const first = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet, now: at('2026-10-14T01:17:00Z') });
+    const firstSwitch = await switchTo({ request: typesense.request, imported: first, upstreamCommit: 'b'.repeat(40), now: at('2026-10-14T01:18:00Z'), log: quiet });
+    expect(firstSwitch.previous).toBeNull();
+    expect(firstSwitch.previousMeta).toBeNull();
+    expect(await readMeta(typesense.request)).toEqual({
+      data_date: '2026-10-14',
+      commit: 'bbbbbbbb',
+      upstream_commit: 'b'.repeat(40),
+      collection: first.collection,
+      documents: 37,
+      loaded_at: '2026-10-14T01:18:00.000Z',
+      cut_names: { journal: {}, publisher: {} },
+    });
+
+    const second = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet, now: at('2026-10-15T01:17:00Z') });
+    const secondSwitch = await switchTo({ request: typesense.request, imported: second, upstreamCommit: 'b'.repeat(40), now: at('2026-10-15T01:18:00Z'), log: quiet });
+    expect(secondSwitch.previous).toBe(first.collection);
+    expect(secondSwitch.previousMeta).toEqual(firstSwitch.meta);
+    expect(typesense.aliases.get('retractions')).toBe(second.collection);
+  });
+
+  it('cleans up collections older than the previous one', async () => {
+    const typesense = fakeTypesense();
+    const names = [];
+    for (const day of ['12', '13', '14']) {
+      const imported = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet, now: at(`2026-10-${day}T01:17:00Z`) });
+      names.push(imported.collection);
+    }
+    expect(await cleanUp({ request: typesense.request, current: names[2], previous: names[1], log: quiet })).toEqual([names[0]]);
+    expect([...typesense.collections.keys()].sort()).toEqual([names[1], names[2]].sort());
+  });
+
+  it('makes no request to /keys in the three steps (AC18)', async () => {
+    const typesense = fakeTypesense();
+    const imported = await importSnapshot({ snapshotDir, request: typesense.request, log: quiet });
+    const { previous } = await switchTo({ request: typesense.request, imported, log: quiet });
+    await cleanUp({ request: typesense.request, current: imported.collection, previous, log: quiet });
+    expect(typesense.requests.filter((line) => line.includes('/keys'))).toEqual([]);
   });
 });

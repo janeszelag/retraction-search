@@ -33,7 +33,7 @@ The work goes up in three pull requests:
 
 **Load**
 
-- [ ] **7. Split the load.** `load.js` becomes `importSnapshot`, `switchTo` and `cleanUp`. Imports escape every non-ASCII character, and after each import the load exports the collection and compares every stored document with the cleaned file, throwing `DocumentCheckError` on a difference (decision record 004). The facet-value check throws `FacetCheckError`. The meta document gains `upstream_commit`, the full SHA from the download's manifest. `npm run load` keeps its key handling, but the three steps never touch keys. (AC3, AC9, AC10, AC18)
+- [x] **7. Split the load.** `load.js` becomes `importSnapshot`, `switchTo` and `cleanUp`. Imports escape every non-ASCII character, and after each import the load exports the collection and compares every stored document with the cleaned file, throwing `DocumentCheckError` on a difference (decision record 004). The facet-value check throws `FacetCheckError`. The meta document gains `upstream_commit`, the full SHA from the download's manifest. `npm run load` keeps its key handling, but the three steps never touch keys. (AC3, AC9, AC10, AC18)
   - Done when: the existing load tests pass. New tests show:
     - the import body is pure ASCII and parses back to the same documents
     - a stored document with one letter missing fails the check, while a reordered `original` object passes
