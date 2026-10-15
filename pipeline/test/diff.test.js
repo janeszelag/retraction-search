@@ -3,7 +3,16 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { compareSnapshots, diffDirFor, runDiff, snapshotName } from '../src/diff.js';
+import {
+  compareSnapshots,
+  diffDirFor,
+  diffMarkdown,
+  MAX_REASON_LINES,
+  MAX_RECORD_IDS,
+  runDiff,
+  snapshotName,
+} from '../src/diff.js';
+import { openDatabase, queryRows, sqlString } from '../src/duckdb.js';
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
 
@@ -98,9 +107,115 @@ describe('diff output', () => {
     ).toBe('/d/2026-10-13-2cf47753_to_2026-10-14-1af1bfbb');
   });
 
-  it('writes diff.json', async () => {
+  it('writes diff.json and diff.md', async () => {
     const outputDir = path.join(root, 'out');
     const { diff } = await runDiff({ fromPath: fixture('sample.csv'), toPath: fixture('sample-next.csv'), outputDir });
     expect(JSON.parse(await readFile(path.join(outputDir, 'diff.json'), 'utf8'))).toEqual(diff);
+    expect(await readFile(path.join(outputDir, 'diff.md'), 'utf8')).toBe(diffMarkdown(diff));
+  });
+});
+
+describe('diff.md (AC5, AC6)', () => {
+  let markdown;
+
+  beforeAll(async () => {
+    markdown = diffMarkdown(await compareSnapshots(fixture('sample.csv'), fixture('sample-next.csv')));
+  });
+
+  it('gives the counts and the changed columns', () => {
+    expect(markdown).toContain('| Added | 2 |');
+    expect(markdown).toContain('| Removed | 1 |');
+    expect(markdown).toContain('| Changed | 5 |');
+    expect(markdown).toContain('| With a filled field now empty | 1 |');
+    expect(markdown).toContain('| Notes | 1 | 1 |');
+  });
+
+  it('gives old and new notice types and reasons', () => {
+    expect(markdown).toContain('| 18 | Expression of concern | Retraction |');
+    expect(markdown).toContain('| 6 | Results Not Reproducible; | Concerns/Issues about Data;Results Not Reproducible; |');
+  });
+
+  it('lists record IDs', () => {
+    expect(markdown).toMatch(/## Added records \(2\)\n\n900000301, 900000302\n/);
+    expect(markdown).toMatch(/## Removed records \(1\)\n\n102\n/);
+    expect(markdown).toContain('| 69326 | Notes | Notes |');
+    expect(markdown).toContain('| 4 | URLS | - |');
+  });
+
+  it('has no title or author text from the fixtures', async () => {
+    const db = await openDatabase();
+    const rows = await queryRows(
+      db,
+      `SELECT Title, Author FROM read_csv([${[fixture('sample.csv'), fixture('sample-next.csv')].map(sqlString).join(', ')}],
+         header = true, all_varchar = true, union_by_name = true)`,
+    );
+    const texts = rows.flatMap((row) => [row.Title, ...(row.Author ?? '').split(';')]).filter((text) => text?.trim());
+    expect(texts.length).toBeGreaterThan(400);
+    expect(texts.filter((text) => markdown.includes(text.trim()))).toEqual([]);
+  });
+
+  it('can start at a lower heading level', () => {
+    const nested = diffMarkdown(
+      { from: { file: 'a.csv', records: 0 }, to: { file: 'b.csv', records: 0 }, counts: { added: 0, removed: 0, changed: 0, emptied: 0 }, columns: [], values: [], records: [] },
+      { level: 2 },
+    );
+    expect(nested).toMatch(/^## Changes from a\.csv to b\.csv\n/);
+    expect(nested).toContain('\n### Added records (0)\n\nNone.\n');
+  });
+});
+
+describe('diff.md caps (AC6)', () => {
+  const range = (start, count) => Array.from({ length: count }, (_, index) => start + index);
+  const records = [
+    ...range(1, MAX_RECORD_IDS + 50).map((id) => ({ record_id: id, change: 'added', columns: [], emptied: [] })),
+    ...range(1000, MAX_RECORD_IDS + 1).map((id) => ({ record_id: id, change: 'removed', columns: [], emptied: [] })),
+    ...range(2000, MAX_RECORD_IDS).map((id) => ({ record_id: id, change: 'changed', columns: ['Reason'], emptied: [] })),
+    ...range(3000, MAX_REASON_LINES + 100 - MAX_RECORD_IDS).map((id) => ({ record_id: id, change: 'changed', columns: ['Reason', 'RetractionNature'], emptied: [] })),
+  ];
+  const changedIds = records.filter((record) => record.change === 'changed').map((record) => record.record_id);
+  const diff = {
+    from: { file: 'a.csv', commit: 'a'.repeat(40), data_date: '2026-10-13', records: 1000 },
+    to: { file: 'b.csv', commit: 'b'.repeat(40), data_date: '2026-10-14', records: 1049 },
+    counts: { added: MAX_RECORD_IDS + 50, removed: MAX_RECORD_IDS + 1, changed: changedIds.length, emptied: 0 },
+    columns: [{ column: 'Reason', changed: changedIds.length, emptied: 0 }],
+    values: [
+      ...changedIds.map((id) => ({ record_id: id, column: 'Reason', old: 'Old reason;', new: 'New reason;' })),
+      ...range(3000, MAX_REASON_LINES + 100 - MAX_RECORD_IDS).map((id) => ({ record_id: id, column: 'RetractionNature', old: 'Expression of concern', new: 'Retraction' })),
+    ],
+    records,
+  };
+  const markdown = diffMarkdown(diff);
+  const section = (heading) => markdown.slice(markdown.indexOf(heading)).split('\n## ')[0];
+
+  it('names both snapshots by data date and commit', () => {
+    expect(markdown).toMatch(/^# Changes from 2026-10-13 \(upstream commit aaaaaaaa\) to 2026-10-14 \(upstream commit bbbbbbbb\)\n/);
+  });
+
+  it(`shows ${MAX_RECORD_IDS} record IDs per list, then how many more`, () => {
+    const added = section('## Added records');
+    expect(added).toContain(`, ${MAX_RECORD_IDS}\n\n…and 50 more in diff.json.`);
+    expect(added).not.toContain(`${MAX_RECORD_IDS + 1}`);
+    expect(section('## Removed records')).toContain('…and 1 more in diff.json.');
+    const changedRows = section('## Changed records (').split('\n').filter((line) => /^\| \d/.test(line));
+    expect(changedRows).toHaveLength(MAX_RECORD_IDS);
+    expect(section('## Changed records (')).toContain(`…and ${changedIds.length - MAX_RECORD_IDS} more in diff.json.`);
+  });
+
+  it(`shows ${MAX_REASON_LINES} reason changes, then how many more`, () => {
+    const reasonRows = section('## Reason changes').split('\n').filter((line) => /^\| \d/.test(line));
+    expect(reasonRows).toHaveLength(MAX_REASON_LINES);
+    expect(section('## Reason changes')).toContain('…and 100 more in diff.json.');
+  });
+
+  it('shows every notice type change', () => {
+    const rows = section('## Notice type changes').split('\n').filter((line) => /^\| \d/.test(line));
+    expect(rows).toHaveLength(MAX_REASON_LINES + 100 - MAX_RECORD_IDS);
+    expect(section('## Notice type changes')).not.toContain('more in diff.json');
+  });
+
+  it('shows "None." for an empty list', () => {
+    const none = diffMarkdown({ ...diff, records: [], values: [], columns: [], counts: { added: 0, removed: 0, changed: 0, emptied: 0 } });
+    expect(none).toContain('## Added records (0)\n\nNone.');
+    expect(none).toContain('No column changed.');
   });
 });

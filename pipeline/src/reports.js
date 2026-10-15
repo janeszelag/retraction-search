@@ -26,16 +26,16 @@ const REVIEW_ISSUES = [
   'Journal or publisher spelling merged',
 ];
 
-const formatNumber = (value) => value.toLocaleString('en-US');
+export const formatNumber = (value) => value.toLocaleString('en-US');
 
-function cell(value) {
+export function cell(value) {
   if (value === null || value === undefined || value === '') {
     return '(empty)';
   }
   return String(value).replaceAll('|', '\\|');
 }
 
-function table(headers, rows) {
+export function table(headers, rows) {
   return [
     `| ${headers.join(' | ')} |`,
     `|${headers.map(() => '---').join('|')}|`,

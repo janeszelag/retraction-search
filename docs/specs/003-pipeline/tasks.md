@@ -28,7 +28,7 @@ The work goes up in three pull requests:
 - [x] **5. Diff.** `sql/40_diff.sql` and `src/diff.js` build `diff_records`, `diff_columns` and `diff_values`, including emptied columns, and write `diff.json`. Add `test/fixtures/sample-next.csv` and `npm run diff -- --from <csv> --to <csv>`. (AC4, AC5)
   - Done when: the plan's fixture tests pass. `npm run diff` from the 2026-10-13 snapshot to the 2026-10-14 one gives 30 added, 0 removed and 4 changed (URLS), as in spike S1.
 
-- [ ] **6. Diff report.** `diff.md` has the counts and per-column tables, notice-type and reason changes with their old and new values, and capped lists of record IDs. (AC5, AC6)
+- [x] **6. Diff report.** `diff.md` has the counts and per-column tables, notice-type and reason changes with their old and new values, and capped lists of record IDs. (AC5, AC6)
   - Done when: tests show the caps, the "…and N more" line, and no title or author text from the fixtures. The 2026-10-08 to 2026-10-09 diff shows 653 changed journal names.
 
 **Load**
