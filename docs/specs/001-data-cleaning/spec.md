@@ -27,6 +27,10 @@ Made 2026-10-12:
 - Placeholder entries in author, institution and country lists ("Unknown", "unavailable", "Not available", in any capitalization) become one value, "Unknown".
 - Stray "x" characters at the start of a DOI are removed when what follows starts with "10.".
 
+Proposed 2026-10-14, while planning [spec 003](../003-pipeline/spec.md), which builds it:
+
+- Rows where every field is empty are dropped before cleaning and counted in the profile report (AC2). The 2026-10-09 snapshot has none, but other upstream files end with up to 317 rows of nothing but commas. Every daily file from 2026-08-18 to 2026-09-22 had them, and so did several monthly samples earlier in 2026 ([plan 003](../003-pipeline/plan.md#spikes-first), spike S1). Without this rule, the integrity check stops on them, because they have no Record ID.
+
 ## Source data
 
 Checked 2026-10-12 against the 2026-10-09 snapshot (upstream commit `bc5648dd`).
@@ -63,7 +67,7 @@ Every criterion is checked against one pinned snapshot.
 
 **Integrity**
 
-- AC2: The cleaned data has exactly one row per source row. Record ID is unique and never empty.
+- AC2: Source rows where every field is empty are dropped, and the profile report gives their number (proposed change, 2026-10-14). The cleaned data has exactly one row per remaining source row. Record ID is unique and never empty.
 - AC3: If one of the 20 expected columns is missing or renamed, or an unexpected column contains data, cleaning stops with an error that names the column and writes no output. The always-empty column created by the header's trailing comma is ignored.
 - AC4: For every field the cleaning changes, the original value stays available next to the cleaned one, so record pages can show what Retraction Watch published.
 - AC5: Running the cleaning twice on the same input produces identical output.
