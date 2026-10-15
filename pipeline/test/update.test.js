@@ -1,9 +1,12 @@
+import { execFile } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { runCleaning } from '../src/clean.js';
+import { repoRoot } from '../src/paths.js';
 import {
   checkChangeLimits,
   DEFAULT_VIEW_FILTER,
@@ -109,9 +112,24 @@ describe('one command (AC1, AC3)', () => {
     const summary = await readFile(path.join(result.run_folder, 'summary.md'), 'utf8');
     expect(summary).toContain('## Changes from 2026-10-13 (upstream commit aaaaaaaa) to 2026-10-14 (upstream commit bbbbbbbb)');
     expect(summary).toContain('| 18 | Expression of concern | Retraction |');
-    // The previous collection stays, so going back is one alias switch.
-    expect([...typesense.collections.keys()].sort()).toEqual(
-      ['meta', first.result.after.collection, result.after.collection].sort(),
+    // Only the new collection stays (plan trade-off 4, decided after spike S3).
+    expect([...typesense.collections.keys()].sort()).toEqual(['meta', result.after.collection].sort());
+  });
+
+  it('deletes every other snapshot collection after the checks pass, including ones left from before', async () => {
+    const typesense = fakeTypesense();
+    await update(typesense, [OLDER]);
+    // A previous collection kept by an earlier version of the command.
+    typesense.collections.set('retractions_2026-10-12_cccccccc_20261013T011700Z', { schema: {}, docs: new Map() });
+    const logged = [];
+    const { result } = await update(typesense, [NEWER, OLDER], { log: (line) => logged.push(line) });
+
+    expect(result.outcome).toBe('updated');
+    expect([...typesense.collections.keys()].sort()).toEqual(['meta', result.after.collection].sort());
+    expect(logged.filter((line) => line.startsWith('Deleted '))).toHaveLength(2);
+    // The deletions come last, after the checks through the alias.
+    expect(logged.findIndex((line) => line.startsWith('Deleted '))).toBeGreaterThan(
+      logged.findIndex((line) => line.startsWith('Search through the retractions alias matches')),
     );
   });
 
@@ -194,6 +212,39 @@ describe('secrets in messages (AC17)', () => {
     expect(result.message).toBe("Can't reach Typesense at [hidden] (ECONNREFUSED).");
     expect(await readFile(path.join(result.run_folder, 'result.json'), 'utf8')).not.toContain('search.example.app');
   });
+});
+
+describe('--server-env, typed as a person would (AC17)', () => {
+  // The real command from the repository root, with npm's and the server's
+  // variables cleared as in a new terminal. The script runs from pipeline/, so a
+  // path that only works from the root shows the script read it, not Node.
+  async function npmUpdate(...args) {
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(([name]) => !/^npm_/i.test(name) && !['INIT_CWD', 'TYPESENSE_URL', 'TYPESENSE_ADMIN_KEY'].includes(name)),
+    );
+    try {
+      await promisify(execFile)('npm', ['run', 'update', '--', ...args], { cwd: repoRoot, env });
+      return { code: 0, stderr: '' };
+    } catch (error) {
+      return { code: error.code, stderr: error.stderr };
+    }
+  }
+
+  it('reads a file given relative to the repository root', async () => {
+    const file = path.join(root, 'hosted.env');
+    await writeFile(file, 'TYPESENSE_URL=http://127.0.0.1:9\n');
+    const { code, stderr } = await npmUpdate('--server-env', path.relative(repoRoot, file));
+    // The file has no admin key, so the run stops before any request.
+    expect(stderr).toContain(`Set TYPESENSE_URL and TYPESENSE_ADMIN_KEY in the environment or in ${file}.`);
+    expect(code).toBe(1);
+  }, 30_000);
+
+  it('names a missing file in its own message', async () => {
+    const file = path.join(root, 'missing.env');
+    const { code, stderr } = await npmUpdate('--server-env', path.relative(repoRoot, file));
+    expect(stderr).toContain(`Can't find ${file}.`);
+    expect(code).toBe(1);
+  }, 30_000);
 });
 
 // What search serves: the alias target and the meta document.
