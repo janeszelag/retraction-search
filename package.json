@@ -22,6 +22,7 @@
     "search:up": "docker compose --env-file .env.local up --detach --wait",
     "test": "npm test --workspaces --if-present",
     "test:e2e": "npm run test:e2e -w web",
+    "update": "npm run update -w pipeline --",
     "web": "npm run dev -w web"
   },
   "overrides": {
