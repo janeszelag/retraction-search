@@ -26,16 +26,16 @@ const REVIEW_ISSUES = [
   'Journal or publisher spelling merged',
 ];
 
-const formatNumber = (value) => value.toLocaleString('en-US');
+export const formatNumber = (value) => value.toLocaleString('en-US');
 
-function cell(value) {
+export function cell(value) {
   if (value === null || value === undefined || value === '') {
     return '(empty)';
   }
   return String(value).replaceAll('|', '\\|');
 }
 
-function table(headers, rows) {
+export function table(headers, rows) {
   return [
     `| ${headers.join(' | ')} |`,
     `|${headers.map(() => '---').join('|')}|`,
@@ -153,6 +153,7 @@ export function profileMarkdown({ snapshot, emptyValues, values, review, listInt
         ['Upstream commit', snapshot.commit ?? 'unknown (no manifest)'],
         ['Data date', snapshot.dataDate ?? 'unknown (no manifest)'],
         ['Rows', formatNumber(snapshot.rows)],
+        ['Empty rows dropped (AC2)', formatNumber(snapshot.emptyRows)],
         ['Size', `${formatNumber(snapshot.bytes)} bytes`],
         ['SHA-256', checksum],
       ],

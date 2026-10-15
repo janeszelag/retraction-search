@@ -1,5 +1,8 @@
 // Loads one cleaned snapshot into Typesense (spec 002, plan "Data in Typesense").
+// importSnapshot, switchTo and cleanUp are the steps that npm run load and
+// npm run update share (spec 003). Only npm run load touches keys.
 // Usage: npm run load [-- --input <folder>]  (default: the newest folder in data/clean)
+import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -7,7 +10,7 @@ import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { fileExists } from './files.js';
-import { cleanDir, relativeToRepo, repoRoot } from './paths.js';
+import { cleanDir, rawDir, relativeToRepo, repoRoot } from './paths.js';
 import { typesenseClient } from './typesense.js';
 
 export const ALIAS = 'retractions';
@@ -114,6 +117,10 @@ export function readImportResults(responseText, expected) {
 }
 
 export class ValueCheckError extends Error {}
+// The two checks of what Typesense stored. A new import can pass them, so
+// the update retries these, once (spec 003, AC9).
+export class DocumentCheckError extends ValueCheckError {}
+export class FacetCheckError extends ValueCheckError {}
 
 // Typesense returns at most the first 255 bytes of a facet value, ending on a
 // whole character (spike S2).
@@ -265,6 +272,97 @@ async function* batchesOf(file, size) {
   }
 }
 
+// Writes every non-ASCII character as a \uXXXX escape, so the request body
+// is pure ASCII. Typesense reads an import in slices of 196,605 bytes and
+// drops a character that a slice boundary cuts in two (typesense/typesense#3071,
+// decision record 004). JSON reads the escape as the same character.
+export function escapeNonAscii(jsonText) {
+  return jsonText.replace(/[\u0080-\uffff]/g, (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
+}
+
+// JSON with the keys of every object sorted, since Typesense changes the
+// order of keys inside object fields such as `original`.
+export function canonicalJson(value) {
+  return JSON.stringify(value, (_key, entry) =>
+    entry && typeof entry === 'object' && !Array.isArray(entry)
+      ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
+      : entry,
+  );
+}
+
+// The fields whose stored value differs from the one sent.
+export function differingFields(sent, stored) {
+  return [...new Set([...Object.keys(sent), ...Object.keys(stored)])]
+    .filter((field) => canonicalJson(sent[field]) !== canonicalJson(stored[field]))
+    .sort();
+}
+
+const MAX_LISTED = 10;
+const listed = (items) =>
+  items.length > MAX_LISTED ? `${items.slice(0, MAX_LISTED).join(', ')} and ${items.length - MAX_LISTED} more` : items.join(', ');
+const hashOf = (text) => createHash('sha256').update(text).digest('base64');
+
+// Exports the collection and compares every document with the cleaned file
+// (decision record 004). Keeps a hash per document rather than the file.
+// The error names records and fields but never their text, since it can end
+// up in a public issue (spec 003, AC6).
+async function checkStoredDocuments(request, name, documentsFile) {
+  const expected = new Map();
+  for await (const batch of batchesOf(documentsFile, BATCH_SIZE)) {
+    for (const line of batch) {
+      const doc = JSON.parse(line);
+      expected.set(String(doc.id), hashOf(canonicalJson(doc)));
+    }
+  }
+  const exported = await request('GET', `/collections/${encodeURIComponent(name)}/documents/export`, { text: true });
+  const differing = new Map();
+  const unexpected = [];
+  for (const line of exported.split('\n')) {
+    if (line.trim() === '') {
+      continue;
+    }
+    const stored = JSON.parse(line);
+    const id = String(stored.id);
+    const hash = expected.get(id);
+    if (hash === undefined) {
+      unexpected.push(id);
+      continue;
+    }
+    expected.delete(id);
+    if (hash !== hashOf(canonicalJson(stored))) {
+      differing.set(id, stored);
+    }
+  }
+  const missing = [...expected.keys()];
+  if (differing.size === 0 && missing.length === 0 && unexpected.length === 0) {
+    return;
+  }
+
+  const problems = [];
+  if (differing.size > 0) {
+    const records = [];
+    for await (const batch of batchesOf(documentsFile, BATCH_SIZE)) {
+      for (const line of batch) {
+        const sent = JSON.parse(line);
+        const stored = differing.get(String(sent.id));
+        if (stored) {
+          records.push(`record ${sent.id} (${differingFields(sent, stored).join(', ')})`);
+        }
+      }
+    }
+    problems.push(`${records.length} stored differently from the cleaned file: ${listed(records)}`);
+  }
+  if (missing.length > 0) {
+    problems.push(`${missing.length} missing: ${listed(missing.map((id) => `record ${id}`))}`);
+  }
+  if (unexpected.length > 0) {
+    problems.push(`${unexpected.length} not in the cleaned file: ${listed(unexpected.map((id) => `record ${id}`))}`);
+  }
+  throw new DocumentCheckError(
+    `Typesense's documents don't match the cleaned file. Documents ${problems.join('; ')}. The import reported success, so Typesense changed them as it stored them (see decision record 004).`,
+  );
+}
+
 // Checks that Typesense cut journal and publisher values the way checkValues expects.
 async function checkFacetValues(request, name, values, cut) {
   const result = await request('GET', `/collections/${encodeURIComponent(name)}/documents/search`, {
@@ -273,7 +371,7 @@ async function checkFacetValues(request, name, values, cut) {
   for (const { field_name: field, counts } of result.facet_counts) {
     const unexpected = unexpectedFacetValues(counts.map((count) => count.value), values[field], cut[field]);
     if (unexpected.length > 0) {
-      throw new ValueCheckError(`Typesense's ${field} values don't match the documents: ${unexpected.map((value) => `"${value}"`).join(', ')}.`);
+      throw new FacetCheckError(`Typesense's ${field} values don't match the documents: ${unexpected.map((value) => `"${value}"`).join(', ')}.`);
     }
   }
 }
@@ -283,7 +381,7 @@ async function importDocuments(request, name, documentsFile) {
   for await (const batch of batchesOf(documentsFile, BATCH_SIZE)) {
     const response = await request('POST', `/collections/${encodeURIComponent(name)}/documents/import`, {
       query: { action: 'create', dirty_values: 'reject', return_id: true },
-      body: batch.join('\n'),
+      body: escapeNonAscii(batch.join('\n')),
       text: true,
     });
     imported += readImportResults(response, batch.length);
@@ -344,7 +442,23 @@ async function ensureSiteKey(request, currentValue) {
   return { created };
 }
 
-export async function runLoad({ snapshotDir, request, searchKey, log = console.log, now = new Date() }) {
+// The meta document, or null when there isn't one yet.
+export async function readMeta(request) {
+  try {
+    const { id: _id, ...meta } = await request('GET', `/collections/${META_COLLECTION}/documents/current`);
+    return meta;
+  } catch (error) {
+    if (error.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+// Step 1: creates a new collection, imports the snapshot, and checks the
+// count, every stored document and the facet values. If a check fails, it
+// deletes the collection and throws. Search doesn't change.
+export async function importSnapshot({ snapshotDir, request, log = console.log, now = new Date() }) {
   const snapshot = describeSnapshotDir(snapshotDir);
   const documentsFile = path.join(snapshotDir, 'search-documents.jsonl');
   const name = collectionName(snapshot, now);
@@ -359,42 +473,102 @@ export async function runLoad({ snapshotDir, request, searchKey, log = console.l
     if (documents !== imported) {
       throw new ImportError(`${name} holds ${documents} documents, but ${imported} were imported.`);
     }
+    await checkStoredDocuments(request, name, documentsFile);
     await checkFacetValues(request, name, values, cut);
   } catch (error) {
     await request('DELETE', `/collections/${encodeURIComponent(name)}`).catch(() => {});
     throw error;
   }
-  log(`Imported ${documents} documents into ${name}.`);
+  log(`Imported ${documents} documents into ${name}, and every stored document matches the cleaned file.`);
+  return { collection: name, documents, cut, snapshot };
+}
 
+// Step 2: points the alias at the new collection and writes the meta
+// document. Returns the alias target and meta document from before, so the
+// update can put them back.
+export async function switchTo({ request, imported, upstreamCommit = null, now = new Date(), log = console.log }) {
   const previous = await previousAliasTarget(request);
-  await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: name } });
-  await writeMeta(request, {
-    data_date: snapshot.dataDate,
-    commit: snapshot.commit,
-    collection: name,
-    documents,
+  const previousMeta = await readMeta(request);
+  await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: imported.collection } });
+  const meta = {
+    data_date: imported.snapshot.dataDate,
+    commit: imported.snapshot.commit,
+    // The full SHA, so the next update can download this snapshot again to diff against.
+    upstream_commit: upstreamCommit,
+    collection: imported.collection,
+    documents: imported.documents,
     loaded_at: now.toISOString(),
     // Full names for the journal and publisher facet values Typesense cut short.
-    cut_names: cut,
-  });
-  log(`Pointed the ${ALIAS} alias at ${name}${previous ? ` (it was ${previous})` : ''}.`);
+    cut_names: imported.cut,
+  };
+  try {
+    await writeMeta(request, meta);
+  } catch (error) {
+    // The alias and the meta document must agree, so put the alias back.
+    if (previous) {
+      await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: previous } }).catch(() => {});
+    }
+    throw error;
+  }
+  log(`Pointed the ${ALIAS} alias at ${imported.collection}${previous ? ` (it was ${previous})` : ''}.`);
   log(
-    `Stored full names for ${Object.keys(cut.journal).length} journal and ${Object.keys(cut.publisher).length} publisher values cut at 255 bytes.`,
+    `Stored full names for ${Object.keys(imported.cut.journal).length} journal and ${Object.keys(imported.cut.publisher).length} publisher values cut at 255 bytes.`,
   );
+  return { previous, previousMeta, meta };
+}
 
+// Undoes switchTo: points the alias back at the previous collection, puts
+// back the previous meta document and deletes the new collection. After a
+// first load there's nothing to go back to, so search keeps the new one.
+// Returns whether it went back.
+export async function switchBack({ request, switched, collection, log = console.log }) {
+  if (!switched.previous) {
+    log(`There was no previous collection to go back to, so the ${ALIAS} alias stays on ${collection}.`);
+    return false;
+  }
+  await request('PUT', `/aliases/${ALIAS}`, { body: { collection_name: switched.previous } });
+  if (switched.previousMeta) {
+    await writeMeta(request, switched.previousMeta);
+  } else {
+    await request('DELETE', `/collections/${META_COLLECTION}/documents/current`);
+  }
+  await request('DELETE', `/collections/${encodeURIComponent(collection)}`);
+  log(`Pointed the ${ALIAS} alias back at ${switched.previous}, restored the meta document and deleted ${collection}.`);
+  return true;
+}
+
+// Step 3: deletes snapshot collections other than the current and previous ones.
+export async function cleanUp({ request, current, previous, log = console.log }) {
   const all = (await request('GET', '/collections')).map((collection) => collection.name);
-  for (const old of collectionsToDelete(all, { current: name, previous })) {
+  const deleted = collectionsToDelete(all, { current, previous });
+  for (const old of deleted) {
     await request('DELETE', `/collections/${encodeURIComponent(old)}`);
     log(`Deleted ${old}.`);
   }
+  return deleted;
+}
 
+// npm run load: the three steps, then the site's key.
+export async function runLoad({ snapshotDir, request, searchKey, upstreamCommit = null, log = console.log, now = new Date() }) {
+  const imported = await importSnapshot({ snapshotDir, request, log, now });
+  const { previous } = await switchTo({ request, imported, upstreamCommit, now, log });
+  await cleanUp({ request, current: imported.collection, previous, log });
   const key = await ensureSiteKey(request, searchKey);
   log(
     key.created
       ? `Created the site's key and saved it to ${relativeToRepo(envFile)} as TYPESENSE_SEARCH_KEY.`
       : `Reused the site's key in ${relativeToRepo(envFile)}.`,
   );
-  return { collection: name, documents, previous };
+  return { collection: imported.collection, documents: imported.documents, previous };
+}
+
+// The full upstream commit, from the download's manifest for this snapshot.
+async function upstreamCommitFor(snapshotDir) {
+  const manifestPath = path.join(rawDir, `retraction_watch-${path.basename(snapshotDir)}.json`);
+  if (!(await fileExists(manifestPath))) {
+    return null;
+  }
+  return JSON.parse(await readFile(manifestPath, 'utf8')).commit ?? null;
 }
 
 async function main() {
@@ -409,11 +583,18 @@ async function main() {
   // npm runs workspace scripts from pipeline/, but INIT_CWD is where the command was typed.
   const invokedFrom = process.env.INIT_CWD ?? process.cwd();
   const snapshotDir = values.input ? path.resolve(invokedFrom, values.input) : await findNewestCleanSnapshot();
+  const upstreamCommit = await upstreamCommitFor(snapshotDir);
+  if (!upstreamCommit) {
+    console.log(
+      `No download manifest for ${path.basename(snapshotDir)} in ${relativeToRepo(rawDir)}, so the meta document won't name its upstream commit, and the next npm run update can't diff against it.`,
+    );
+  }
   const started = performance.now();
   await runLoad({
     snapshotDir,
     request: typesenseClient({ url, key: adminKey }),
     searchKey: process.env.TYPESENSE_SEARCH_KEY,
+    upstreamCommit,
   });
   console.log(`Loaded ${relativeToRepo(snapshotDir)} in ${((performance.now() - started) / 1000).toFixed(1)} s.`);
 }

@@ -17,7 +17,7 @@ This page covers problems in how the data is written down: formats, placeholders
 |---|---|
 | The header ends with a comma, so parsers see a 21st, always-empty column. | Ignored. |
 | A column could go missing, be renamed, or appear with data in a future snapshot. | The cleaning stops, names the column and writes no output (spec 001 AC3). |
-| Some files end with rows of 20 commas and nothing else. They aren't in the 2026-10-09 snapshot. Every daily file from 2026-08-18 to 2026-09-22 had them, 130 to 317 rows, and so did the monthly samples from 2026-02-13 (78) and 2026-06-12 to 2026-08-14 (192 to 279). None have appeared since 2026-09-23 (checked 2026-10-14, spec 003 spike S1). | Today the cleaning stops, because these rows have no record ID. Agreed 2026-10-14, to be built in spec 003: drop rows where every field is empty, and give their number in the profile report (a change to spec 001 AC2). |
+| Some files end with rows of 20 commas and nothing else. They aren't in the 2026-10-09 snapshot. Every daily file from 2026-08-18 to 2026-09-22 had them, 130 to 317 rows, and so did the monthly samples from 2026-02-13 (78) and 2026-06-12 to 2026-08-14 (192 to 279). None have appeared since 2026-09-23 (checked 2026-10-14, spec 003 spike S1). | Rows where every field is empty or only spaces are dropped before cleaning, and the profile report gives their number (spec 001 AC2, changed 2026-10-14). A row with any value at all is kept and goes through every check. The 2026-09-22 file cleans to 72,561 records, with 130 empty rows dropped. |
 
 ## Dates
 
@@ -101,7 +101,7 @@ A spelling that differs by a typo rather than by capitals, such as "Placenta" an
 - any document fails to import, or the number loaded differs from the number in the snapshot
 - two values of a filter field differ only in capitals or accents, which the cleaning should have merged
 - two journal or publisher names share their first 255 bytes, so Typesense would merge their counts
-- a journal or publisher value that Typesense returns doesn't match the documents. This happened once in nine loads on 2026-10-13: right after an import, Typesense returned a publisher name with one letter missing. It didn't happen again in eight more loads or in 1,435 repeated searches, and the cause is unknown. The daily run (spec 003) should retry once when it happens.
+- a journal or publisher value that Typesense returns doesn't match the documents. This happened once in nine loads on 2026-10-13: right after an import, Typesense returned a publisher name with one letter missing. Spike S2 of spec 003 found the cause on 2026-10-15: a Typesense bug ([typesense/typesense#3071](https://github.com/typesense/typesense/issues/3071)) drops a letter from imported text in about one import in three. See decision record [004](decisions/004-typesense-import-escaping.md) for the fix.
 
 ## Out of scope
 

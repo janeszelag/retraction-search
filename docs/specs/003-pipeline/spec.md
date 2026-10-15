@@ -1,6 +1,6 @@
 # Spec 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
 
 ## Problem
 
@@ -32,11 +32,14 @@ Agreed 2026-10-14, as a change to spec 001 that this spec builds:
 
 - Rows where every field is empty are dropped before cleaning and counted in the profile report ([spec 001](../001-data-cleaning/spec.md), AC2). Some upstream files end with such rows. Today's integrity check rejects them, because they have no Record ID, so without this change every daily run on those files would fail. See [data issues](../../data-issues.md#file-format).
 
+Agreed 2026-10-15, after spike S2 (plan):
+
+- Typesense 30.2 sometimes drops one letter from imported text and still reports success: in 6 of 20 test imports, one or two names lost a letter. The load sends text in a form this can't affect, and checks every stored document against the cleaned file, since the facet-value check from plan 002 sees only about half of the damage. See decision record [004](../../decisions/004-typesense-import-escaping.md).
+
 From earlier documents:
 
 - The daily diff reports changed records as well as new ones (product brief, Risks).
 - If a run fails or is skipped, search keeps serving the previous data (product brief, How it runs).
-- A load whose check of facet values fails is retried once (plan 002, "Data in Typesense"). The cause of the one failure seen so far is unknown.
 
 ## Acceptance criteria
 
@@ -64,7 +67,7 @@ From earlier documents:
   - more than half of the records changed
 
   Spike S1 measured how far normal changes go. Over the 40 updates from 18 August to 14 October 2026, the record count never fell. An update removed at most 1 record, emptied a field in at most 1 record and changed at most 655 (0.9%). Comparing monthly snapshots since October 2025, the record count never fell either. The most in one month were 24 removed, 3 emptied and 21,758 changed (32%). After checking the diff, a person can let one run past the limits, and the run records that.
-- AC9: A load whose facet-value check fails is retried once. Every retry is reported in the run's summary, so its rate over the first 30 days can be measured.
+- AC9: After each import, the load checks that every document Typesense stored matches the cleaned file, field by field. A load that fails the check is retried once. Every retry is reported in the run's summary, so its rate over the first 30 days can be measured.
 - AC10: After switching, the run checks through the alias that search returns the new data date and the expected number of records. It also checks that the default view's count (retractions, without revised versions) and the count for each notice type match a DuckDB query on the same snapshot. If any of these checks fails, search goes back to the previous snapshot and the run fails.
 - AC11: If the newest upstream snapshot is more than three working days old, the run fails, because the file may have moved or stopped updating. Over the 40 most recent upstream commits (checked 2026-10-14), the longest gap was one missed working day.
 
@@ -105,7 +108,7 @@ All acceptance criteria pass, and the scheduled run has kept the hosted server c
 
 - Days behind upstream: zero on every working day of that week, measured as the hosted data date against upstream's newest commit.
 - A whole run finishes in under 10 minutes on GitHub's runner. Downloading, cleaning and loading take well under a minute each on a laptop.
-- The facet-check retry rate over the first 30 days is recorded, with the date of each retry.
+- The retry rate (AC9) over the first 30 days is recorded, with the date of each retry.
 - After the first full week, the hosted server's memory, CPU and bill are compared with decision record 002's estimate of about $5 a month.
 
 ## Non-goals
