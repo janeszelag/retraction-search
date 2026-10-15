@@ -73,8 +73,9 @@ The work goes up in three pull requests:
   Decide whether the hosted server keeps the previous collection (plan trade-off 4). (AC16, AC19)
   - Done when: the results and the decision are in the plan's spike list, and the runbook records each check with its date.
 
-- [ ] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
+- [x] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
   - Done when: the environment exists with both secrets, and only `main` can deploy to it.
+  - Result, 2026-10-15: GitHub's API shows the `search` environment with the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`, a single deployment branch rule for `main`, and no repository-wide secrets. The branch rule was missing at first, which left the environment open to every branch, and was added the same evening. The owner turned on email for failed workflows, an account setting the API doesn't show.
 
 **Daily workflow**
 
