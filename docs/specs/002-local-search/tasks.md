@@ -1,6 +1,6 @@
 # Tasks 002: Local search MVP
 
-Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, and tasks 18–25 in a second. Tasks 23 (running the VoiceOver check) and 24 (the owner's confirmation of the budgets) wait on the owner. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, and tasks 18–25 in a second. The VoiceOver check passed on 2026-10-14 (task 23). Task 24 waits on the owner's confirmation of the budgets. Follows [plan 002](plan.md). Spike S1 ran during planning; its result is in the plan. Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 **Local stack and data**
 
@@ -142,7 +142,7 @@ Status: in progress, 2026-10-14. Tasks 1–17 went up in a first pull request, a
   (AC1, AC2, AC3, AC7, AC9, AC10, AC14, AC18, AC18a, AC18b, AC21, AC22, AC25, AC26, AC27, AC28, AC29, AC31, AC32)
   - Done when: the suite passes, and axe reports no WCAG 2.2 AA violations.
 
-- [ ] **23. Screen reader check.** Write the manual VoiceOver check covering one full search, run it and record the result. (AC32)
+- [x] **23. Screen reader check.** Write the manual VoiceOver check covering one full search, run it and record the result. (AC32)
   - Done when: the check is written down and passes.
 
 - [ ] **24. Speed.** A script times the server response for the fixed query set (p95), and Lighthouse's mobile test runs on a shared URL. Confirm the budgets with the owner. (AC33)

@@ -37,4 +37,5 @@ Each step lists what VoiceOver should say. Record a pass or fail and anything co
 
 | Date | macOS | Safari | Snapshot | Result | Notes |
 |---|---|---|---|---|---|
-| | | | | | |
+| 2026-10-14 | 15.7.9 | 18.6 | 2026-10-09 (`bc5648dd`) | Fail | After typing a search, VoiceOver read the new "matching" chip over the total, so the count was cut off. Tab went from the search box into the filters, with no way to reach the results. Both fixed in pull request #6. |
+| 2026-10-14 | 15.7.9 | 18.6 | 2026-10-09 (`bc5648dd`) | Pass | Run by the owner after the fixes. |
