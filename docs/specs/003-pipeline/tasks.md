@@ -81,12 +81,15 @@ The work goes up in three pull requests:
 
 - [ ] **14. Update workflow.** `.github/workflows/update.yml`. It has the two schedules, `workflow_dispatch` with `commit`, `force` and `accept_changes` passed through environment variables, `concurrency`, the `search` environment, the plan's permissions and a 30-minute timeout. Its steps install only the pipeline workspace, run the update, write the job summary and upload the artifact for 30 days. (AC12, AC13, AC17)
   - Done when: a run started by hand loads the hosted server, and the job summary shows the diff. The artifact downloads, and a second run says "up to date". A search of the logs, the summary and the repository finds no part of the admin key.
+  - Partly checked, 2026-10-16: the first run started by hand (run 38841398791, 02:37 UTC) installed only the pipeline's packages on Linux, added `summary.md` to the job summary and uploaded an artifact that downloads. No part of the admin key, and not the server's host, appears in its log, the artifact, issue #13 or the repository's history. It stopped at the download, because upstream's 2026-10-15 file changed format ([data issues](../../data-issues.md#file-format)). Still to check: a run that loads, with its diff, then "up to date".
 
 - [ ] **15. Alerts.** On failure, comment on the open `daily-update` issue or open one with the step, the message and the run's link. On the next success, comment and close it. (AC14)
   - Done when: the plan's manual check passes. A run started with a commit that doesn't exist opens the issue, and the owner gets an email. The next run closes the issue.
+  - Partly checked, 2026-10-16: the failed run above opened issue #13, "Daily update failed", with the step, the message and the run's link, so `gh` works on the runner. Still to check: the owner's email, and a successful run closing #13.
 
 - [ ] **16. Keepalive.** Every successful run calls the "enable workflow" endpoint. Every run checks the last commit on `main`, and from day 45 opens one warning issue. (AC15)
   - Done when: a unit test covers the date logic, and a run started by hand with the threshold lowered for that run opens the warning issue once. Tasks 12–16 go up as a pull request before this check and those of tasks 14 and 15 can run.
+  - So far, 2026-10-16: on the failed run above, the warning step ran and opened nothing, as expected with a commit that day. The enable call runs only after a successful run, so it's unchecked.
 
 **Running it**
 

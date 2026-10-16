@@ -1,6 +1,6 @@
 # Data issues and how the pipeline handles them
 
-Status: summary as of 2026-10-14. Numbers are from the 2026-10-09 snapshot (upstream commit `bc5648dd`, 73,100 records) unless a line says otherwise. The rules come from [spec 001](specs/001-data-cleaning/spec.md) (cleaning) and [plan 002](specs/002-local-search/plan.md) (search). `npm run clean` writes a profile report (`profile.md`) with the current numbers for any snapshot.
+Status: summary as of 2026-10-14, plus upstream's format change of 2026-10-15. Numbers are from the 2026-10-09 snapshot (upstream commit `bc5648dd`, 73,100 records) unless a line says otherwise. The rules come from [spec 001](specs/001-data-cleaning/spec.md) (cleaning) and [plan 002](specs/002-local-search/plan.md) (search). `npm run clean` writes a profile report (`profile.md`) with the current numbers for any snapshot.
 
 This page covers problems in how the data is written down: formats, placeholders, spellings. What the data means, and why counts need care, is covered by the [data caveats](product-brief.md#data-caveats) in the product brief. Examples include selective coverage of expressions of concern, countries that cover every author, and approximate dates.
 
@@ -18,12 +18,14 @@ This page covers problems in how the data is written down: formats, placeholders
 | The header ends with a comma, so parsers see a 21st, always-empty column. | Ignored. |
 | A column could go missing, be renamed, or appear with data in a future snapshot. | The cleaning stops, names the column and writes no output (spec 001 AC3). |
 | Some files end with rows of 20 commas and nothing else. They aren't in the 2026-10-09 snapshot. Every daily file from 2026-08-18 to 2026-09-22 had them, 130 to 317 rows, and so did the monthly samples from 2026-02-13 (78) and 2026-06-12 to 2026-08-14 (192 to 279). None have appeared since 2026-09-23 (checked 2026-10-14, spec 003 spike S1). | Rows where every field is empty or only spaces are dropped before cleaning, and the profile report gives their number (spec 001 AC2, changed 2026-10-14). A row with any value at all is kept and goes through every check. The 2026-09-22 file cleans to 72,561 records, with 130 empty rows dropped. |
+| The 2026-10-15 file (upstream commit `1dcf1a28`) came from a different export, and it lost text. It's in Windows-1252, not UTF-8: 35,954 bytes aren't valid UTF-8, such as `0x92` for ’ and `0xE9` for é. **Every character Windows-1252 can't hold became `?`.** The 2026-10-14 file had 334,843 such characters, and the new file has 334,857 more question marks. Most are Cyrillic (329,650), followed by symbols, Greek, Latin letters such as ł, ő and ğ, Chinese and Korean. At least 4,732 records lost characters in their title or journal alone. One journal, "Bulletin of New Medical Technologies (Вестник Новых Медицинских Технологий)", now reads "(??????? ????? ??????????? ??????????)". The export also changed formatting: line breaks inside quoted fields (173,235 lines for about 73,000 records, against one line per record before), dates written `M/D/YYYY 12:00:00 AM` (see Dates), missing PubMed IDs written `00000000` instead of `0`, list separators followed by a space, some double spaces in journal and publisher names, and no trailing comma in the header. Read with the right encoding, it has 73,253 records: 39 added and none removed, a normal day. Neither the commit nor the README mentions the change. The commit came from the same automated account as every other day. The 52 snapshots read in spike S1 of spec 003, every daily commit from 2026-08-18 to 2026-10-14 plus one a month back to October 2025, were all UTF-8 in the old format. | The update stops at the download, before anything reaches search (see "Checks that stop a run"), and search keeps the 2026-10-14 snapshot. Until the format changes back, every run fails and comments on the open `daily-update` issue. The formatting changes alone would be a modest spec change: decode Windows-1252, read the CSV with DuckDB's `parallel = false` (its parallel reader can't handle the line breaks), parse the second date format, treat `00000000` as a missing PubMed ID, and verify downloads by git blob ID. The lost characters can't be recovered from the file, though, so loading it would put `?` in names and journals and could merge different journals that now read the same. Found on the workflow's first run, 2026-10-16 02:37 UTC. |
 
 ## Dates
 
 | Issue | How it's handled |
 |---|---|
 | Dates are text in the form `M/D/YYYY 0:00`. | They become real dates, each with a year for the year filters. A date that can't be parsed becomes empty and is listed in the profile report; none fail on this snapshot. |
+| The 2026-10-15 file writes dates as `M/D/YYYY 12:00:00 AM` (see File format). | The cleaning's rule reads `M/D/YYYY H:MM` only, so each such date would become empty, and the cleaning doesn't stop on unparseable dates. In a file with only this change, the change limits would still stop the run, because every record's date text changes, far past the 50% limit (spec 003 AC8). Checked 2026-10-16. |
 | Dates go back to 1753 (a paper) and 1756 (its notice). Typesense has no date type. | Dates are stored as Unix seconds, negative before 1970. Spike S7 confirmed that sorting and year filters work for the 49 papers and 7 notices dated before 1970. |
 | Six records, sections of one 1970 book, are dated 1 January 1970 for both paper and notice. Crossref stores that notice date as timestamp 0, so it's almost certainly a placeholder. | Kept as published, and listed in the profile report. |
 | One record's notice is dated before its paper. | Kept as published, and listed in the profile report. |
@@ -92,7 +94,12 @@ A spelling that differs by a typo rather than by capitals, such as "Placenta" an
 
 ## Checks that stop a run
 
+**Download** (`npm run download`, and the update's first step) stops when:
+- the file is empty, or doesn't start with the expected header
+- its SHA-256 differs from the one GitLab reports. GitLab computes that checksum after converting a file that isn't UTF-8 into UTF-8, so for such a file the check always fails, even when the download is complete. On 2026-10-15 the downloaded file's git blob ID matched GitLab's, while GitLab's SHA-256 belonged to its converted copy, 35,978 bytes longer. That's how this check stopped the 2026-10-15 file, before the cleaning could.
+
 **Cleaning** (`npm run clean`) stops when:
+- the file isn't valid UTF-8 (DuckDB refuses to read it, as with the 2026-10-15 file)
 - a column is missing, renamed or unexpected
 - the number of records differs from the number of source rows, a record ID repeats or is missing, or a record lacks exactly one notice type
 - splitting a list field loses or invents entries
