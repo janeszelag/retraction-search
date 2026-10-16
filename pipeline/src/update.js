@@ -2,7 +2,7 @@
 // reads what the server has, finds the newest upstream commit, downloads,
 // cleans and diffs it, imports it into a new collection, and switches search
 // to it. Writes summary.md and result.json to data/runs/<start time>/.
-// Usage: npm run update [-- --force] [-- --commit <sha>] [-- --accept-changes] [-- --env-file <path>]
+// Usage: npm run update [-- --force] [-- --commit <sha>] [-- --accept-changes] [-- --server-env <path>]
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -21,7 +21,7 @@ import {
   repoRoot,
   runsDir as defaultRunsDir,
 } from './paths.js';
-import { formatNumber, table } from './reports.js';
+import { describeSnapshot, formatNumber, table } from './reports.js';
 import { typesenseClient } from './typesense.js';
 import { checkFreshness, dataDateFromCommit, findCommit } from './upstream.js';
 
@@ -155,9 +155,6 @@ const describeLoaded = (meta) =>
     upstream_commit: meta.upstream_commit ?? null,
     collection: meta.collection,
   };
-
-const describeSnapshot = (snapshot) =>
-  snapshot ? `${snapshot.data_date} (upstream commit ${(snapshot.upstream_commit ?? snapshot.commit).slice(0, 8)})` : 'nothing';
 
 function describeLimitsOutcome(result) {
   if (!result.limits) {
@@ -373,7 +370,9 @@ export async function runUpdate({
       log(`Search through the ${ALIAS} alias matches the new snapshot: ${expected.documents} documents, ${expected.defaultView} in the default view.`);
     });
     result.after = describeLoaded(switched.meta);
-    await step('clean up', () => cleanUp({ request, current: imported.collection, previous: switched.previous, log }));
+    // Only the new collection stays, now that the checks have passed: a second one
+    // roughly doubled memory on Railway (spike S3). Going back means --commit.
+    await step('clean up', () => cleanUp({ request, current: imported.collection, previous: null, log }));
     result.outcome = 'updated';
     return result;
   } catch (error) {
@@ -392,7 +391,7 @@ export async function runUpdate({
 }
 
 // TYPESENSE_URL and TYPESENSE_ADMIN_KEY come from the environment first,
-// then the env file. A file given with --env-file must exist.
+// then the env file. A file given with --server-env must exist.
 export async function readServerSettings(envFile, { required = false } = {}) {
   if (await fileExists(envFile)) {
     // Node's loader keeps values already in the environment.
@@ -413,13 +412,15 @@ async function main() {
       force: { type: 'boolean', default: false },
       commit: { type: 'string' },
       'accept-changes': { type: 'boolean', default: false },
-      'env-file': { type: 'string' },
+      // Not --env-file: Node checks a path given with that name itself, even after
+      // the script name, from pipeline/, and exits before this script runs.
+      'server-env': { type: 'string' },
     },
   });
   // npm runs workspace scripts from pipeline/, but INIT_CWD is where the command was typed.
   const invokedFrom = process.env.INIT_CWD ?? process.cwd();
-  const envFile = values['env-file'] ? path.resolve(invokedFrom, values['env-file']) : path.join(repoRoot, '.env.local');
-  const { url, key } = await readServerSettings(envFile, { required: Boolean(values['env-file']) });
+  const envFile = values['server-env'] ? path.resolve(invokedFrom, values['server-env']) : path.join(repoRoot, '.env.local');
+  const { url, key } = await readServerSettings(envFile, { required: Boolean(values['server-env']) });
   const result = await runUpdate({
     request: typesenseClient({ url, key }),
     force: values.force,

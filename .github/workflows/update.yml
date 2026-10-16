@@ -1,0 +1,155 @@
+# Brings the hosted Typesense server up to the newest upstream snapshot every
+# day (spec 003, AC12, AC13 and AC17). Upstream commits at about 23:00 UTC on
+# working days. The second schedule covers a first run that was delayed,
+# dropped or failed; on most days it finds the server up to date.
+name: Update
+
+on:
+  schedule:
+    - cron: '17 1 * * *'
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Load this upstream commit instead of the newest (to reproduce a day or roll back)
+        type: string
+        default: ''
+      force:
+        description: Load the snapshot even if the server has it
+        type: boolean
+        default: false
+      accept_changes:
+        description: Let this run past the change limits (read the diff first)
+        type: boolean
+        default: false
+      warn_after_days:
+        description: Days after the last commit on main before the keepalive warning opens (lower it to test the warning)
+        type: number
+        default: 45
+
+# A second run waits for the first instead of overlapping it.
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write # alerts (task 15)
+  actions: write # keepalive (task 16)
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # Holds TYPESENSE_URL and TYPESENSE_ADMIN_KEY, and only main can use it.
+    environment: search
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      # The pipeline's dependencies only, not the site's.
+      - run: npm ci --workspace pipeline
+      # The inputs arrive as environment variables and are only ever quoted,
+      # so their text can't run as shell code. They're empty on scheduled runs.
+      # Shorter than the job's limit, so a stuck update is stopped with time
+      # left for the alert. GitHub cancels a job that hits its own limit.
+      - name: Update the hosted server
+        timeout-minutes: 20
+        env:
+          TYPESENSE_URL: ${{ secrets.TYPESENSE_URL }}
+          TYPESENSE_ADMIN_KEY: ${{ secrets.TYPESENSE_ADMIN_KEY }}
+          COMMIT: ${{ inputs.commit }}
+          FORCE: ${{ inputs.force }}
+          ACCEPT_CHANGES: ${{ inputs.accept_changes }}
+        run: |
+          args=()
+          if [ -n "$COMMIT" ]; then args+=(--commit "$COMMIT"); fi
+          if [ "$FORCE" = true ]; then args+=(--force); fi
+          if [ "$ACCEPT_CHANGES" = true ]; then args+=(--accept-changes); fi
+          npm run update -- "${args[@]}"
+      # summary.md already hides the server's address and key (AC17).
+      - name: Add the run's summary to the job summary
+        if: always()
+        run: |
+          shopt -s nullglob
+          summaries=(data/runs/*/summary.md)
+          if [ ${#summaries[@]} -eq 0 ]; then
+            echo "The update wrote no summary. The step above shows the error." >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "${summaries[@]}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: update-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/diff/
+            data/runs/
+          retention-days: 30
+          if-no-files-found: ignore
+      # One open issue labeled daily-update collects the failures until a run
+      # succeeds (AC14). New issues and comments notify the repository's
+      # watchers, whoever last edited this file. GitHub's docs don't say whether
+      # a step that hits its time limit counts as failed or cancelled, so both
+      # raise the alert.
+      - name: Open or update the alert issue
+        if: failure() || cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          body=$(node pipeline/src/alert.js failed --run-url "$RUN_URL") ||
+            body="The daily update failed before it could describe what went wrong. Run: $RUN_URL"
+          issue=$(gh issue list --label daily-update --state open --json number --jq '.[0].number // empty')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body "$body"
+          else
+            gh label create daily-update --color B60205 --description "The daily update failed" --force
+            gh issue create --title "Daily update failed" --label daily-update --body "$body"
+          fi
+      - name: Close the alert issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          for issue in $(gh issue list --label daily-update --state open --json number --jq '.[].number'); do
+            gh issue close "$issue" --comment "$(node pipeline/src/alert.js resolved --run-url "$RUN_URL")"
+          done
+      # GitHub turns off a public repository's schedules after 60 days without
+      # activity (AC15). Its docs don't say whether this call counts, so the
+      # next step warns from day 45 either way.
+      - name: Keep the schedule enabled
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh api --method PUT "repos/$GH_REPO/actions/workflows/update.yml/enable"
+      # One open issue labeled schedule-keepalive, not daily-update, so a
+      # successful run doesn't close it. A run under the threshold does, as
+      # after a newer commit.
+      - name: Warn before the schedule stops
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WARN_AFTER_DAYS: ${{ inputs.warn_after_days }}
+        run: |
+          warning=$(node pipeline/src/keepalive.js --last-commit "$(git log -1 --format=%cI)" --warn-after-days "${WARN_AFTER_DAYS:-45}")
+          open=$(gh issue list --label schedule-keepalive --state open --json number --jq '.[].number')
+          if [ "$(jq -r .due <<<"$warning")" = true ]; then
+            if [ -z "$open" ]; then
+              gh label create schedule-keepalive --color FBCA04 --description "The daily schedule needs a commit on main" --force
+              gh issue create --title "$(jq -r .title <<<"$warning")" --label schedule-keepalive --body "$(jq -r .body <<<"$warning")"
+            fi
+          else
+            for issue in $open; do
+              gh issue close "$issue" --comment "The last commit on main is $(jq -r .days <<<"$warning") days old, under the warning threshold, so the schedule isn't at risk now."
+            done
+          fi

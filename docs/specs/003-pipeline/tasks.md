@@ -14,8 +14,9 @@ The work goes up in three pull requests:
   - Done when: the result is recorded. If there was more than one failure, the cause has been looked for, and a spec change is proposed if a single retry isn't enough.
   - Result, 2026-10-15: 4 failures in 30 loads, caused by a Typesense bug that drops a letter from imported text. The AC9 change and decision record 004 were agreed with the owner.
 
-- [ ] **2. Test workflow.** `.github/workflows/test.yml` runs `npm ci` and `npm test` on pull requests and pushes to `main`. It uses Node 22, `contents: read` and no secrets, with GitHub's own actions pinned to commit SHAs. (AC20)
+- [x] **2. Test workflow.** `.github/workflows/test.yml` runs `npm ci` and `npm test` on pull requests and pushes to `main`. It uses Node 22, `contents: read` and no secrets, with GitHub's own actions pinned to commit SHAs. (AC20)
   - Done when: the pull request shows the check passing, which also confirms that DuckDB's Linux binary installs from the lockfile. A temporary commit with a failing test shows it failing and is then reverted.
+  - Result, 2026-10-15: the Test check passed on pull request #10 (38 s) and on the push to `main`, so DuckDB's Linux binary installs from the lockfile. The failing case ran on a throwaway draft, pull request #11, instead of a commit and revert: a test failing on purpose turned the check red (33 s), and the draft was closed unmerged and its branch deleted.
 
 **Cleaning and diff**
 
@@ -44,7 +45,7 @@ The work goes up in three pull requests:
 
 **Update command**
 
-- [x] **8. Update command.** `src/update.js` and `npm run update`, with `--force`, `--commit` and `--env-file`. It reads the meta document, finds the newest commit, downloads both snapshots, cleans, diffs, loads and switches, and writes `result.json` and `summary.md`. A server with no meta document gets a full load and "nothing to compare against". (AC1, AC2, AC3, AC6, AC18)
+- [x] **8. Update command.** `src/update.js` and `npm run update`, with `--force`, `--commit` and `--server-env` (named `--env-file` until 2026-10-15; see the plan's spike S3). It reads the meta document, finds the newest commit, downloads both snapshots, cleans, diffs, loads and switches, and writes `result.json` and `summary.md`. A server with no meta document gets a full load and "nothing to compare against". (AC1, AC2, AC3, AC6, AC18)
   - Done when: the plan's tests for AC1, AC2, AC3 and AC18 pass against a fake Typesense client and fake GitLab responses. On the local stack, `npm run update -- --commit 2cf47753` and then `npm run update` move from the 2026-10-13 snapshot to the newest with a diff, and a third run says "up to date".
 
 - [x] **9. Failing loudly.** Every failed step stops the run before the switch and names the step. The change limits (`MAX_REMOVED` 50, `MAX_EMPTIED` 100, `MAX_CHANGED_SHARE` one half, and no fall in records) stop it after the diff, with `--accept-changes` to let one run through. The staleness check from task 4 runs too. (AC7, AC8, AC11)
@@ -65,15 +66,16 @@ The work goes up in three pull requests:
 
 - [ ] **12. Railway setup and spike S3.** The owner's steps first: create the Railway account, subscribe to Hobby, set the $50 hard limit and the $10 alert, then create the service, volume, variables and domain as the plan lists. Then run the checks:
   - HTTPS, and HTTP 401 without a key
-  - the port, a load from the laptop with `--env-file .env.hosted`, and the upload time
+  - the port, a load from the laptop with `--server-env .env.hosted`, and the upload time
   - memory with one, two and three collections
   - a restart keeping the data
 
   Decide whether the hosted server keeps the previous collection (plan trade-off 4). (AC16, AC19)
   - Done when: the results and the decision are in the plan's spike list, and the runbook records each check with its date.
 
-- [ ] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
+- [x] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
   - Done when: the environment exists with both secrets, and only `main` can deploy to it.
+  - Result, 2026-10-15: GitHub's API shows the `search` environment with the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`, a single deployment branch rule for `main`, and no repository-wide secrets. The branch rule was missing at first, which left the environment open to every branch, and was added the same evening. The owner turned on email for failed workflows, an account setting the API doesn't show.
 
 **Daily workflow**
 

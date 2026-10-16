@@ -20,7 +20,7 @@ GitHub Actions: update.yml (01:17 and 07:17 UTC, or started by hand)
           └─ a stored document differs ─► delete it and import once more (AC9)
        8. switch the alias, write meta, check through the alias (AC10)
           └─ a check fails ─► alias and meta go back, run fails
-       9. delete collections older than the previous one
+       9. delete every other snapshot collection, the previous one included
       10. write summary.md and result.json
   └─ job summary, artifact (diff and summary), failure issue, keepalive
 
@@ -75,7 +75,7 @@ A runner starts empty, so every run downloads the loaded snapshot again from Git
 | `--force` | Loads the newest snapshot even if the server has it |
 | `--commit <sha>` | Loads that upstream commit instead, to reproduce a day or roll back. Skips the staleness check. |
 | `--accept-changes` | Lets this run past the change limits. The summary says so. |
-| `--env-file <path>` | Reads `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY` from this file instead of `.env.local`, for example `.env.hosted` to target Railway from the laptop. `.gitignore` already excludes `.env.*`. |
+| `--server-env <path>` | Reads `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY` from this file instead of `.env.local`, for example `.env.hosted` to target Railway from the laptop. `.gitignore` already excludes `.env.*`. A relative path is read from where the command was typed. Named `--env-file` until 2026-10-15, when spike S3 found that Node intercepts that name. |
 
 Values already in the environment, as on GitHub Actions, take precedence over the file.
 
@@ -147,7 +147,7 @@ Some upstream files end with rows where every field is empty: 20 commas and noth
 
    Both new errors are kinds of `ValueCheckError`. The update retries only these two, once. The checks before import (spellings that differ only in capitals or accents, names sharing 255 bytes) depend only on the data, so a retry can't fix them.
 2. **`switchTo`:** reads the current meta document, points the alias at the new collection and writes the new meta document. It returns the previous alias target and meta document, so the update can undo it.
-3. **`cleanUp`:** deletes collections older than the previous one, as now.
+3. **`cleanUp`:** deletes collections older than the previous one, as now. The update passes no previous collection, so it deletes every snapshot collection but the new one (trade-off 4). `npm run load` still keeps the previous one.
 
 `npm run load` keeps its key handling (it creates and saves the local site key). `npm run update` never calls it, so the daily run creates, changes and deletes no keys (AC18).
 
@@ -159,7 +159,7 @@ Some upstream files end with rows where every field is empty: 20 commas and noth
 
 If any check fails, the alias and meta document go back to their previous values, the new collection is deleted and the run fails. On a first load there's nothing to go back to, so the alias stays on the new collection and the run still fails loudly.
 
-**The previous collection on the hosted server** is kept, as it is locally, so going back is one alias switch. It roughly doubles steady memory. Plan 002 measured the 2026-10-09 collection at 220 MB in a fresh container, so expect about 450 MB plus Typesense's own use, and about 650 MB for the minute a third collection is loading. Spike S3 measures this on Railway. If keeping it pushes the monthly bill past the $10 alert, the hosted run deletes the previous collection after the checks pass, and rolling back means loading an older commit (about a minute).
+**The previous collection is deleted** once the checks through the alias pass, on the hosted server and locally alike. Keeping it would make going back one alias switch, but spike S3 found it costs $9–12 a month in memory on Railway, which reaches the $10 alert. The owner decided on 2026-10-15 to delete it everywhere, so the command behaves the same wherever it runs. Until the checks pass, the previous collection is still there, so a failed check still puts search back on it. Rolling back later means loading an older commit with `--commit` (and `--accept-changes`, since an older snapshot has fewer records). That takes about a minute, or up to two from the laptop.
 
 ## Workflows
 
@@ -173,10 +173,10 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 - **`concurrency: daily-update`,** with `cancel-in-progress: false`, so a second run waits for the first instead of overlapping it.
 - **`environment: search`:** a GitHub environment holding the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`, with deployments limited to `main`. GitHub Free offers environments for public repositories only. Keeping the URL secret too means logs don't print it. GitHub masks secret values in logs.
 - **Permissions:** `contents: read`, `issues: write` (alerts) and `actions: write` (keepalive).
-- **`timeout-minutes: 30`.** A job may run for up to 6 hours, but a run that takes 30 minutes has gone wrong.
+- **`timeout-minutes: 30`.** A job may run for up to 6 hours, but a run that takes 30 minutes has gone wrong. GitHub cancels a job that reaches its limit (workflow syntax docs, checked 2026-10-15), so the update step has its own limit of 20 minutes, which leaves time for the alert.
 - **Steps:**
   1. checkout and Node setup
-  2. `npm ci --workspace pipeline`, so the site's dependencies aren't installed (confirm on the first run)
+  2. `npm ci --workspace pipeline`, so the site's dependencies aren't installed. Checked on a clean copy of the repository on 2026-10-15: it added 44 packages, none of the site's (Next.js, React, TypeScript, Playwright), and `npm run update` and the pipeline's tests ran with them. The first run on GitHub confirms it on Linux.
   3. `npm run update`
   4. always: append `summary.md` to the job summary, and upload `data/diff/` and `data/runs/` as an artifact kept for 30 days
   5. alert or resolve
@@ -188,14 +188,19 @@ Both workflows run on `ubuntu-24.04`, GitHub's standard runner for public reposi
 
 - **GitHub's own notifications** for scheduled workflows go to "the user who last modified the cron syntax in the workflow file". That's the owner, as long as they push every change to the schedule. The runbook says how to turn on email for failed workflows in GitHub's notification settings.
 - **A GitHub issue,** which doesn't depend on who edited the schedule. On failure, the workflow comments on the open issue labeled `daily-update`, or opens one titled "Daily update failed". The issue gives the step, the message from `result.json` and a link to the run. On the next successful run, the workflow comments with that run's link and closes the issue. It uses the `gh` command with the workflow's own token. The first run confirms that `gh` is on the runner.
+  - **The text** comes from `pipeline/src/alert.js`, which reads the run's `result.json`. It imports nothing outside Node, so it works even when installing failed, and the step falls back to a fixed sentence with the run's link if the script can't run at all. The message goes in a code block, so an @mention in it, for example from a journal name, doesn't notify anyone.
+  - **When it fires:** on a failed or cancelled run. GitHub's docs don't say whether a step that reaches its time limit counts as failed or cancelled, so both raise the alert. A run the owner cancels by hand opens an issue too, and the next successful run closes it.
+  - **The label** `daily-update` is created on the first failure. The keepalive warning (AC15) needs a different label, or a successful run would close it.
 - **The manual check for AC14:** start the workflow by hand with a commit that doesn't exist. Confirm that the issue opens and the owner gets an email. Then start a normal run and confirm that it closes the issue.
 
 ## Keeping the schedule alive (AC15)
 
 GitHub disables scheduled workflows in a public repository after 60 days without repository activity. Its docs don't say what counts as activity, and the page on enabling workflows doesn't say whether GitHub warns first. Community tools say the "enable workflow" API call resets the count, but that's unverified, and checking it takes 60 days. So two measures:
 
-1. **Every successful run calls the "enable workflow" endpoint** for `update.yml`. It's harmless if it does nothing.
+1. **Every successful run calls the "enable workflow" endpoint** for `update.yml` (`PUT …/actions/workflows/update.yml/enable`, which takes the file name and answers 204; GitHub's REST docs, checked 2026-10-15). It's harmless if it does nothing. The docs page doesn't name the token permission it needs, so the first run confirms that `actions: write` is enough.
 2. **Every run checks the date of the last commit on `main`.** From day 45 on, it opens one issue, "The daily update stops around <date> without a commit", unless one is open already. Any push resets the count. This warns at least two weeks ahead, whatever the first measure does.
+   - **Details:** `pipeline/src/keepalive.js` holds the date logic, with unit tests. It reads the committer date of the checked-out commit (`git log -1 --format=%cI`). The issue is labeled `schedule-keepalive`, so a successful update doesn't close it. A run under the threshold closes it, as after a newer commit. Without that, an issue left open after a push would hide the next warning 45 days later.
+   - **The `warn_after_days` input** (default 45) lowers the threshold for one run started by hand. Task 16's check uses it: a run with 0 opens the issue, a second run with 0 doesn't open another, and a normal run closes it.
 
 ## Hosted search server (AC16, AC17, AC19)
 
@@ -207,6 +212,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - Redeploying a service with a volume causes "a small amount of downtime". Replicas can't be used with volumes. Daily loads don't redeploy anything, so this only affects image upgrades and setting changes.
 - Railway generates a public domain with an automatic TLS certificate. Its networking page doesn't say how the target port is chosen, so spike S3 confirms that.
 - Typesense reads its settings from environment variables named after its command-line options: `TYPESENSE_API_KEY` and `TYPESENSE_DATA_DIR` (Typesense 30.0 docs). 30.2 is still the newest stable image; 31.0 is at release candidate 20 (Docker Hub, 2026-10-13).
+- Typesense sizes two thread pools from the number of CPUs it sees: requests (`--thread-pool-size`, default `NUM_CORES * 8`) and collections loaded in parallel at startup (`--num-collections-parallel-load`, default `NUM_CORES * 4`) (Typesense 30.2 docs, checked 2026-10-15). On Railway it sees the host's CPUs, and with the defaults it stopped on every start with `std::system_error: Resource temporarily unavailable` while creating threads (spike S3). `TYPESENSE_THREAD_POOL_SIZE=8` and `TYPESENSE_NUM_COLLECTIONS_PARALLEL_LOAD=4` fixed it. Railway's own Typesense template uses the same values, and a Railway forum thread reports the same error fixed the same way (both checked 2026-10-15).
+- Railway's healthcheck connects on the port in the service's `PORT` variable. An app listening on another port fails it with "service unavailable" (Railway healthcheck docs, checked 2026-10-15). Typesense listens on 8108 and doesn't read `PORT`, so the service sets `PORT=8108` for the healthcheck alone.
 
 **Setup (the owner's steps, since they need an account and a payment method):**
 
@@ -214,8 +221,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 2. Set the hard limit to $50 and a custom email alert at $10.
 3. Create a project with one service from the Docker image `typesense/typesense:30.2`.
 4. Add a volume mounted at `/data`.
-5. Set the variables `TYPESENSE_DATA_DIR=/data` and `TYPESENSE_API_KEY` to a new random key (`openssl rand -hex 32`), not the local one.
-6. Generate a public domain pointing at port 8108.
+5. Set the variables `TYPESENSE_DATA_DIR=/data` and `TYPESENSE_API_KEY` to a new random key (`openssl rand -hex 32`), not the local one. Also set `TYPESENSE_THREAD_POOL_SIZE=8`, `TYPESENSE_NUM_COLLECTIONS_PARALLEL_LOAD=4` and `PORT=8108` (Railway facts above).
+6. Generate a public domain pointing at port 8108, and set the healthcheck path to `/health`.
 7. In GitHub, create the `search` environment, limit it to `main`, and add the two secrets.
 
 **Checks, recorded in the runbook with their dates:**
@@ -224,11 +231,11 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - After the first load, restarting the service keeps the collections.
 - Deleting the collections, then running the workflow by hand, rebuilds them. The volume itself isn't deleted for this check: a run that starts from an empty server is the same case as a lost volume.
 
-**Cost:** decision record 002 expects about $5 a month in all, with a worst case of $50. Steady memory of about 450 MB is about $4.50 a month at Railway's prices. CPU is mostly idle apart from a short load each day. The daily upload of about 110 MB of documents is incoming data, which the pricing page doesn't charge for (unverified, since it doesn't say so outright). Egress is small, since nothing searches the hosted server until Phase 4. The check of stored documents exports about 113 MB after each load, about 3.4 GB a month, or about $0.17 (decision record 004). The success metric compares the first full week with this estimate.
+**Cost:** decision record 002 expects about $5 a month in all, with a worst case of $50. Spike S3 measured about 510 MB of steady memory with one collection, about $5.10 a month at Railway's prices, and possibly up to about 750 MB ($7.50) after daily loads (trade-off 4). CPU is mostly idle apart from a short load each day. The daily upload of about 110 MB of documents is incoming data, which the pricing page doesn't charge for (unverified, since it doesn't say so outright). Egress is small, since nothing searches the hosted server until Phase 4. The check of stored documents exports about 113 MB after each load, about 3.4 GB a month, or about $0.17 (decision record 004). The success metric compares the first full week with this estimate.
 
 ## Runbook (AC21)
 
-`docs/runbook.md` covers: what the daily update does, in the order above; setting up the hosted server from scratch; rerunning a failed day (start the workflow by hand); loading a given snapshot or rolling back (`commit` input, or `--commit` with `--env-file .env.hosted` from the laptop); letting a run past the limits (`accept_changes`, after reading the diff); changing the admin key (Railway variable, restart, GitHub secret, one manual run to confirm); reading the diff; what happens at Railway's spending limit (search goes offline until the limit is raised or the month resets; the next run reloads nothing unless the volume is lost); and the false alarm over long holidays. It's written for someone who hasn't run a server before.
+`docs/runbook.md` covers: what the daily update does, in the order above; setting up the hosted server from scratch; rerunning a failed day (start the workflow by hand); loading a given snapshot or rolling back (`commit` input, or `--commit` with `--server-env .env.hosted` from the laptop); letting a run past the limits (`accept_changes`, after reading the diff); changing the admin key (Railway variable, restart, GitHub secret, one manual run to confirm); reading the diff; what happens at Railway's spending limit (search goes offline until the limit is raised or the month resets; the next run reloads nothing unless the volume is lost); and the false alarm over long holidays. It's written for someone who hasn't run a server before.
 
 ## Tests
 
@@ -290,14 +297,28 @@ GitHub disables scheduled workflows in a public repository after 60 days without
   - **Cost of the full comparison:** exporting the whole collection is 112.7 MB and took 3 s locally.
   - **Data loaded before:** the collection the local site served on 2026-10-15 (loaded 2026-10-14) matched the cleaned file exactly.
   - **Decision:** escape every import and check every stored document, with one retry. Agreed with the owner on 2026-10-15 and recorded in decision record [004](../../decisions/004-typesense-import-escaping.md). AC9 changed to match.
-- **S3, Railway (AC16, AC19), once the owner has set up the account.** Confirm the port, HTTPS, 401 and restart behavior. Load from the laptop with `--env-file .env.hosted`, timing the upload. Read Railway's memory graph with one, two and three collections loaded.
+- **S3, Railway (AC16, AC19). Run 2026-10-15.** Confirm the port, HTTPS, 401 and restart behavior. Load from the laptop with `--server-env .env.hosted`, timing the upload. Read Railway's memory graph with one, two and three collections loaded.
+  - **Startup:** with Typesense's default thread pools, the server stopped on every start, about every 40 seconds, at the first thread it couldn't create. With 8 request threads and 4 parallel loads it started in about 0.1 s on the empty volume.
+  - **Port:** the healthcheck failed for its whole 5-minute window until `PORT=8108` was set, though Typesense was ready within 10 s. The public domain points at port 8108.
+  - **HTTPS and keys:** `/health` answers `{"ok":true}` over HTTPS, and `/collections` without a key gets HTTP 401 (owner's check, 2026-10-15).
+  - **Option name:** the first load from the laptop, `npm run update -- --env-file .env.hosted`, stopped before the script ran, with `node: .env.hosted: not found` and exit code 9. Node 22.21.1 checks that a path given as `--env-file` exists even when it comes after the script name. It looks relative to `pipeline/`, where npm runs the script, and doesn't load the file itself. No test covered the option, so the tests missed it. The option is now `--server-env` (owner's decision, 2026-10-15), and a test runs the real npm command with a path relative to the repository root.
+  - **First load from the laptop (2026-10-15, 21:44 UTC):** `npm run update -- --server-env .env.hosted` loaded upstream commit `1af1bfbb` (data date 2026-10-14) into the empty server in 50 s, with every check passing: 73,214 documents imported, every stored document matching the cleaned file, the alias switched, and search counts matching DuckDB (67,497 in the default view). Downloading and cleaning took about 12 s. The other 38 s cover the escaped import, the export of every stored document, the switch and the search checks. The run doesn't time the upload on its own, so the upload took at most 38 s, against about 6 s for the import alone locally.
+  - **Memory with one collection** (Railway's Metrics graph, owner's screenshot, 2026-10-15; values read off the chart, so roughly ±20 MB): about 60 MB with no data, a peak of about 750 MB for under a minute during the load, then a steady 530 MB. That's well above the about 280 MB that plan 002's 220 MB fresh-container figure suggests. One possible cause is memory Typesense's allocator keeps after the import and the export (unverified). The restart check below shows whether a fresh start uses less. At $10 per GB a month, 530 MB is about $5.30 a month.
+  - **Redeploy with one collection** (about 21:54 UTC, same graph): a peak of about 680 MB for under a minute, then a steady 510 MB. A fresh start uses nearly as much as after the import, so leftover import memory explains 20 MB at most, within the reading error. The extra memory compared with plan 002's figure has another cause. One candidate is that Railway's figure includes the operating system's file cache for the data on the volume, which Docker Desktop's figure leaves out (unverified). Memory came back to the one-collection level rather than the 60 MB of an empty server, so Typesense reloaded the collection from the volume.
+  - **Restart keeps the data:** after the redeploy, `npm run update -- --server-env .env.hosted` reported "The server already has the newest upstream snapshot, 2026-10-14 (upstream commit 1af1bfbb)" in 1 s (21:55 UTC). The meta document and the alias survived along with the collection.
+  - **Second load, `--force` (21:58 UTC):** 96 s, every check passing, with the first collection kept as the previous one. Downloading and cleaning took about 6 s. The other 90 s, against 38 s on the first load, were mostly the upload: the process had sent 114.6 MB after about 80 s, at roughly 1.4 MB/s, with almost no CPU in use. The laptop's upload speed varies, so a load from the laptop can take a minute or more longer than the first one did. The upload speed from GitHub's runners isn't measured yet.
+  - **Third load, `--force` (22:00 UTC):** 80 s, every check passing. Three collections existed during the load, and the oldest was deleted after the checks.
+  - **Memory with two and three collections** (same graph, read off the chart, roughly ±30 MB): one collection before the forced loads, about 510 MB. The second load peaked at about 1.03 GB, then held about 910 MB with two collections for the minute before the next load. The third load peaked at about 1.51 GB with three. After the oldest was deleted, memory held about 1.19 GB with two collections until at least 22:09, not the 910 MB seen before. Deleting a collection gave back only part of its memory. The plan expected about 450 MB with two collections and 650 MB with three; Railway shows about twice that.
+  - **Cost:** two collections at 0.9–1.2 GB come to $9–12 a month for memory alone, which reaches the $10 alert. One collection at about 510 MB comes to about $5.10.
+  - **Decision (owner, 2026-10-15):** `npm run update` deletes the previous collection once the checks pass, locally and on Railway (trade-off 4). Deleting a collection gave back only part of its memory, so the steady level after each daily load may sit above 510 MB, up to about the 750 MB peak of a load with two collections. The unattended week (tasks 20 and 21) shows where it settles.
+  - **Restart replays every write since the last snapshot (22:40 UTC):** the owner deleted the unused collection by hand and redeployed. The first listing after the redeploy showed all three of the evening's collections, partly loaded: 46,729, 60,638 and 70,791 documents, two of them already deleted. `/health` was already answering `{"ok":true}`. About 30 s later, only the current collection was left, with all 73,214 documents. Typesense starts from its last snapshot and replays the writes logged since. It takes a snapshot every hour of uptime (`--snapshot-interval-seconds`, default 3600; the docs say "frequent snapshotting helps in faster recovery from a cold start", Typesense 30.2 docs, checked 2026-10-15). The server never ran an hour between redeploys that day, so each start replayed everything from the first one, which had logged "Snapshot does not exist". Two consequences follow. First, memory after a restart can reflect the replay, here three collections at once, rather than what ends up loaded. Second, for about half a minute after a restart, the collection search uses can be partly loaded while `/health` says ok. That matters from Phase 4, when the site searches this server.
 
 ## Trade-offs
 
 1. **Downloading the loaded snapshot again for the diff,** instead of keeping state between runs in a GitHub cache or artifact. It costs one more 67 MB download per run, a few seconds on a runner. In return, the meta document is the only state, and losing it costs one diff.
 2. **The diff compares published text, not cleaned values.** It reports exactly what Retraction Watch changed. A cleaned value can also change without its record changing, for example when the most common spelling of a journal changes and the merge (spec 002) picks a different one. Those changes don't appear in the diff. The profile report still shows every merge.
 3. **GitHub Actions rather than a scheduled job on Railway.** Actions are free in public repositories, running a pipeline on GitHub Actions is one of the brief's learning goals, and the runner's 16 GB of RAM never counts against Railway's limit.
-4. **Keeping the previous collection on the hosted server:** going back is one alias switch, for roughly double the steady memory. Decided after S3.
+4. **Deleting the previous collection after each load.** Going back takes a load of an older commit, about a minute, instead of one alias switch. In return, memory on Railway stays near one collection's, about $5 a month instead of $9–12 (spike S3). The previous collection stays until the checks pass, so a failed check still puts search back on it.
 5. **Issues as alerts are public.** The repository is public anyway, and the site shows its data date, so a failed day is visible either way. The issue history also records how reliable the pipeline is over the 30-day milestone.
 6. **Two scheduled runs a day.** The second costs about a minute of free runner time on most days, and it covers a delayed or dropped first run.
 7. **A staleness limit without a holiday calendar.** It's simpler, at the cost of a likely false alarm in late December.
@@ -320,7 +341,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | Command | What it does |
 |---|---|
 | `npm run update` | Updates the server in `.env.local` to the newest upstream snapshot (options above) |
-| `npm run update -- --env-file .env.hosted` | The same, against the hosted server |
+| `npm run update -- --server-env .env.hosted` | The same, against the hosted server |
 | `npm run diff -- --from <csv> --to <csv>` | Diffs two downloaded snapshots into `data/diff/` |
 
 The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep working as they do now.
@@ -328,5 +349,4 @@ The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep w
 ## Still open
 
 - Whether GitHub's "enable workflow" call alone keeps the schedule alive (see the spec's open questions).
-- Whether the hosted server keeps the previous collection, decided after spike S3 (trade-off 4).
 - When a Typesense release fixes the import bug. [typesense/typesense#3109](https://github.com/typesense/typesense/pull/3109) says it fixes it, and was open and unreviewed on 2026-10-15. Escaping and the check can stay either way (decision record 004).
