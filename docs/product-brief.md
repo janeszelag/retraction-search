@@ -65,7 +65,7 @@ Supporting metrics:
 - Visits that land on a URL with filters already applied, as a proxy for shared links.
 - Zero-result rate for text searches.
 
-Targets are set after four weeks of launch data, not before.
+Targets are set after four weeks of launch data, not before. Recording starts with the analytics iteration after Phase 4 (see Roadmap).
 
 **Guardrails.** Breaching one is a bug, not a trade-off.
 
@@ -124,11 +124,11 @@ Once the site is public, nothing depends on the owner's computer. Three hosted p
 |---|---|---|---|
 | Daily update | GitHub Actions, on a schedule | After Retraction Watch's daily update, starts a fresh machine, runs download → clean → load into the search server, then shuts down | Free for public repos. Without a payment method on GitHub, use beyond the free allowance is blocked, not charged (GitHub docs, checked 2026-10-12). |
 | Search server | Typesense on Railway, always on | Keeps the search index on a persistent disk and answers every search | Railway's hard spending limit, set to $50 with an email alert at $10: at the cap, Railway takes the service offline rather than billing more. Worst case $50 a month (decision record 002). |
-| Website | Next.js on Vercel | Rebuilds on every push to `main`. Its server code sends searches to the search server, so browsers never see a search key, and it limits each visitor's searches. | Free Hobby plan, which pauses at its limits (to verify in Phase 4) |
+| Website | Next.js on Vercel | Rebuilds on every push to `main` that changes the site. Its server code sends searches to the search server, so browsers never see a search key. A Vercel firewall rule limits each visitor's requests. | Free Hobby plan with no payment method: past a limit, Vercel pauses that feature, possibly for up to 30 days (decision record 005, checked 2026-10-15) |
 
 - If a daily run fails or is skipped, the site keeps serving the previous day's data, and GitHub emails whoever last edited the schedule.
 - In public repos, GitHub switches off scheduled jobs after 60 days without repository activity. Spec 003 has to handle that.
-- The admin key for loading data is an encrypted GitHub secret, never in the code. Every search goes through the website's server code, which keeps the search key secret and applies a rate limit. Natural-language searches (Phase 5) add the LLM key and a cache there.
+- The admin key for loading data is an encrypted GitHub secret, never in the code. Every search goes through the website's server code, which keeps the search key secret. A firewall rule limits each visitor's requests for now. The site's own per-visitor limits return in a later iteration, before natural-language searches (Phase 5) add the LLM key and a cache there.
 - If the search index is lost, the next daily run rebuilds it from the CSV, so it needs no backups.
 
 ## Roadmap
@@ -139,11 +139,16 @@ Once the site is public, nothing depends on the owner's computer. Three hosted p
 | 1. Data cleaning (spec 001) | DuckDB cleaning of the CSV, and the measured size of the search documents | Decision record 002 chooses the search engine and host, with its worst-case monthly cost |
 | 2. Local search MVP (spec 002) | Next.js app and a local search server, with facets, counts and record pages | Spec 002's acceptance criteria pass locally |
 | 3. Pipeline (spec 003) | Download → clean → diff → publish, locally and then on GitHub Actions, into the hosted search server (moved here from Phase 4 on 2026-10-14) | Runs unattended and fails loudly on schema changes |
-| 4. Launch | The site, its rate limits and analytics, within the cost guardrail | Live, updating daily, recording metrics |
-| 5. Natural-language filters | An LLM turns a typed sentence into filters the user can edit | A decision record picks an LLM provider whose spending can be hard-capped, and the feature's spec passes |
+| 4. Launch (spec 004) | The site on Vercel in front of the hosted search server, with a firewall rate limit, within the cost guardrail. Its own rate limits and analytics moved to later iterations on 2026-10-17. | Live, updating daily, announced |
+| 5. Natural-language filters | An LLM turns a typed sentence into filters the user can edit, behind the site's own rate limits | A decision record picks an LLM provider whose spending can be hard-capped, and the feature's spec passes |
 | 6+. Chosen from launch data | Candidates below | |
 
 If decision record 002 confirms Typesense, Phase 5 uses its built-in natural-language search, which turns a sentence into a query and filters that the site can show as the same editable tags as Goal 4. Typesense's docs (checked 2026-10-12) don't mention caching LLM responses or limiting LLM calls, so the site needs its own rate limit and cache.
+
+Later iterations after Phase 4, each with its own spec when it starts. Decision record 005 lists the options checked for both.
+
+- **Analytics.** Visits and downloads first, then the success metrics. Targets need four weeks of launch data, so this comes before the announcement or soon after it.
+- **The site's own rate limits,** with a hosted store, so a visitor over a limit gets the site's notice, and downloads get a stricter limit than searches. Needed before Phase 5, and sooner if the firewall rule proves too blunt or downloads use up Vercel's allowances.
 
 Phase 6+ candidates, each with the evidence that would justify it:
 
@@ -152,5 +157,5 @@ Phase 6+ candidates, each with the evidence that would justify it:
 
 ## Open questions
 
-- Which analytics tool records custom events without cookies, within the cost guardrail? Decide in the launch spec.
+- Which analytics tool records custom events without cookies, within the cost guardrail? Decide in the analytics iteration. Decision record 005 lists the options checked on 2026-10-15.
 - Name and domain.
