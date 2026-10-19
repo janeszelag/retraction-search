@@ -30,7 +30,7 @@ These need accounts, so they're the owner's steps. None of them takes a payment 
 
 1. **Railway:** note the search server's region (service settings). The site's functions go in the nearest Vercel region.
 2. **Site key:** run `npm run site-key -- --server-env .env.hosted`. It writes `TYPESENSE_SEARCH_KEY` into that file.
-3. **Vercel:** sign up with GitHub on Hobby, and import the repository with `web` as the root directory. Set Node 22 and the function region nearest Railway. Keep Vercel Authentication on preview deployments, and turn it on for production until spike S1 is done.
+3. **Vercel:** sign up with GitHub on Hobby, and import the repository with `web` as the root directory and the Next.js preset, without variables. The import deploys at once, and Vercel's default protection, Standard Protection, leaves the production domain public, so the first deployment has nothing it can search. Then, in the project's settings: Deployment Protection set to Vercel Authentication for All Deployments until spike S1 is done, Node.js Version 22.x under Build and Deployment, and the function region nearest Railway under Functions (Vercel docs, checked 2026-10-18).
 4. **Vercel variables,** for Production and Preview: `TYPESENSE_URL`, `TYPESENSE_SEARCH_KEY` (marked sensitive) and `RATE_LIMITS=off`. `SITE_INDEXING` stays unset until launch.
 5. **Firewall rule:** rate limit by IP address on every path except `/_next/static/`, with the window and limit from spike S2.
 6. **GitHub:** create a `site` environment, limited to `main`, with the secret `SITE_URL`.
@@ -44,6 +44,12 @@ Each one is written into this plan before the code that depends on it.
   - the size of a results page as HTML and as a client-side navigation, and of a download with every record, to estimate how far the 10 GB of fast origin transfer goes
   - the server response time for spec 002's fixed searches, from the owner's laptop, for AC12
   - whether Hobby can roll back to the previous production deployment (unverified)
+
+  Results so far, 2026-10-18, from a deployment of `main` at `491af4c` with Node 22.x selected and production behind Vercel Authentication:
+  - **Install and build:** the workspace installs and builds as it is, so `web/vercel.json` needs no install command. The install added 278 packages in 15 s, Next.js 16.4 compiled in 9.6 s, and the build took 30 s, or 34 s from clone to deployed. The log has no warnings and doesn't name the Node version. Building and uploading the 293 MB build cache took another 25 s after the deployment was live.
+  - **Region:** the Railway server is in US East (Virginia). Vercel's nearest region is Washington, D.C. (`iad1`), which is also its default, and `web/vercel.json` records it.
+  - **Rollback:** Vercel's docs (checked 2026-10-18) say Hobby can roll back to the immediately previous production deployment only, and that after a rollback, pushes to `main` don't go live until the rollback is undone from the production deployment's tile. Task 15 tries it.
+  - **Sizes and response times:** to measure past Vercel Authentication, a script sends a Protection Bypass for Automation secret in the `x-vercel-protection-bypass` header. It's available on Hobby (Vercel docs, checked 2026-10-18), lives in the owner's `.env.hosted`, and is revoked once S1 is done.
 - **S2, a busy minute.** Count the requests that reach Vercel in the most intense minute of browsing the e2e tests can produce, such as paging through results while record links prefetch. The firewall limit goes well above that.
 
 ## Build and deploy (AC1, AC2)
