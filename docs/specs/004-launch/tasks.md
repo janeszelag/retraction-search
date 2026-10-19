@@ -1,6 +1,6 @@
 # Tasks 004: Launch
 
-Status: in progress, 2026-10-18. Tasks 1–8 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-19. Tasks 1–8 and 11 are done, and tasks 9 and 10 finish once task 12 opens production. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 The work goes up in three pull requests:
 
@@ -54,8 +54,9 @@ The work goes up in three pull requests:
   - Done when: a short burst from the laptop, past the limit, gets HTTP 429, and the owner browses quickly through results and records without meeting it.
   - Result so far, 2026-10-19: spike S2's counts are in the plan. The busiest minute of fast browsing was 217 requests, 82% of them record prefetches, which pull request #20 turned off; without them it was 37. The owner published the rule on 2026-10-19: a fixed 60-second window, 300 requests per IP address, every path that doesn't start with `/_next/static/`, and 429 over the limit. Two bursts of 400 and 650 logged-out requests from the laptop all got Vercel's login redirect, none a 429: Vercel checks deployment protection before the project's firewall rules (Vercel docs, checked 2026-10-19). The burst and the owner's quick browsing run right after task 12 opens production, and the task is ticked then.
 
-- [ ] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
+- [x] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
   - Done when: the check and its date are recorded under this task, and move into the runbook with task 15.
+  - Result, 2026-10-19: the owner confirmed Railway's billing limits are set, and that the Vercel account has no payment method. The owner plans to buy the domain from Vercel (task 17), which puts a card on the account. Vercel's docs (checked 2026-10-19) say Hobby has no billing cycles, and that going over an allowance pauses the feature for up to 30 days rather than charging, so the card would pay only for what the owner buys, such as the domain and its renewal. AC8 and decision record 005 say "no payment method", so task 17 proposes that change before the purchase.
 
 - [ ] **12. Open production.** The owner switches Deployment Protection from All Deployments back to Standard Protection, so production opens and previews stay behind the login, with `SITE_INDEXING` still unset. (AC1, AC3, AC10)
   - Done when: in a private window the site searches the hosted server, and its footer shows the hosted snapshot's data date and commit. `robots.txt` disallows everything, and pages carry `noindex`.
