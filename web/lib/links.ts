@@ -4,8 +4,14 @@ import { parseQuery, queryHref } from './query/url';
 // Retraction Watch's user guide: what the database is, and how to tell
 // Retraction Watch about a missing retraction.
 export const RW_USER_GUIDE = 'https://retractionwatch.com/retraction-watch-database-user-guide/';
+// Retraction Watch's blog, which the header's database name links to.
+export const RW_BLOG = 'https://retractionwatch.com/';
 // Where Crossref distributes the data.
 export const DATA_SOURCE = 'https://gitlab.com/crossref/retraction-watch-data';
+// Crossref's page on the data, which the header's data date links to: Crossref
+// acquired the database in 2023, and Retraction Watch updates it every working
+// day (checked 2026-10-19).
+export const CROSSREF_RW_DATA = 'https://www.crossref.org/documentation/retrieve-metadata/retraction-watch/';
 // Retraction Watch's note on how it built the database (checked 2026-10-14).
 export const RW_METHODOLOGY = 'https://retractionwatch.com/wp-content/uploads/2023/12/Building-The-Database.pdf';
 // Crossref's metadata page, whose license table lists the Retraction Watch

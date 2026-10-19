@@ -160,9 +160,9 @@ export default async function AboutPage() {
               retractions, its blog posts or high-profile studies, so their counts are not representative. It also records reinstatements.
             </p>
             <p>
-              An article removed entirely counts as a retraction, however long it was removed for, including “withdrawn” articles. Corrections include
-              errata, corrigenda and partial retractions. Expressions of concern cover almost every other editorial notice. The site keeps the four
-              types visibly apart.
+              An article removed entirely counts as a <strong>retraction</strong>, however long it was removed for, including “withdrawn” articles.{' '}
+              <strong>Corrections</strong> include errata, corrigenda and partial retractions. <strong>Expressions of concern</strong> cover almost every
+              other editorial notice. The site keeps the four types visibly apart.
             </p>
           </Section>
 
