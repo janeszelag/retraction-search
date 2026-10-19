@@ -33,7 +33,7 @@ These need accounts, so they're the owner's steps. None of them takes a payment 
 3. **Vercel:** sign up with GitHub on Hobby, and import the repository with `web` as the root directory and the Next.js preset, without variables. The import deploys at once, and Vercel's default protection, Standard Protection, leaves the production domain public, so the first deployment has nothing it can search. Then, in the project's settings: Deployment Protection set to Vercel Authentication for All Deployments until spike S1 is done, Node.js Version 22.x under Build and Deployment, and the function region nearest Railway under Functions (Vercel docs, checked 2026-10-18).
 4. **Vercel variables,** for Production and Preview: `TYPESENSE_URL`, `TYPESENSE_SEARCH_KEY` (marked sensitive) and `RATE_LIMITS=off`. `SITE_INDEXING` stays unset until launch.
 5. **Firewall rule:** rate limit by IP address on every path except `/_next/static/`, with the window and limit from spike S2.
-6. **GitHub:** create a `site` environment, limited to `main`, with the secret `SITE_URL`.
+6. **GitHub:** create a `site` environment, limited to `main`. Add the secret `SITE_URL` once production is open: until then the site check would only meet Vercel's login, so without the secret it passes without loading anything.
 
 ## Spikes first
 

@@ -33,7 +33,7 @@ The work goes up in three pull requests:
   - Result, 2026-10-18: six unit tests cover the ok answer, a failed meta read, a failed search, both HTTP answers with `no-store`, and that the route checks no rate limit. Under `npm run web` the route answered `{"ok":true,"dataDate":"2026-10-14","total":67497}`, the same date and total as the start page. Two Playwright tests add 45 health checks in a row past the test site's limit of 40 searches a minute, all HTTP 200, and HTTP 503 from the site that can't reach Typesense.
 
 - [x] **6. Site check workflow.** `pipeline/src/site-check.js` loads `/` and `/api/health` from `SITE_URL` and checks for HTTP 200, `ok` and a total above zero. `alert.js` takes the label and title as options. `.github/workflows/site-check.yml` runs at 02:47, 08:47, 14:47 and 20:47 UTC and by hand, in the `site` environment, with `issues: write`, GitHub's own actions pinned to commit SHAs, and failures reported under the `site-check` label without the address. `keepalive.js` also re-enables `site-check.yml`. (AC9)
-  - Done when: unit tests cover the check's failures and the alert labels, and spec 003's alert and keepalive tests still pass. The live run is task 12.
+  - Done when: unit tests cover the check's failures and the alert labels, and spec 003's alert and keepalive tests still pass. The live run is task 13.
   - Result, 2026-10-18: 14 unit tests cover the check passing, its failures (HTTP errors, a login page, no connection, a timeout, a health answer that isn't ok, isn't JSON or has no records, a missing path, a bad address), that neither the result nor the comment names the address, and the comments. Six more cover opening, commenting on and closing issues by label with a stand-in for `gh`, and re-enabling both workflows. Spec 003's alert and keepalive tests pass unchanged. Run on the laptop, the check passed against `npm run web`, and failed with HTTP 404 for a missing path and `ECONNREFUSED` for a closed port, without naming the address. `alert.js` now holds the issue handling as `open` and `close`, with `--label` and `--title`, and `update.yml`'s alert and enable steps call it and `keepalive.js enable`, so spec 003's remaining checks of tasks 15 and 16 run on the shared code. Without `SITE_URL` the check passes without loading anything, so the workflow is quiet until the secret is set.
 
 - [ ] **7. Options for the live checks.** `npm run check:search` takes `--server-env <file>`. A Playwright project, `live`, runs only the axe tests against `SITE_URL`. `npm run check:speed` takes `--url <address>` and then skips the local build. Add the options to `CLAUDE.md`. (AC11, AC12)
@@ -44,7 +44,7 @@ The work goes up in three pull requests:
 
 **Going live**
 
-- [ ] **9. Production settings.** The owner adds `RATE_LIMITS=off` to Production and Preview, gives Preview the same Typesense variables, and creates the GitHub `site` environment, limited to `main`, with the secret `SITE_URL`. (AC1, AC2, AC5)
+- [ ] **9. Production settings.** The owner adds `RATE_LIMITS=off` to Production and Preview, gives Preview the same Typesense variables, and creates the GitHub `site` environment, limited to `main`, without `SITE_URL` for now, so the site check passes without loading anything while production is behind the login. (AC1, AC2, AC5)
   - Done when: the merge of the first pull request deploys production. A preview of a test pull request asks for a Vercel login in a private window. A search of the page source, the build log and the repository finds no part of the search key.
 
 - [ ] **10. Spike S2 and the firewall rule.** Count the requests in the busiest minute of the e2e tests, then the owner adds the rate-limit rule by IP address on every path except `/_next/static/`. Write the count, the window and the limit into the plan. (AC6)
@@ -53,11 +53,11 @@ The work goes up in three pull requests:
 - [ ] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
   - Done when: the check and its date are recorded under this task, and move into the runbook with task 15.
 
-- [ ] **12. Live site check.** Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
-  - Done when: the first run passes, the second opens a `site-check` issue with the step, the status and the time, and the third closes it. Neither the logs nor the issue show the address.
-
-- [ ] **13. Open production.** The owner turns Vercel Authentication off for production, with `SITE_INDEXING` still unset. (AC1, AC3, AC10)
+- [ ] **12. Open production.** The owner switches Deployment Protection from All Deployments back to Standard Protection, so production opens and previews stay behind the login, with `SITE_INDEXING` still unset. (AC1, AC3, AC10)
   - Done when: in a private window the site searches the hosted server, and its footer shows the hosted snapshot's data date and commit. `robots.txt` disallows everything, and pages carry `noindex`.
+
+- [ ] **13. Live site check.** The owner adds the secret `SITE_URL` to the `site` environment. Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
+  - Done when: the first run passes, the second opens a `site-check` issue with the step, the status and the time, and the third closes it. Neither the logs nor the issue show the address.
 
 - [ ] **14. Live checks.** Run `check:search -- --server-env .env.hosted`, compare the live site's default total with it, run the `live` Playwright project, and run `check:speed -- --url` against the live site. (AC11, AC12)
   - Done when: the counts match, axe finds no violations on the five pages, and the owner confirms AC12's budgets from the measured numbers, or a spec change is proposed.
