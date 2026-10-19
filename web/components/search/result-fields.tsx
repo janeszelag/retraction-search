@@ -32,7 +32,7 @@ export function ResultFields({
             Paper
           </a>
         )}
-        <Link href={`/record/${recordId}`} className={ui.link}>
+        <Link href={`/record/${recordId}`} className={ui.link} prefetch={false}>
           Record page
         </Link>
         <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={ui.link}>
@@ -49,7 +49,7 @@ export function ResultFields({
           ))}
           <dt className="text-ink-600">Institutions and notes</dt>
           <dd>
-            <Link href={`/record/${recordId}`} className={`${ui.link} min-h-0 p-0 text-[13px]`}>
+            <Link href={`/record/${recordId}`} className={`${ui.link} min-h-0 p-0 text-[13px]`} prefetch={false}>
               On the record page
             </Link>
           </dd>

@@ -55,6 +55,15 @@ Each one is written into this plan before the code that depends on it.
   - **Response times,** from the owner's laptop on 2026-10-18, 10 runs of each of spec 002's 14 searches after one warm-up: median 336 ms, 95th percentile 455 ms, under AC12's proposed 500 ms. The slowest single searches were `in_title=brain tumor` with China excluded (p95 901 ms) and `q=neuron` (p95 645 ms). Requests entered at Vercel's San Francisco edge (`sfo1`), about 49 ms from the laptop for a static file, and ran in `iad1`, so a visitor on the East Coast would see less. AC12's Lighthouse budget is measured in task 14.
 - **S2, a busy minute.** Count the requests that reach Vercel in the most intense minute of browsing the e2e tests can produce, such as paging through results while record links prefetch. The firewall limit goes well above that.
 
+  Results, 2026-10-18, from a Playwright script that browsed a local production build of `main` at `842aece` in Chrome, with the site's own limits off, counting every request the firewall rule would see (all but `/_next/static/`):
+  - **One round of browsing:** open the start page, scroll to the end of the results and go to the next page three times, open three records and come back each time, add a filter, type a search, type in the journal value search, and open a record. Each scroll reaches the end of the 50 results in about two seconds.
+  - **At a fast human pace,** one second after each step and 120 ms per key: 367 requests in two minutes, at most 217 in any 60 seconds and 49 in any 10 seconds.
+  - **As fast as the browser goes,** with no pauses: at most 1,382 in any 60 seconds and 237 in any 10 seconds. No person browses this fast.
+  - **Prefetches are most of it:** 301 of the 367 requests at the human pace, and 1,687 of 2,026 at full speed. Each record link in the results prefetches `/record/<id>` as it scrolls into view, so a results page read to the end sends about 50. For a server-rendered page with no loading state, the prefetch answer is 299 bytes and holds only the route tree, not the record, so opening the record still makes its own request.
+  - **Allowances:** every prefetch is also a CDN request and a request the firewall rule allows, and probably a function invocation (unverified). Hobby includes 1,000,000 of each a month (decision record 005), so with prefetches a results page read to the end uses about 50 of each.
+  - **With record prefetches off** (see "Limits"), the same script on a new build sent no prefetches. At the fast human pace: 66 requests in two minutes, at most 37 in any 60 seconds and 11 in any 10 seconds. As fast as the browser goes: at most 230 in any 60 seconds and 42 in any 10 seconds. About half of what's left is `/icon.svg`, which the browser checks again after most navigations.
+  - **Proposed rule:** a 60-second window and 300 requests per IP address. That's about eight times the fast human minute, which leaves room for several people behind one address, such as a university network, and for `check:speed -- --url` (about 150 requests over a couple of minutes). Task 10 records what the owner sets.
+
 ## Build and deploy (AC1, AC2)
 
 - Vercel installs from the repository root, which holds the lockfile and the workspace list. If spike S1 finds the full install slow or broken, `web/vercel.json` sets an install command limited to the web workspace.
@@ -74,6 +83,7 @@ Each one is written into this plan before the code that depends on it.
 ## Limits (AC6, AC7)
 
 - **Firewall rule.** Hobby allows one rate-limit rule, counted by IP address, with a fixed window of 10 seconds to 10 minutes (Vercel WAF docs, checked 2026-10-15). Vercel sets the address itself and ignores a client's `X-Forwarded-For`. Over the limit, Vercel answers with its own 429 page. The window and limit come from spike S2, and the runbook records them.
+- **Record links don't prefetch** (spike S2; owner, 2026-10-18). Each record link in the results prefetched its record page as it scrolled into view, so a results page read to the end sent about 50 requests, each counted by the firewall rule. The prefetch held only the route tree, so turning it off, as the filter, page and search links already do, costs nothing when a record opens. A Playwright test scrolls through the results and checks that nothing is prefetched.
 - **The site's own limits off.** With `RATE_LIMITS=off`, the rate-limit check allows every request without touching Redis, and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Today a missing `REDIS_URL` already lets requests through, but logs an error up to once a minute, which would clutter the live site's logs. `REDIS_URL` and `VISITOR_HASH_SALT` aren't needed when the limits are off.
 - **Locally** nothing changes: `.env.local` has no `RATE_LIMITS`, so the limits stay on, and the e2e limit and Redis-failure tests keep running.
 - **Downloads** get no limit of their own until the rate-limit iteration, since the one rule covers every path. Spike S1 measures how much of Vercel's allowance a download uses.
@@ -137,6 +147,7 @@ Made with the code:
 
 - **`CLAUDE.md`:** the stack adds Vercel, and the commands table adds `site-key` and the new options.
 - **`.env.example`:** the `RATE_LIMITS` and `SITE_INDEXING` settings.
+- **Plan 002:** the rate-limit note on prefetches says the results' record links no longer prefetch.
 - **Runbook:** spec 003's task 17 writes it. This spec adds the site section afterwards (AC13).
 
 ## Still open

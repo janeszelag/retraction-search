@@ -118,6 +118,24 @@ test('a record opened from a search links back to the results (AC22)', async ({ 
   await expect(page).toHaveURL(/\/\?q=neuron&page=2$/);
 });
 
+test('scrolling through the results prefetches nothing (spec 004 AC6, spike S2)', async ({ page }) => {
+  const prefetches: string[] = [];
+  page.on('request', (request) => {
+    if (request.headers()['next-router-prefetch']) {
+      prefetches.push(new URL(request.url()).pathname);
+    }
+  });
+  await page.goto('/');
+  await expect(page.getByRole('main').getByRole('listitem').first()).toBeVisible();
+  for (let step = 0; step < 15; step++) {
+    await page.mouse.wheel(0, 900);
+    await page.waitForTimeout(50);
+  }
+  await expect(page.getByRole('navigation', { name: 'Result pages' }).last()).toBeInViewport();
+  await page.waitForLoadState('networkidle');
+  expect(prefetches).toEqual([]);
+});
+
 test('every page carries the attribution and the two report links (AC25)', async ({ page }) => {
   for (const path of ['/', '/?q=neuron', '/record/7962', '/about', '/no-such-page']) {
     await page.goto(path);
