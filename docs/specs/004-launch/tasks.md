@@ -20,8 +20,9 @@ The work goes up in three pull requests:
 
 **Site changes**
 
-- [ ] **3. Limits off by setting.** With `RATE_LIMITS=off`, the rate-limit check allows every request, opens no Redis connection and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Document the setting in `.env.example`. (AC7)
+- [x] **3. Limits off by setting.** With `RATE_LIMITS=off`, the rate-limit check allows every request, opens no Redis connection and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Document the setting in `.env.example`. (AC7)
   - Done when: unit tests cover the setting on and unset. `npm test` and `npm run test:e2e` pass unchanged, with the limit and Redis-failure tests still running locally.
+  - Result, 2026-10-18: four unit tests cover the setting on, unset and other values, and show that with it off the check reads no counter, address or salt, creates no Redis store and logs once. `npm test` and all 26 `npm run test:e2e` tests pass, including the limit and Redis-failure tests. The built site, with the setting off and Redis pointed at a closed port, answered 70 searches, 7 downloads and 3 value searches with HTTP 200 and logged the line once. A first version logged it once per route, since Next.js gives the pages and each route handler their own copy of the module, so the flag now lives on `globalThis`, like the Redis store.
 
 - [ ] **4. Indexing switch.** `app/robots.ts` disallows everything, and the root layout's metadata sets `noindex, nofollow`, unless `SITE_INDEXING` is `on`. Document the setting in `.env.example`. (AC10)
   - Done when: unit tests cover both values, and a Playwright test shows `robots.txt` disallowing everything and a page carrying `noindex` by default.
