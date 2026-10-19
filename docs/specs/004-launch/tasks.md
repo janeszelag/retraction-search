@@ -1,6 +1,6 @@
 # Tasks 004: Launch
 
-Status: in progress, 2026-10-19. Tasks 1–12 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-19. Tasks 1–13 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 The work goes up in three pull requests:
 
@@ -62,8 +62,9 @@ The work goes up in three pull requests:
   - Done when: in a private window the site searches the hosted server, and its footer shows the hosted snapshot's data date and commit. `robots.txt` disallows everything, and pages carry `noindex`.
   - Result, 2026-10-19: the owner switched to Standard Protection with `SITE_INDEXING` unset. Without a login, the start page, a search, the About page, `robots.txt` and the health route answered HTTP 200, with functions running in `iad1`. The start page showed 67,566 retractions, and the health route the same total with data date 2026-10-16. The footer gave the snapshot of 16 October 2026, commit `5338abda`, with 73,283 records, matching the hosted server: its alias points to the collection loaded on 17 October from upstream commit `5338abda`, which holds 73,283 records. `robots.txt` disallows everything, and the start page carries `noindex, nofollow`. The preview of pull request #20 still redirects to Vercel's login.
 
-- [ ] **13. Live site check.** The owner adds the secret `SITE_URL` to the `site` environment. Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
+- [x] **13. Live site check.** The owner adds the secret `SITE_URL` to the `site` environment. Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
   - Done when: the first run passes, the second opens a `site-check` issue with the step, the status and the time, and the third closes it. Neither the logs nor the issue show the address.
+  - Result, 2026-10-19: `SITE_URL` first went in as an environment variable, which the workflow doesn't read and GitHub doesn't mask, so a run passed without loading anything; the owner moved it to the environment's secrets. Run 1 then passed in 16 seconds: the site answered with the snapshot of 2026-10-16 and 67,566 records in the default view. Run 2, with `SITE_URL` pointing at a missing path, failed and opened issue #22, "Site check failed", labeled `site-check`, which names the step (the start page), the status (HTTP 404), the time and the run. Run 3, back on the right address, passed and closed the issue with a comment. GitHub masked the address in all three logs, and neither the issue nor the comment contains it.
 
 - [ ] **14. Live checks.** Run `check:search -- --server-env .env.hosted`, compare the live site's default total with it, run the `live` Playwright project, and run `check:speed -- --url` against the live site. (AC11, AC12)
   - Done when: the counts match, axe finds no violations on the five pages, and the owner confirms AC12's budgets from the measured numbers, or a spec change is proposed.
