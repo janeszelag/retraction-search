@@ -16,7 +16,7 @@ Next.js server code, one region (Vercel Hobby), own limits off (AC7)
 
 GitHub Actions
    ├── update.yml, daily ──► Typesense (admin key)            spec 003
-   └── site-check.yml, hourly ──► the live site               AC9
+   └── site-check.yml, every 6 h ──► the live site            AC9
 
 Owner's laptop
    └── npm run site-key -- --server-env .env.hosted          AC4
@@ -88,7 +88,7 @@ Each one is written into this plan before the code that depends on it.
 ## Monitoring (AC9)
 
 - **Health route.** `GET /api/health` runs the default view's count through the site's own search code and returns `{ ok, dataDate, total }`, with `Cache-Control: no-store`, or HTTP 503 when Typesense can't be reached. It skips rate limits, so it keeps working once the site's own limits return. Everything it returns is already in the site's footer.
-- **Workflow.** `.github/workflows/site-check.yml` runs at minute 47 of every hour and by hand, in the `site` environment. A script in `pipeline/src/` loads `/` and `/api/health` and checks for HTTP 200, `ok`, and a total above zero.
+- **Workflow.** `.github/workflows/site-check.yml` runs at 02:47, 08:47, 14:47 and 20:47 UTC and by hand, in the `site` environment. The first two come about 90 minutes after the daily update's runs at 01:17 and 07:17, so a site an update broke is caught soon after. Every 6 hours rather than every hour keeps an outage to four alert comments a day, and the checks' start-page loads to about 45 MB of fast origin transfer a month (owner, 2026-10-18). A script in `pipeline/src/` loads `/` and `/api/health` and checks for HTTP 200, `ok`, and a total above zero.
 - **Alerts.** `alert.js` from spec 003 takes the label and title as options. The check uses the label `site-check`, with "Site check failed" as the title. The comment gives the failed step, the status and the time, but not the address. GitHub masks the `SITE_URL` secret in logs.
 - **Keeping it alive.** GitHub disables scheduled workflows after 60 days without repository activity. `keepalive.js` already re-enables `update.yml` after each successful run. It re-enables `site-check.yml` as well.
 

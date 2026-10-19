@@ -56,7 +56,7 @@ Accepted with decision record [005](../../decisions/005-site-hosting.md), 2026-1
 
 **Monitoring**
 
-- AC9: A scheduled check, at least once an hour, loads the live site and runs one search through it. When the check fails, it opens an issue, or comments on the open one, with what failed and when. The next successful check comments and closes it. The check doesn't print the site's address in public logs until the site is announced.
+- AC9: A scheduled check, every 6 hours and about 90 minutes after each daily update run, loads the live site and runs one search through it. When the check fails, it opens an issue, or comments on the open one, with what failed and when. The next successful check comments and closes it. The check doesn't print the site's address in public logs until the site is announced.
 
 **Before the announcement**
 

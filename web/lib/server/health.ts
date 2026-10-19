@@ -1,6 +1,6 @@
 // What GET /api/health answers (spec 004 AC9): the data date and the default
 // view's total, read through the same search code as the start page, so the
-// hourly site check fails when the start page would.
+// scheduled site check fails when the start page would.
 import 'server-only';
 import { parseQuery } from '../query/url';
 import { loadMeta, runSearch } from './search';

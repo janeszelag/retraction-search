@@ -1,4 +1,4 @@
-// GET /api/health, which the hourly site check reads (spec 004 AC9). The site
+// GET /api/health, which the scheduled site check reads (spec 004 AC9). The site
 // on port 3100 allows 40 searches a minute; port 3101 can't reach Typesense
 // (see playwright.config.ts).
 import { SEARCH_DOWN } from '../playwright.config';
