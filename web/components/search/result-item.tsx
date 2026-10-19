@@ -52,7 +52,13 @@ export function ResultItem({ record, query, lookup }: { record: ResultRecord; qu
         {match && <span className="font-[650] text-accent">{match}</span>}
       </div>
       <h2 className="mt-1.5 mb-1 text-[17px] leading-[1.35] font-[650]">
-        <Link href={`/record/${record.recordId}`} className="text-ink-950 no-underline hover:text-accent hover:underline hover:underline-offset-[3px]">
+        {/* Record links don't prefetch either: the prefetch holds no record, and
+            each one counts against the firewall's limit (spec 004, spike S2). */}
+        <Link
+          href={`/record/${record.recordId}`}
+          className="text-ink-950 no-underline hover:text-accent hover:underline hover:underline-offset-[3px]"
+          prefetch={false}
+        >
           <Highlighted segments={record.titleSegments} />
         </Link>
       </h2>
