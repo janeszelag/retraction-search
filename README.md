@@ -24,14 +24,25 @@ Given my previous research experience (Masters degree in Physiology from the Uni
 - TypeScript
 - Hosting a Typesense server (cost, set up)
 - Next.js server functions
-- Natural language search
+- Deploying with Vercel
+- Vector (meaning-based) search versus keyword search
 
 ## Concerns
 
 My biggest initial concern with this project is unexpected costs whether it's from bugs, bots, improper key storage or high volume searches.
 
-I of course also want to ensure proper attribution to Retraction Watch and Crossref, and to only report what data already exists - not allege anything new.
+I also want to ensure proper attribution to Retraction Watch and Crossref, and to only report what data already exists - not allege anything new.
 
 ## How
 
-Using Claude (mainly Opus 5.5) and spec driven development.
+Built using Claude (mainly Opus 5.5) and spec driven development.
+
+## Stack & Tools
+
+- DuckDB
+- SQL
+- Typesense
+- Docker
+- TypeScript
+- Next.js
+- Playwright
