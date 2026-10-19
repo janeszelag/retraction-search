@@ -1,6 +1,6 @@
 # Tasks 004: Launch
 
-Status: not started, 2026-10-17. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-18. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 The work goes up in three pull requests:
 
@@ -10,8 +10,9 @@ The work goes up in three pull requests:
 
 **Before code**
 
-- [ ] **1. Site-key command.** Move the site key's reuse and creation out of `load.js` into its own function. Add `npm run site-key -- --server-env <file>`, which writes `TYPESENSE_SEARCH_KEY` into that file and prints only whether it created or reused the key, and the key's id. `npm run load` calls the same function. Add the command to `CLAUDE.md`. (AC4)
+- [x] **1. Site-key command.** Move the site key's reuse and creation out of `load.js` into its own function. Add `npm run site-key -- --server-env <file>`, which writes `TYPESENSE_SEARCH_KEY` into that file and prints only whether it created or reused the key, and the key's id. `npm run load` calls the same function. Add the command to `CLAUDE.md`. (AC4)
   - Done when: unit tests with a fake Typesense cover reuse, creation and a key in the file that the server no longer has, and show the key never reaches the output. `npm run load` behaves as before. The owner runs the command against `.env.hosted`, and the file gains the key.
+  - Result, 2026-10-18: six unit tests in `pipeline/test/site-key.test.js` cover creation, reuse, a key the server no longer has, a key with other actions, and the deletion of older site keys, and check that no log line contains the key. `npm run load` on the local stack reused the local key and left `.env.local` unchanged. The owner's run against `.env.hosted` created the hosted server's first site key (id 0) and wrote it to the file. Like `npm run load`, the command deletes older keys it made, so changing the hosted key takes the site's search down until Vercel has the new key; the runbook (task 15) gives the order.
 
 - [ ] **2. Spike S1, first deploy.** The owner's steps first: note the Railway server's region, sign up for Vercel on Hobby with no payment method, import the repository with `web` as the root directory, set Node 22 and the function region nearest Railway, turn on Vercel Authentication for production as well as previews, and add `TYPESENSE_URL` and `TYPESENSE_SEARCH_KEY` (sensitive). Then deploy `main` and record what the plan lists: the install and build, page and download sizes, the server response times for spec 002's fixed searches, and whether Hobby can roll back. Add `web/vercel.json` with the region, and an install command if the build needs one. (AC1, AC12)
   - Done when: the results are in the plan's spike list, with an estimate of how many pages and full downloads the 10 GB of fast origin transfer allows. If the build failed as it was, the fix is in this pull request and a second deploy succeeded.
