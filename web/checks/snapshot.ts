@@ -2,6 +2,7 @@
 // documents that `npm run load` put in Typesense. The filters are written
 // again here in SQL, from the spec rather than from the Typesense mapping, so
 // a mistake in one shows up as a difference.
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DuckDBInstance } from '@duckdb/node-api';
@@ -21,7 +22,14 @@ export interface Snapshot {
 
 // The snapshot's search documents, as a table named docs.
 export async function openSnapshot(meta: Meta): Promise<Snapshot> {
-  const file = path.join(repoRoot, 'data', 'clean', `${meta.dataDate}-${meta.commit}`, 'search-documents.jsonl');
+  const folder = `${meta.dataDate}-${meta.commit}`;
+  const file = path.join(repoRoot, 'data', 'clean', folder, 'search-documents.jsonl');
+  if (!existsSync(file)) {
+    // As when checking the hosted server, whose snapshot the daily update cleaned elsewhere.
+    throw new Error(
+      `The server holds the snapshot ${folder}, which isn't cleaned on this computer. Run npm run download -- --commit ${meta.commit}, then npm run clean -- --input data/raw/retraction_watch-${folder}.csv.`,
+    );
+  }
   const instance = await DuckDBInstance.create(':memory:');
   const connection = await instance.connect();
   await connection.run(`CREATE TABLE docs AS SELECT * FROM read_json(${sql(file)}, format = 'newline_delimited', sample_size = -1)`);

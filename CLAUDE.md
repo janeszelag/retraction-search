@@ -65,8 +65,9 @@ Run from the repository root:
 | `npm run site-key -- --server-env <file>` | Creates or reuses the site's search-only key on the server in that file (default `.env.local`) and saves it there as `TYPESENSE_SEARCH_KEY`. Prints the key's id, never the key |
 | `npm run update` | Brings the Typesense server in `.env.local` up to the newest upstream snapshot: downloads, cleans, diffs, loads and switches, with spec 003's checks, and writes `data/runs/<time>/summary.md`. `-- --force` reloads, `-- --commit <sha>` loads a given snapshot, `-- --accept-changes` lets one run past the change limits, and `-- --server-env <file>` targets another server. Never touches keys |
 | `npm run web` | Starts the site at http://localhost:3000 |
-| `npm run check:search` | Compares the site's searches, counts and download with DuckDB on the loaded snapshot; needs the local stack |
+| `npm run check:search` | Compares the site's searches, counts and download with DuckDB on the loaded snapshot; needs the local stack. `-- --server-env <file>` checks the server in that file instead, such as `.env.hosted`, once its snapshot is cleaned here |
 | `npm run test:e2e` | Builds the site and runs the browser tests (Playwright, with axe) in the installed Google Chrome; needs the local stack |
-| `npm run check:speed` | Builds the site, times the server response for a fixed set of searches and runs Lighthouse's mobile test; needs the local stack |
+| `SITE_URL=<address> npm run test:live` | Runs only the axe tests against that site, starting no servers |
+| `npm run check:speed` | Builds the site, times the server response for a fixed set of searches and runs Lighthouse's mobile test; needs the local stack. `-- --url <address>` times that site instead, without building, against spec 004's 500 ms budget |
 
 The SQL files in `pipeline/sql/` also run in the DuckDB CLI: `SET VARIABLE input_path = '<csv file>';`, then `.read` the files in order.

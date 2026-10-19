@@ -1,20 +1,24 @@
-// npm run check:speed (spec 002 task 24, AC33). Starts the built site on its own
-// port, then:
+// npm run check:speed [-- --url <address>] (spec 002 task 24, AC33; spec 004
+// task 7, AC12). Builds the site and starts it on its own port, or with --url
+// uses that site as it is, then:
 // - times the full server response for a fixed set of searches, several times
-//   each, and reports the 95th percentile against the 300 ms budget
+//   each, and reports the 95th percentile against the budget: 300 ms locally
+//   (spec 002 AC33), 500 ms for a live site from the owner's laptop (spec 004 AC12)
 // - runs Lighthouse's mobile test on a shared URL (the brief's example search)
 //   five times, and reports the median Largest Contentful Paint against the
 //   2.5 s budget (single runs vary by several tenths of a second)
-// Needs the local stack and a build: the npm script builds first.
-import { spawn } from 'node:child_process';
+// Without --url it needs the local stack.
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 import * as chromeLauncher from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 
+const { values } = parseArgs({ options: { url: { type: 'string' } } });
 const PORT = 3200;
-const ORIGIN = `http://localhost:${PORT}`;
+const ORIGIN = values.url ? new URL(values.url).origin : `http://localhost:${PORT}`;
 const RUNS = 10;
-const BUDGET_P95_MS = 300;
+const BUDGET_P95_MS = values.url ? 500 : 300;
 const BUDGET_LCP_MS = 2500;
 const LIGHTHOUSE_RUNS = 5;
 
@@ -57,7 +61,7 @@ async function waitForSite() {
     }
     await new Promise((resolve) => setTimeout(resolve, 300));
   }
-  throw new Error(`The site didn't start on ${ORIGIN}.`);
+  throw new Error(`The site didn't answer at ${ORIGIN}.`);
 }
 
 // Milliseconds until the whole page has arrived.
@@ -115,7 +119,14 @@ async function largestContentfulPaint() {
   return percentile(paints, 50);
 }
 
-const site = startSite();
+let site = null;
+if (!values.url) {
+  const build = spawnSync(process.execPath, ['scripts/next.mjs', 'build'], { cwd: webDir, stdio: 'inherit' });
+  if (build.status !== 0) {
+    throw new Error('The build failed.');
+  }
+  site = startSite();
+}
 let failed = false;
 try {
   await waitForSite();
@@ -126,7 +137,7 @@ try {
   console.log(`Largest Contentful Paint, median ${(lcp / 1000).toFixed(2)} s (budget ${BUDGET_LCP_MS / 1000} s)`);
   failed ||= lcp > BUDGET_LCP_MS;
 } finally {
-  site.kill();
+  site?.kill();
 }
 console.log(failed ? 'Over budget.' : 'Within budget.');
 process.exitCode = failed ? 1 : 0;

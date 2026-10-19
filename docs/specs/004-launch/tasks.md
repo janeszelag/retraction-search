@@ -38,6 +38,7 @@ The work goes up in three pull requests:
 
 - [ ] **7. Options for the live checks.** `npm run check:search` takes `--server-env <file>`. A Playwright project, `live`, runs only the axe tests against `SITE_URL`. `npm run check:speed` takes `--url <address>` and then skips the local build. Add the options to `CLAUDE.md`. (AC11, AC12)
   - Done when: `check:search` with `--server-env .env.local` gives the same results as without it, and the `live` project and `check:speed --url` pass against `npm run web` on the laptop.
+  - So far, 2026-10-18: `check:search -- --server-env .env.local` passed the same 49 checks as without the option. With `.env.hosted` it read the hosted server and stopped with the commands to clean its snapshot, `2026-10-16-5338abda`, here. The `live` project's five axe tests passed against `npm run web` and against a production build. `check:speed --url` skipped the build and timed the given site against 500 ms: 95th percentile 273 ms on `npm run web` and 106 ms on a production build. Lighthouse's median Largest Contentful Paint missed its 2.5 s budget: 3.0 s in development mode, and 2.76 s on a production build, the same as `npm run check:speed` without the option. It passed for spec 002 on 2026-10-14, and the cause is open.
 
 - [ ] **8. Stack in `CLAUDE.md`.** The stack names Vercel Hobby and decision record 005. (Plan, changes to other documents)
   - Done when: `CLAUDE.md` matches what tasks 1–7 built. The first pull request goes up.
