@@ -13,11 +13,13 @@ A faceted public search over the Retraction Watch database, rebuilt daily from t
 
 ## Stack
 
-See decision records [001](docs/decisions/001-languages.md) (languages), [002](docs/decisions/002-search-engine.md) (search) and [003](docs/decisions/003-ui-stack.md) (UI).
+See decision records [001](docs/decisions/001-languages.md) (languages), [002](docs/decisions/002-search-engine.md) (search), [003](docs/decisions/003-ui-stack.md) (UI) and [005](docs/decisions/005-site-hosting.md) (site hosting).
 
 - Frontend: Next.js (React) written in TypeScript.
 - UI: Tailwind CSS 4, with Radix Primitives only where native HTML falls short. The search page is a server component, and the URL holds the whole query.
 - Search: Typesense 30.2 on Railway (Hobby plan, $50 hard limit), reached only through the website's server code.
+- Site: Vercel Hobby with no payment method, deployed from `main` with `web` as the root directory. Its server code runs in Washington, D.C. (`iad1`), next to the search server. One Vercel firewall rule limits each visitor, and the site's own limits are off (`RATE_LIMITS=off`) until a later iteration. Search engines are asked to stay away (`robots.txt` and `noindex`) until `SITE_INDEXING=on`.
+- Scheduled jobs: GitHub Actions. `update.yml` loads the newest snapshot daily, and `site-check.yml` checks the live site every 6 hours. Failures open an issue labeled `daily-update` or `site-check`.
 - Data transforms: SQL run by DuckDB, kept in `.sql` files.
 - Pipeline glue: JavaScript (ES modules) on Node 22, using `@duckdb/node-api`. No build step.
 - Python: only for exploration notebooks, or for a pipeline step that a decision record approves.

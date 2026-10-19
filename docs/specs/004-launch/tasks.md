@@ -1,6 +1,6 @@
 # Tasks 004: Launch
 
-Status: in progress, 2026-10-18. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-18. Tasks 1–8 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 The work goes up in three pull requests:
 
@@ -36,12 +36,13 @@ The work goes up in three pull requests:
   - Done when: unit tests cover the check's failures and the alert labels, and spec 003's alert and keepalive tests still pass. The live run is task 13.
   - Result, 2026-10-18: 14 unit tests cover the check passing, its failures (HTTP errors, a login page, no connection, a timeout, a health answer that isn't ok, isn't JSON or has no records, a missing path, a bad address), that neither the result nor the comment names the address, and the comments. Six more cover opening, commenting on and closing issues by label with a stand-in for `gh`, and re-enabling both workflows. Spec 003's alert and keepalive tests pass unchanged. Run on the laptop, the check passed against `npm run web`, and failed with HTTP 404 for a missing path and `ECONNREFUSED` for a closed port, without naming the address. `alert.js` now holds the issue handling as `open` and `close`, with `--label` and `--title`, and `update.yml`'s alert and enable steps call it and `keepalive.js enable`, so spec 003's remaining checks of tasks 15 and 16 run on the shared code. Without `SITE_URL` the check passes without loading anything, so the workflow is quiet until the secret is set.
 
-- [ ] **7. Options for the live checks.** `npm run check:search` takes `--server-env <file>`. A Playwright project, `live`, runs only the axe tests against `SITE_URL`. `npm run check:speed` takes `--url <address>` and then skips the local build. Add the options to `CLAUDE.md`. (AC11, AC12)
+- [x] **7. Options for the live checks.** `npm run check:search` takes `--server-env <file>`. A Playwright project, `live`, runs only the axe tests against `SITE_URL`. `npm run check:speed` takes `--url <address>` and then skips the local build. Add the options to `CLAUDE.md`. (AC11, AC12)
   - Done when: `check:search` with `--server-env .env.local` gives the same results as without it, and the `live` project and `check:speed --url` pass against `npm run web` on the laptop.
-  - So far, 2026-10-18: `check:search -- --server-env .env.local` passed the same 49 checks as without the option. With `.env.hosted` it read the hosted server and stopped with the commands to clean its snapshot, `2026-10-16-5338abda`, here. The `live` project's five axe tests passed against `npm run web` and against a production build. `check:speed --url` skipped the build and timed the given site against 500 ms: 95th percentile 273 ms on `npm run web` and 106 ms on a production build. Lighthouse's median Largest Contentful Paint missed its 2.5 s budget: 3.0 s in development mode, and 2.76 s on a production build, the same as `npm run check:speed` without the option. It passed for spec 002 on 2026-10-14, and the cause is open.
+  - Result, 2026-10-18: `check:search -- --server-env .env.local` passed the same 49 checks as without the option. With `.env.hosted` it read the hosted server and stopped with the commands to clean its snapshot, `2026-10-16-5338abda`, here. The `live` project's five axe tests passed against `npm run web` and against a production build. `check:speed --url` skipped the build and timed the given site against 500 ms: 95th percentile 273 ms on `npm run web` and 106 ms on a production build. Lighthouse's median Largest Contentful Paint missed its 2.5 s budget: 3.0 s in development mode, and 2.76 s on a production build, the same as `npm run check:speed` without the option. It passed for spec 002 on 2026-10-14. The miss doesn't come from these options, so the owner ticked the task on 2026-10-18, and the cause is being looked into separately before task 14 confirms AC12's budgets.
 
-- [ ] **8. Stack in `CLAUDE.md`.** The stack names Vercel Hobby and decision record 005. (Plan, changes to other documents)
+- [x] **8. Stack in `CLAUDE.md`.** The stack names Vercel Hobby and decision record 005. (Plan, changes to other documents)
   - Done when: `CLAUDE.md` matches what tasks 1–7 built. The first pull request goes up.
+  - Result, 2026-10-18: the stack names Vercel Hobby, the `iad1` region, the firewall rule, `RATE_LIMITS=off`, the indexing switch and the two scheduled workflows, and links decision record 005. The commands table has `site-key`, `check:search -- --server-env`, `test:live` and `check:speed -- --url`.
 
 **Going live**
 
