@@ -64,7 +64,7 @@ The work goes up in three pull requests:
 
 **Hosted server**
 
-- [ ] **12. Railway setup and spike S3.** The owner's steps first: create the Railway account, subscribe to Hobby, set the $50 hard limit and the $10 alert, then create the service, volume, variables and domain as the plan lists. Then run the checks:
+- [x] **12. Railway setup and spike S3.** The owner's steps first: create the Railway account, subscribe to Hobby, set the $50 hard limit and the $10 alert, then create the service, volume, variables and domain as the plan lists. Then run the checks:
   - HTTPS, and HTTP 401 without a key
   - the port, a load from the laptop with `--server-env .env.hosted`, and the upload time
   - memory with one, two and three collections
@@ -72,6 +72,7 @@ The work goes up in three pull requests:
 
   Decide whether the hosted server keeps the previous collection (plan trade-off 4). (AC16, AC19)
   - Done when: the results and the decision are in the plan's spike list, and the runbook records each check with its date.
+  - Result, 2026-10-19: spike S3's results and the owner's decision to delete the previous collection have been in the plan's spike list since 2026-10-15. [The runbook](../../runbook.md#checks-and-their-dates) now records each check with its date: HTTPS and 401, the port, the load from the laptop, memory and a restart.
 
 - [x] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
   - Done when: the environment exists with both secrets, and only `main` can deploy to it.
@@ -95,6 +96,7 @@ The work goes up in three pull requests:
 
 - [ ] **17. Runbook.** `docs/runbook.md`, with the contents the plan lists, written for someone who hasn't run a server before. (AC21)
   - Done when: the owner reads it and follows its rollback steps once: load an older commit by hand, then the newest.
+  - So far, 2026-10-19: [`docs/runbook.md`](../../runbook.md) covers each item of AC21 and the plan's list, with spec 004's site section (its task 15). Still to do: the owner's reading and the rollback.
 
 - [ ] **18. Recovery check.** Delete the hosted server's collections, then start the workflow by hand. (AC19)
   - Done when: the run rebuilds the index from the CSV with no other steps, and the runbook records the check with its date.

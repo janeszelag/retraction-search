@@ -72,6 +72,7 @@ The work goes up in three pull requests:
 
 - [ ] **15. Runbook: the site.** After spec 003's task 17 writes `docs/runbook.md`, add the site section the plan lists: deploying and rolling back, changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. (AC13)
   - Done when: the owner follows it to roll production back to the previous deployment and forward again. The second pull request goes up.
+  - So far, 2026-10-19: [the runbook](../../runbook.md#the-website) has the site section: deploying, rolling back (checked against Vercel's docs on 2026-10-19), changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. Still to do: the owner's rollback and undo.
 
 **Close-out**
 
