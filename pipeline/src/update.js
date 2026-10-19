@@ -10,9 +10,8 @@ import { parseArgs } from 'node:util';
 import { ColumnCheckError, IntegrityError, runCleaning } from './clean.js';
 import { diffMarkdown, runDiff, snapshotName } from './diff.js';
 import { downloadSnapshot } from './download.js';
-import { fileExists } from './files.js';
 import { openDatabase, queryRows, sqlString } from './duckdb.js';
-import { ALIAS, cleanUp, DocumentCheckError, FacetCheckError, importSnapshot, readMeta, switchBack, switchTo } from './load.js';
+import { cleanUp, DocumentCheckError, FacetCheckError, importSnapshot, readMeta, switchBack, switchTo } from './load.js';
 import {
   cleanDir as defaultCleanDir,
   diffDir as defaultDiffDir,
@@ -22,7 +21,7 @@ import {
   runsDir as defaultRunsDir,
 } from './paths.js';
 import { describeSnapshot, formatNumber, table } from './reports.js';
-import { typesenseClient } from './typesense.js';
+import { ALIAS, readServerSettings, typesenseClient } from './typesense.js';
 import { checkFreshness, dataDateFromCommit, findCommit } from './upstream.js';
 
 // A failed step. The run stops before search changes, and the message names the step (AC7).
@@ -388,22 +387,6 @@ export async function runUpdate({
     await writeFile(path.join(runDir, 'summary.md'), summaryMarkdown(result, diff));
     result.run_folder = runDir;
   }
-}
-
-// TYPESENSE_URL and TYPESENSE_ADMIN_KEY come from the environment first,
-// then the env file. A file given with --server-env must exist.
-export async function readServerSettings(envFile, { required = false } = {}) {
-  if (await fileExists(envFile)) {
-    // Node's loader keeps values already in the environment.
-    process.loadEnvFile(envFile);
-  } else if (required) {
-    throw new Error(`Can't find ${envFile}.`);
-  }
-  const { TYPESENSE_ADMIN_KEY: key, TYPESENSE_URL: url } = process.env;
-  if (!key || !url) {
-    throw new Error(`Set TYPESENSE_URL and TYPESENSE_ADMIN_KEY in the environment or in ${envFile}.`);
-  }
-  return { url, key };
 }
 
 async function main() {

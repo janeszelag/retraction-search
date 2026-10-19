@@ -16,7 +16,7 @@ Next.js server code, one region (Vercel Hobby), own limits off (AC7)
 
 GitHub Actions
    ├── update.yml, daily ──► Typesense (admin key)            spec 003
-   └── site-check.yml, hourly ──► the live site               AC9
+   └── site-check.yml, every 6 h ──► the live site            AC9
 
 Owner's laptop
    └── npm run site-key -- --server-env .env.hosted          AC4
@@ -30,10 +30,10 @@ These need accounts, so they're the owner's steps. None of them takes a payment 
 
 1. **Railway:** note the search server's region (service settings). The site's functions go in the nearest Vercel region.
 2. **Site key:** run `npm run site-key -- --server-env .env.hosted`. It writes `TYPESENSE_SEARCH_KEY` into that file.
-3. **Vercel:** sign up with GitHub on Hobby, and import the repository with `web` as the root directory. Set Node 22 and the function region nearest Railway. Keep Vercel Authentication on preview deployments, and turn it on for production until spike S1 is done.
+3. **Vercel:** sign up with GitHub on Hobby, and import the repository with `web` as the root directory and the Next.js preset, without variables. The import deploys at once, and Vercel's default protection, Standard Protection, leaves the production domain public, so the first deployment has nothing it can search. Then, in the project's settings: Deployment Protection set to Vercel Authentication for All Deployments until spike S1 is done, Node.js Version 22.x under Build and Deployment, and the function region nearest Railway under Functions (Vercel docs, checked 2026-10-18).
 4. **Vercel variables,** for Production and Preview: `TYPESENSE_URL`, `TYPESENSE_SEARCH_KEY` (marked sensitive) and `RATE_LIMITS=off`. `SITE_INDEXING` stays unset until launch.
 5. **Firewall rule:** rate limit by IP address on every path except `/_next/static/`, with the window and limit from spike S2.
-6. **GitHub:** create a `site` environment, limited to `main`, with the secret `SITE_URL`.
+6. **GitHub:** create a `site` environment, limited to `main`. Add the secret `SITE_URL` once production is open: until then the site check would only meet Vercel's login, so without the secret it passes without loading anything.
 
 ## Spikes first
 
@@ -44,6 +44,15 @@ Each one is written into this plan before the code that depends on it.
   - the size of a results page as HTML and as a client-side navigation, and of a download with every record, to estimate how far the 10 GB of fast origin transfer goes
   - the server response time for spec 002's fixed searches, from the owner's laptop, for AC12
   - whether Hobby can roll back to the previous production deployment (unverified)
+
+  Results, 2026-10-18, from a deployment of `main` at `491af4c` with Node 22.x selected and production behind Vercel Authentication:
+  - **Install and build:** the workspace installs and builds as it is, so `web/vercel.json` needs no install command. The install added 278 packages in 15 s, Next.js 16.4 compiled in 9.6 s, and the build took 30 s, or 34 s from clone to deployed. The log has no warnings and doesn't name the Node version. Building and uploading the 293 MB build cache took another 25 s after the deployment was live.
+  - **Region:** the Railway server is in US East (Virginia). Vercel's nearest region is Washington, D.C. (`iad1`), which is also its default, and `web/vercel.json` records it.
+  - **Rollback:** Vercel's docs (checked 2026-10-18) say Hobby can roll back to the immediately previous production deployment only, and that after a rollback, pushes to `main` don't go live until the rollback is undone from the production deployment's tile. Task 15 tries it.
+  - **How sizes and times were measured:** past Vercel Authentication, a script sent a Protection Bypass for Automation secret in the `x-vercel-protection-bypass` header. It's available on Hobby (Vercel docs, checked 2026-10-18). The secret lives in the owner's `.env.hosted`, and the owner revokes it once S1 is recorded. The site served the hosted snapshot of 16 October 2026 (`5338abda`), with 73,283 records.
+  - **Sizes,** on the wire with Brotli and unpacked: a results page is 32–36 KB and 327–450 KB as HTML, and 21 KB and 143–163 KB as a client-side navigation (the full tree, so an upper bound). A record page is 8 KB and 45 KB. The download with every record is 13.6 MB and 67.8 MB, and took 5.1 s. The HTML is about nine times decision record 005's guess of 50 KB, since it carries 50 results, the filter counts, and the same content again as Next.js's data for the browser.
+  - **The 10 GB of fast origin transfer:** Vercel's docs (checked 2026-10-18) count the bytes between its CDN and the functions, but don't say whether they're compressed. Unpacked, the allowance covers about 23,000 results pages, 65,000 client-side navigations or 150 full downloads a month; compressed, about 290,000 pages or 750 full downloads. Downloads are the risk: one script fetching the full file 150 times could use up the month. Decision record 005 accepts that risk until the announcement.
+  - **Response times,** from the owner's laptop on 2026-10-18, 10 runs of each of spec 002's 14 searches after one warm-up: median 336 ms, 95th percentile 455 ms, under AC12's proposed 500 ms. The slowest single searches were `in_title=brain tumor` with China excluded (p95 901 ms) and `q=neuron` (p95 645 ms). Requests entered at Vercel's San Francisco edge (`sfo1`), about 49 ms from the laptop for a static file, and ran in `iad1`, so a visitor on the East Coast would see less. AC12's Lighthouse budget is measured in task 14.
 - **S2, a busy minute.** Count the requests that reach Vercel in the most intense minute of browsing the e2e tests can produce, such as paging through results while record links prefetch. The firewall limit goes well above that.
 
 ## Build and deploy (AC1, AC2)
@@ -79,7 +88,7 @@ Each one is written into this plan before the code that depends on it.
 ## Monitoring (AC9)
 
 - **Health route.** `GET /api/health` runs the default view's count through the site's own search code and returns `{ ok, dataDate, total }`, with `Cache-Control: no-store`, or HTTP 503 when Typesense can't be reached. It skips rate limits, so it keeps working once the site's own limits return. Everything it returns is already in the site's footer.
-- **Workflow.** `.github/workflows/site-check.yml` runs at minute 47 of every hour and by hand, in the `site` environment. A script in `pipeline/src/` loads `/` and `/api/health` and checks for HTTP 200, `ok`, and a total above zero.
+- **Workflow.** `.github/workflows/site-check.yml` runs at 02:47, 08:47, 14:47 and 20:47 UTC and by hand, in the `site` environment. The first two come about 90 minutes after the daily update's runs at 01:17 and 07:17, so a site an update broke is caught soon after. Every 6 hours rather than every hour keeps an outage to four alert comments a day, and the checks' start-page loads to about 45 MB of fast origin transfer a month (owner, 2026-10-18). A script in `pipeline/src/` loads `/` and `/api/health` and checks for HTTP 200, `ok`, and a total above zero.
 - **Alerts.** `alert.js` from spec 003 takes the label and title as options. The check uses the label `site-check`, with "Site check failed" as the title. The comment gives the failed step, the status and the time, but not the address. GitHub masks the `SITE_URL` secret in logs.
 - **Keeping it alive.** GitHub disables scheduled workflows after 60 days without repository activity. `keepalive.js` already re-enables `update.yml` after each successful run. It re-enables `site-check.yml` as well.
 

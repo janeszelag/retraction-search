@@ -1,0 +1,72 @@
+# Checks the live site every 6 hours (spec 004, AC9): loads the start page and
+# /api/health, and keeps one issue labeled site-check open while the check
+# fails. The 02:47 and 08:47 runs come about 90 minutes after the daily
+# update's runs at 01:17 and 07:17 UTC. GitHub masks the SITE_URL secret in
+# logs, and the check's own output never names the address.
+name: Site check
+
+on:
+  schedule:
+    - cron: '47 2,8,14,20 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: site-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write # alerts
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    # Holds SITE_URL, and only main can use it.
+    environment: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      # site-check.js and alert.js import nothing outside Node, so nothing is
+      # installed. Without SITE_URL, the check says so, writes no comment and passes.
+      - name: Check the site
+        timeout-minutes: 3
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node pipeline/src/site-check.js --run-url "$RUN_URL" --comment-file "$RUNNER_TEMP/comment.md"
+      - name: Add the result to the job summary
+        if: always()
+        run: |
+          if [ -s "$RUNNER_TEMP/comment.md" ]; then
+            cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "The check wrote no result. The step above says why." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      # As in update.yml: one open issue per label collects the failures until
+      # a check passes, and both a failed and a cancelled step raise the alert.
+      - name: Open or update the alert issue
+        if: failure() || cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          comment="$RUNNER_TEMP/comment.md"
+          if [ ! -s "$comment" ]; then
+            echo "The site check stopped before it could say what failed: it ran out of time or was cancelled. Run: $RUN_URL" > "$comment"
+          fi
+          node pipeline/src/alert.js open --label site-check --title "Site check failed" --description "The site check failed" --body-file "$comment"
+      - name: Close the alert issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ -s "$RUNNER_TEMP/comment.md" ]; then
+            node pipeline/src/alert.js close --label site-check --body-file "$RUNNER_TEMP/comment.md"
+          fi

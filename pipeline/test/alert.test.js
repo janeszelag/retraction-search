@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { codeBlock, failedComment, readLatestResult, resolvedComment } from '../src/alert.js';
+import { closeAlerts, codeBlock, failedComment, openAlert, readLatestResult, resolvedComment } from '../src/alert.js';
 
 const RUN = 'https://github.com/owner/repo/actions/runs/123';
 const LOADED = { data_date: '2026-10-14', commit: '1af1bfbb', upstream_commit: '1af1bfbb73f7b45790ac73ffb9e3cda8bce03d70' };
@@ -104,5 +104,53 @@ describe('reading the run result', () => {
     expect(await readLatestResult(path.join(runs, 'missing'))).toBeNull();
     await mkdir(path.join(runs, '20261015T011700Z'));
     expect(await readLatestResult(runs)).toBeNull();
+  });
+});
+
+// A stand-in for the GitHub CLI: open issues per label, and every call it got.
+function fakeGh(open = {}) {
+  const calls = [];
+  async function gh(args) {
+    calls.push(args);
+    if (args[0] === 'issue' && args[1] === 'list') {
+      return (open[args[args.indexOf('--label') + 1]] ?? []).map((number) => `${number}\n`).join('');
+    }
+    return '';
+  }
+  return { gh, calls };
+}
+
+describe('alert issues by label (spec 004, task 6)', () => {
+  it('opens an issue under the label when none is open, creating the label', async () => {
+    const { gh, calls } = fakeGh();
+    expect(await openAlert({ label: 'site-check', title: 'Site check failed', description: 'The site check failed', body: 'What failed', gh })).toEqual({
+      opened: true,
+    });
+    expect(calls).toEqual([
+      ['issue', 'list', '--label', 'site-check', '--state', 'open', '--json', 'number', '--jq', '.[].number'],
+      ['label', 'create', 'site-check', '--color', 'B60205', '--description', 'The site check failed', '--force'],
+      ['issue', 'create', '--title', 'Site check failed', '--label', 'site-check', '--body', 'What failed'],
+    ]);
+  });
+
+  it('comments on the open issue under the label instead of opening another', async () => {
+    const { gh, calls } = fakeGh({ 'daily-update': [13], 'site-check': [21] });
+    expect(await openAlert({ label: 'daily-update', title: 'Daily update failed', body: 'What failed', gh })).toEqual({ commented: 13 });
+    expect(calls.slice(1)).toEqual([['issue', 'comment', '13', '--body', 'What failed']]);
+  });
+
+  it('closes every open issue under the label, and only that label', async () => {
+    const { gh, calls } = fakeGh({ 'site-check': [21, 20], 'daily-update': [13] });
+    expect(await closeAlerts({ label: 'site-check', body: 'Resolved', gh })).toEqual([21, 20]);
+    expect(calls.slice(1)).toEqual([
+      ['issue', 'close', '21', '--comment', 'Resolved'],
+      ['issue', 'close', '20', '--comment', 'Resolved'],
+    ]);
+  });
+
+  it('closes nothing when no issue is open', async () => {
+    const { gh, calls } = fakeGh();
+    expect(await closeAlerts({ label: 'site-check', body: 'Resolved', gh })).toEqual([]);
+    expect(calls).toHaveLength(1);
   });
 });

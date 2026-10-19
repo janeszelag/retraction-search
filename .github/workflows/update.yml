@@ -105,13 +105,8 @@ jobs:
         run: |
           body=$(node pipeline/src/alert.js failed --run-url "$RUN_URL") ||
             body="The daily update failed before it could describe what went wrong. Run: $RUN_URL"
-          issue=$(gh issue list --label daily-update --state open --json number --jq '.[0].number // empty')
-          if [ -n "$issue" ]; then
-            gh issue comment "$issue" --body "$body"
-          else
-            gh label create daily-update --color B60205 --description "The daily update failed" --force
-            gh issue create --title "Daily update failed" --label daily-update --body "$body"
-          fi
+          printf '%s\n' "$body" > "$RUNNER_TEMP/alert.md"
+          node pipeline/src/alert.js open --label daily-update --title "Daily update failed" --description "The daily update failed" --body-file "$RUNNER_TEMP/alert.md"
       - name: Close the alert issue
         if: success()
         env:
@@ -119,18 +114,18 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          for issue in $(gh issue list --label daily-update --state open --json number --jq '.[].number'); do
-            gh issue close "$issue" --comment "$(node pipeline/src/alert.js resolved --run-url "$RUN_URL")"
-          done
+          node pipeline/src/alert.js resolved --run-url "$RUN_URL" > "$RUNNER_TEMP/resolved.md"
+          node pipeline/src/alert.js close --label daily-update --body-file "$RUNNER_TEMP/resolved.md"
       # GitHub turns off a public repository's schedules after 60 days without
       # activity (AC15). Its docs don't say whether this call counts, so the
-      # next step warns from day 45 either way.
-      - name: Keep the schedule enabled
+      # next step warns from day 45 either way. It enables the site check's
+      # schedule too (spec 004, AC9).
+      - name: Keep the schedules enabled
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh api --method PUT "repos/$GH_REPO/actions/workflows/update.yml/enable"
+        run: node pipeline/src/keepalive.js enable
       # One open issue labeled schedule-keepalive, not daily-update, so a
       # successful run doesn't close it. A run under the threshold does, as
       # after a newer commit.

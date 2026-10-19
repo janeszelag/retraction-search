@@ -47,11 +47,14 @@ function matches(doc, filter) {
 export function fakeTypesense() {
   const collections = new Map(); // name → { schema, docs: Map(id → doc) }
   const aliases = new Map();
+  const keys = new Map(); // id → key, with its full value
+  let nextKeyId = 1;
   const requests = [];
   const importBodies = [];
   const state = {
     collections,
     aliases,
+    keys,
     requests,
     importBodies,
     // Set to a function (doc, collectionName) → doc to change documents as they're stored,
@@ -83,7 +86,22 @@ export function fakeTypesense() {
     const json = typeof body === 'string' ? null : body;
 
     if (parts[0] === 'keys') {
-      return method === 'GET' ? { keys: [] } : { id: 1, value: 'fake-key', value_prefix: 'fake' };
+      if (method === 'GET') {
+        // Typesense lists each key's first four characters, never its value.
+        return { keys: [...keys.values()].map(({ value, ...key }) => ({ ...key, value_prefix: value.slice(0, 4) })) };
+      }
+      if (method === 'POST') {
+        const id = nextKeyId++;
+        const key = { id, ...json, value: `k${String(id).padStart(3, '0')}-secret-${id}` };
+        keys.set(id, key);
+        return key;
+      }
+      if (method === 'DELETE') {
+        if (!keys.delete(Number(parts[1]))) {
+          throw notFound(`key ${parts[1]}`);
+        }
+        return { id: Number(parts[1]) };
+      }
     }
     if (parts[0] === 'aliases') {
       if (method === 'GET') {

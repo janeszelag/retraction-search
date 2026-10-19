@@ -1,7 +1,8 @@
 // npm run check:search (spec 002 task 21): runs a fixed set of searches through
 // the site's own server code against the local Typesense, and compares totals,
 // every filter count and search behavior with DuckDB on the same snapshot.
-// Needs `npm run search:up` and `npm run load` first.
+// Needs `npm run search:up` and `npm run load` first, or --server-env with
+// another server's env file and its snapshot cleaned here (spec 004 task 7).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { LONG_FACET_LIMIT, SMALL_FACET_LIMIT } from '../lib/query/typesense';
 import { parseQuery } from '../lib/query/url';
@@ -18,7 +19,7 @@ let snapshot: Snapshot;
 beforeAll(async () => {
   const loaded = await loadMeta();
   if (!loaded) {
-    throw new Error('Typesense has no data. Run npm run search:up, then npm run load.');
+    throw new Error('Typesense has no data or can\'t be reached. Locally, run npm run search:up, then npm run load.');
   }
   meta = loaded;
   snapshot = await openSnapshot(meta);
@@ -31,7 +32,7 @@ const toQuery = (search: string) => parseQuery(new URLSearchParams(search));
 async function search(query: Query): Promise<SearchOk> {
   const result = await runSearch(query);
   if (result.status !== 'ok') {
-    throw new Error('Search is unavailable. Is the local stack running?');
+    throw new Error('Search is unavailable. Is the search server running?');
   }
   return result;
 }

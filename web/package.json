@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/next.mjs build",
-    "check:search": "vitest run --config vitest.checks.config.ts",
-    "check:speed": "node scripts/next.mjs build && node scripts/speed.mjs",
+    "check:search": "node scripts/check-search.mjs",
+    "check:speed": "node scripts/speed.mjs",
     "dev": "node scripts/next.mjs dev",
     "start": "node scripts/next.mjs start",
     "test": "vitest run",
     "test:e2e": "node scripts/next.mjs build && playwright test",
+    "test:live": "playwright test --project live",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

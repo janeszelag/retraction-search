@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { checkLimit, rules, visitorId, type CounterStore } from './rate-limit';
+import { checkLimit, limitsOff, rules, visitorId, type CounterStore } from './rate-limit';
 
 const now = Date.parse('2026-10-14T15:42:20Z');
 
@@ -98,5 +98,56 @@ describe('when the counters fail (AC29)', () => {
     const { store, calls } = memoryStore();
     expect(await checkLimit('searches', { store, forwardedFor: '203.0.113.7', now })).toEqual({ status: 'ok' });
     expect(calls).toHaveLength(0);
+  });
+});
+
+describe('RATE_LIMITS=off (spec 004, task 3, AC7)', () => {
+  it('is off only when the setting is "off"', () => {
+    expect(limitsOff({ RATE_LIMITS: 'off' })).toBe(true);
+    expect(limitsOff({})).toBe(false);
+    expect(limitsOff({ RATE_LIMITS: '' })).toBe(false);
+    expect(limitsOff({ RATE_LIMITS: 'on' })).toBe(false);
+  });
+
+  it('lets every request through without a counter, an address, a salt or Redis', async () => {
+    vi.stubEnv('RATE_LIMITS', 'off');
+    vi.stubEnv('VISITOR_HASH_SALT', '');
+    vi.stubEnv('REDIS_URL', 'redis://localhost:1');
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    const { store, calls } = memoryStore();
+    for (let index = 0; index < 100; index += 1) {
+      expect(await checkLimit('searches', { store, forwardedFor: '203.0.113.7', now })).toEqual({ status: 'ok' });
+    }
+    // Without a store or an address given, the check would otherwise open Redis and read the request's headers.
+    expect(await checkLimit('downloads')).toEqual({ status: 'ok' });
+    expect(calls).toHaveLength(0);
+    expect((globalThis as { rateLimitStore?: unknown }).rateLimitStore).toBeUndefined();
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it('logs that the limits are off once per server, not per request or per copy of the module', async () => {
+    vi.stubEnv('RATE_LIMITS', 'off');
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    // As a new server starts.
+    delete (globalThis as { rateLimitsOffLogged?: boolean }).rateLimitsOffLogged;
+    for (let index = 0; index < 3; index += 1) {
+      await checkLimit('searches', { forwardedFor: '203.0.113.7', now });
+    }
+    // Next.js gives the pages and each route handler their own copy of the module.
+    vi.resetModules();
+    const routeHandlerCopy = await import('./rate-limit');
+    await routeHandlerCopy.checkLimit('downloads', { forwardedFor: '203.0.113.7', now });
+    expect(info).toHaveBeenCalledTimes(1);
+    expect(info).toHaveBeenCalledWith('Rate limits are off (RATE_LIMITS=off).');
+  });
+
+  it('keeps the limits on when the setting is unset', async () => {
+    vi.stubEnv('RATE_LIMIT_SEARCHES', '1');
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const { store, calls } = memoryStore();
+    expect(await checkLimit('searches', { store, forwardedFor: '203.0.113.7', now })).toEqual({ status: 'ok' });
+    expect((await checkLimit('searches', { store, forwardedFor: '203.0.113.7', now })).status).toBe('limited');
+    expect(calls).toHaveLength(2);
+    expect(info).not.toHaveBeenCalled();
   });
 });

@@ -4,6 +4,9 @@
 // A counter in Redis per visitor and window. If Redis can't be reached, or
 // answers slowly, the request goes ahead without a limit and the failure is
 // logged, so a counter outage doesn't take search down with it.
+//
+// RATE_LIMITS=off turns the limits off without Redis (spec 004 AC7). The live
+// site uses it while a Vercel firewall rule limits each visitor instead.
 import 'server-only';
 import { createHash } from 'node:crypto';
 import { createClient } from '@redis/client';
@@ -34,6 +37,21 @@ export function visitorId(forwardedFor: string | null, salt: string): string {
   const address = forwardedFor?.split(',')[0]?.trim() || 'unknown';
   return createHash('sha256').update(`${salt}\n${address}`).digest('hex').slice(0, 32);
 }
+
+// Whether RATE_LIMITS=off has turned the limits off.
+export function limitsOff(env: Record<string, string | undefined> = process.env): boolean {
+  return env.RATE_LIMITS === 'off';
+}
+
+// State that belongs to the server, not to this module. Next.js gives the
+// pages and each route handler their own copy of the module (seen with
+// RATE_LIMITS=off, which logged once per copy), and in development it
+// reloads changed modules, so the Redis store and the log flag live on
+// globalThis.
+const shared = globalThis as typeof globalThis & {
+  rateLimitStore?: { url: string; store: CounterStore };
+  rateLimitsOffLogged?: boolean;
+};
 
 let lastLogged = 0;
 let outage = false;
@@ -86,10 +104,7 @@ function redisStore(url: string): CounterStore {
   };
 }
 
-// One connection per server. In development, Next.js reloads changed modules,
-// so the store is kept on globalThis rather than in this module.
-const shared = globalThis as typeof globalThis & { rateLimitStore?: { url: string; store: CounterStore } };
-
+// One connection per server.
 function defaultStore(): CounterStore {
   const url = process.env.REDIS_URL;
   if (!url) {
@@ -117,6 +132,14 @@ interface Options {
 
 // Counts this request toward the visitor's limit, and says whether it's over.
 export async function checkLimit(kind: LimitKind, options: Options = {}): Promise<LimitCheck> {
+  if (limitsOff()) {
+    // Once per server, since each request checks.
+    if (!shared.rateLimitsOffLogged) {
+      shared.rateLimitsOffLogged = true;
+      console.info('Rate limits are off (RATE_LIMITS=off).');
+    }
+    return { status: 'ok' };
+  }
   try {
     const salt = process.env.VISITOR_HASH_SALT;
     if (!salt) {

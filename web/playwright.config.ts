@@ -4,6 +4,11 @@
 // - port 3101, with Typesense unreachable (AC29)
 // - port 3102, with Redis unreachable, where search must keep working (AC29)
 // Each server reads .env.local through scripts/next.mjs; the variables set here win.
+//
+// npm run test:live (spec 004 task 7): with SITE_URL set, the only project is
+// `live`, which runs the axe tests against that address and starts no
+// servers. The limit and failure tests stay local, since they need lowered
+// limits and stopped services.
 import { defineConfig, devices } from '@playwright/test';
 
 const start = (port: number, env: Record<string, string>) => ({
@@ -17,6 +22,8 @@ const start = (port: number, env: Record<string, string>) => ({
 export const SITE = 'http://localhost:3100';
 export const SEARCH_DOWN = 'http://localhost:3101';
 export const COUNTERS_DOWN = 'http://localhost:3102';
+const LIVE = process.env.SITE_URL;
+const chrome = { ...devices['Desktop Chrome'], channel: 'chrome' };
 
 export default defineConfig({
   testDir: 'e2e',
@@ -31,11 +38,15 @@ export default defineConfig({
     channel: 'chrome',
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome' } }],
-  webServer: [
-    start(3100, { RATE_LIMIT_SEARCHES: '40', RATE_LIMIT_DOWNLOADS: '2' }),
-    // Port 9 is the discard port: nothing answers there.
-    start(3101, { TYPESENSE_URL: 'http://127.0.0.1:9' }),
-    start(3102, { REDIS_URL: 'redis://127.0.0.1:9' }),
-  ],
+  projects: LIVE
+    ? [{ name: 'live', testMatch: 'accessibility.spec.ts', use: { ...chrome, baseURL: LIVE } }]
+    : [{ name: 'chrome', use: chrome }],
+  webServer: LIVE
+    ? []
+    : [
+        start(3100, { RATE_LIMIT_SEARCHES: '40', RATE_LIMIT_DOWNLOADS: '2' }),
+        // Port 9 is the discard port: nothing answers there.
+        start(3101, { TYPESENSE_URL: 'http://127.0.0.1:9' }),
+        start(3102, { REDIS_URL: 'redis://127.0.0.1:9' }),
+      ],
 });
