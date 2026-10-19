@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { keepaliveWarning } from '../src/keepalive.js';
+import { enableWorkflows, keepaliveWarning } from '../src/keepalive.js';
 
 const LAST_COMMIT = '2026-10-15T22:30:00Z';
 const after = (days, hours = 0) => new Date(Date.parse(LAST_COMMIT) + (days * 24 + hours) * 60 * 60 * 1000);
@@ -28,5 +28,24 @@ describe('the keepalive warning (AC15)', () => {
 
   it('refuses a date it cannot read', () => {
     expect(() => keepaliveWarning({ lastCommit: 'yesterday' })).toThrow("Can't read the last commit's date: yesterday");
+  });
+});
+
+describe('keeping the schedules enabled (spec 004, task 6)', () => {
+  it('asks GitHub to enable the daily update and the site check', async () => {
+    const calls = [];
+    const gh = async (args) => {
+      calls.push(args);
+      return '';
+    };
+    expect(await enableWorkflows({ repo: 'owner/repo', gh })).toEqual(['update.yml', 'site-check.yml']);
+    expect(calls).toEqual([
+      ['api', '--method', 'PUT', 'repos/owner/repo/actions/workflows/update.yml/enable'],
+      ['api', '--method', 'PUT', 'repos/owner/repo/actions/workflows/site-check.yml/enable'],
+    ]);
+  });
+
+  it('says in the warning that the site check stops too', () => {
+    expect(keepaliveWarning({ lastCommit: LAST_COMMIT, now: after(45) }).body).toContain("The site check's schedule stops at the same time.");
   });
 });
