@@ -2,6 +2,9 @@
 
 The readme is written by me, not AI. All other docs are written mainly by Claude with small edits from me.
 
+<img width="1495" height="812" alt="Screenshot 2026-10-18 at 8 22 40 PM" src="https://github.com/user-attachments/assets/0c89e65a-3c96-45db-93b8-71b65f690fb9" />
+
+
 ## What
 
 Personal, side project building out a website that allows anyone to search the Retraction Watch database.
