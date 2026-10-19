@@ -1,28 +1,20 @@
 // Loads one cleaned snapshot into Typesense (spec 002, plan "Data in Typesense").
 // importSnapshot, switchTo and cleanUp are the steps that npm run load and
-// npm run update share (spec 003). Only npm run load touches keys.
+// npm run update share (spec 003). Only npm run load touches keys, through
+// site-key.js.
 // Usage: npm run load [-- --input <folder>]  (default: the newest folder in data/clean)
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { fileExists } from './files.js';
 import { cleanDir, rawDir, relativeToRepo, repoRoot } from './paths.js';
-import { typesenseClient } from './typesense.js';
+import { ensureSiteKey } from './site-key.js';
+import { ALIAS, META_COLLECTION, typesenseClient } from './typesense.js';
 
-export const ALIAS = 'retractions';
-export const META_COLLECTION = 'meta';
-// Keys the load creates are recognized by this start of their description.
-const KEY_DESCRIPTION_PREFIX = 'retraction-search: ';
-export const SITE_KEY = {
-  description: `${KEY_DESCRIPTION_PREFIX}site (search and export, read only)`,
-  actions: ['documents:search', 'documents:export'],
-  // Typesense checks these against the name a search asks for, so the alias is enough (spike S5).
-  collections: [ALIAS, META_COLLECTION],
-};
 const BATCH_SIZE = 5000;
 const envFile = path.join(repoRoot, '.env.local');
 
@@ -232,16 +224,6 @@ export function collectionsToDelete(names, { current, previous }) {
   return names.filter((name) => name.startsWith(`${ALIAS}_`) && name !== current && name !== previous).sort();
 }
 
-// Sets NAME=value in the text of an env file, replacing an existing line or adding one.
-export function withEnvValue(text, name, value) {
-  const line = `${name}=${value}`;
-  const pattern = new RegExp(`^${name}=.*$`, 'm');
-  if (pattern.test(text)) {
-    return text.replace(pattern, () => line);
-  }
-  return `${text}${text === '' || text.endsWith('\n') ? '' : '\n'}${line}\n`;
-}
-
 // The newest folder in data/clean. Folder names start with the data date, so the newest sorts last.
 export async function findNewestCleanSnapshot() {
   const folders = (await readdir(cleanDir, { withFileTypes: true }).catch(() => []))
@@ -415,33 +397,6 @@ async function writeMeta(request, meta) {
   });
 }
 
-function isSiteKey(key) {
-  return (
-    key.description === SITE_KEY.description &&
-    JSON.stringify(key.actions) === JSON.stringify(SITE_KEY.actions) &&
-    JSON.stringify(key.collections) === JSON.stringify(SITE_KEY.collections)
-  );
-}
-
-// Reuses the site's key in .env.local if Typesense still has it. Otherwise
-// creates one and saves it to .env.local. Either way, deletes other keys the
-// load made before.
-async function ensureSiteKey(request, currentValue) {
-  const { keys } = await request('GET', '/keys');
-  const ours = keys.filter((key) => key.description?.startsWith(KEY_DESCRIPTION_PREFIX));
-  let keep = currentValue ? ours.find((key) => isSiteKey(key) && currentValue.startsWith(key.value_prefix)) : undefined;
-  const created = !keep;
-  if (created) {
-    keep = await request('POST', '/keys', { body: SITE_KEY });
-    const text = (await fileExists(envFile)) ? await readFile(envFile, 'utf8') : '';
-    await writeFile(envFile, withEnvValue(text, 'TYPESENSE_SEARCH_KEY', keep.value));
-  }
-  for (const key of ours.filter((key) => key.id !== keep.id)) {
-    await request('DELETE', `/keys/${key.id}`);
-  }
-  return { created };
-}
-
 // The meta document, or null when there isn't one yet.
 export async function readMeta(request) {
   try {
@@ -549,16 +504,11 @@ export async function cleanUp({ request, current, previous, log = console.log })
 }
 
 // npm run load: the three steps, then the site's key.
-export async function runLoad({ snapshotDir, request, searchKey, upstreamCommit = null, log = console.log, now = new Date() }) {
+export async function runLoad({ snapshotDir, request, upstreamCommit = null, log = console.log, now = new Date() }) {
   const imported = await importSnapshot({ snapshotDir, request, log, now });
   const { previous } = await switchTo({ request, imported, upstreamCommit, now, log });
   await cleanUp({ request, current: imported.collection, previous, log });
-  const key = await ensureSiteKey(request, searchKey);
-  log(
-    key.created
-      ? `Created the site's key and saved it to ${relativeToRepo(envFile)} as TYPESENSE_SEARCH_KEY.`
-      : `Reused the site's key in ${relativeToRepo(envFile)}.`,
-  );
+  await ensureSiteKey({ request, envFile, log });
   return { collection: imported.collection, documents: imported.documents, previous };
 }
 
@@ -593,7 +543,6 @@ async function main() {
   await runLoad({
     snapshotDir,
     request: typesenseClient({ url, key: adminKey }),
-    searchKey: process.env.TYPESENSE_SEARCH_KEY,
     upstreamCommit,
   });
   console.log(`Loaded ${relativeToRepo(snapshotDir)} in ${((performance.now() - started) / 1000).toFixed(1)} s.`);

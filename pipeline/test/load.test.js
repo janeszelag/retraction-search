@@ -26,7 +26,6 @@ import {
   switchTo,
   unexpectedFacetValues,
   valuesDifferingInCaseOrAccents,
-  withEnvValue,
 } from '../src/load.js';
 import { fakeTypesense } from './helpers/fake-typesense.js';
 
@@ -220,20 +219,6 @@ describe('filter values that differ only in capitals or accents (spike S8)', () 
     const fields = ['journal', 'publisher', 'notice_type', 'paywalled', 'reasons', 'subjects', 'subject_categories', 'countries', 'article_types'];
     const values = Object.fromEntries(fields.map((field) => [field, new Set(documents.flatMap((doc) => [doc[field]].flat()))]));
     expect(() => checkValues(values)).not.toThrow();
-  });
-});
-
-describe('env file', () => {
-  it('replaces an existing value and keeps the other lines', () => {
-    const text = '# comment\nTYPESENSE_SEARCH_KEY=\nREDIS_URL=redis://localhost:6379\n';
-    expect(withEnvValue(text, 'TYPESENSE_SEARCH_KEY', 'abc')).toBe(
-      '# comment\nTYPESENSE_SEARCH_KEY=abc\nREDIS_URL=redis://localhost:6379\n',
-    );
-  });
-
-  it('adds a missing value', () => {
-    expect(withEnvValue('A=1', 'TYPESENSE_SEARCH_KEY', 'abc')).toBe('A=1\nTYPESENSE_SEARCH_KEY=abc\n');
-    expect(withEnvValue('', 'TYPESENSE_SEARCH_KEY', 'abc')).toBe('TYPESENSE_SEARCH_KEY=abc\n');
   });
 });
 

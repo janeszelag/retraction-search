@@ -20,6 +20,7 @@
     "load": "npm run load -w pipeline --",
     "search:down": "docker compose --env-file .env.local down",
     "search:up": "docker compose --env-file .env.local up --detach --wait",
+    "site-key": "npm run site-key -w pipeline --",
     "test": "npm test --workspaces --if-present",
     "test:e2e": "npm run test:e2e -w web",
     "update": "npm run update -w pipeline --",

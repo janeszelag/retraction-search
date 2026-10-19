@@ -62,6 +62,7 @@ Run from the repository root:
 | `npm run search:up` | Starts Typesense and Redis in Docker, with the keys from `.env.local` (copy `.env.example` to make one) |
 | `npm run search:down` | Stops them |
 | `npm run load` | Loads the newest cleaned snapshot into Typesense (`-- --input <folder>` for another) and saves the site's key to `.env.local` |
+| `npm run site-key -- --server-env <file>` | Creates or reuses the site's search-only key on the server in that file (default `.env.local`) and saves it there as `TYPESENSE_SEARCH_KEY`. Prints the key's id, never the key |
 | `npm run update` | Brings the Typesense server in `.env.local` up to the newest upstream snapshot: downloads, cleans, diffs, loads and switches, with spec 003's checks, and writes `data/runs/<time>/summary.md`. `-- --force` reloads, `-- --commit <sha>` loads a given snapshot, `-- --accept-changes` lets one run past the change limits, and `-- --server-env <file>` targets another server. Never touches keys |
 | `npm run web` | Starts the site at http://localhost:3000 |
 | `npm run check:search` | Compares the site's searches, counts and download with DuckDB on the loaded snapshot; needs the local stack |
