@@ -153,6 +153,23 @@ test('every page carries the attribution and the two report links (AC25)', async
   }
 });
 
+test('every header links to Retraction Watch, Crossref and the notice types (plan 002, "Layout")', async ({ page }) => {
+  for (const path of ['/', '/record/7962', '/about', '/no-such-page']) {
+    await page.goto(path);
+    const header = page.getByRole('banner');
+    await expect(header.getByRole('link', { name: 'Retraction Watch Database' })).toHaveAttribute('href', 'https://retractionwatch.com/');
+    await expect(header.getByRole('link', { name: /^Data as of \w+ \d+, \d{4}$/ })).toHaveAttribute(
+      'href',
+      'https://www.crossref.org/documentation/retrieve-metadata/retraction-watch/',
+    );
+    await expect(header.getByRole('link', { name: 'What is a retraction?' })).toHaveAttribute('href', '/about#notice-types');
+  }
+  await page.goto('/record/7962');
+  await page.getByRole('banner').getByRole('link', { name: 'What is a retraction?' }).click();
+  await expect(page).toHaveURL(/\/about#notice-types$/);
+  await expect(page.getByRole('heading', { name: 'Notice types' })).toBeInViewport();
+});
+
 test('the About page explains each caveat (AC26)', async ({ page }) => {
   await page.goto('/about');
   for (const id of ['source', 'defaults', 'counts', 'notice-types', 'reasons', 'countries', 'revisions', 'editorial-staff', 'dates', 'paywalled', 'coverage', 'author-names', 'missing']) {
