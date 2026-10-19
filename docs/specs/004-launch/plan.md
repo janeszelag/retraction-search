@@ -62,7 +62,7 @@ Each one is written into this plan before the code that depends on it.
   - **Prefetches are most of it:** 301 of the 367 requests at the human pace, and 1,687 of 2,026 at full speed. Each record link in the results prefetches `/record/<id>` as it scrolls into view, so a results page read to the end sends about 50. For a server-rendered page with no loading state, the prefetch answer is 299 bytes and holds only the route tree, not the record, so opening the record still makes its own request.
   - **Allowances:** every prefetch is also a CDN request and a request the firewall rule allows, and probably a function invocation (unverified). Hobby includes 1,000,000 of each a month (decision record 005), so with prefetches a results page read to the end uses about 50 of each.
   - **With record prefetches off** (see "Limits"), the same script on a new build sent no prefetches. At the fast human pace: 66 requests in two minutes, at most 37 in any 60 seconds and 11 in any 10 seconds. As fast as the browser goes: at most 230 in any 60 seconds and 42 in any 10 seconds. About half of what's left is `/icon.svg`, which the browser checks again after most navigations.
-  - **Proposed rule:** a 60-second window and 300 requests per IP address. That's about eight times the fast human minute, which leaves room for several people behind one address, such as a university network, and for `check:speed -- --url` (about 150 requests over a couple of minutes). Task 10 records what the owner sets.
+  - **The rule:** a fixed 60-second window and 300 requests per IP address, on every path that doesn't start with `/_next/static/`, answering 429 over the limit. That's about eight times the fast human minute, which leaves room for several people behind one address, such as a university network, and for `check:speed -- --url` (about 150 requests over a couple of minutes). The owner published it on 2026-10-19.
 
 ## Build and deploy (AC1, AC2)
 
@@ -82,7 +82,7 @@ Each one is written into this plan before the code that depends on it.
 
 ## Limits (AC6, AC7)
 
-- **Firewall rule.** Hobby allows one rate-limit rule, counted by IP address, with a fixed window of 10 seconds to 10 minutes (Vercel WAF docs, checked 2026-10-15). Vercel sets the address itself and ignores a client's `X-Forwarded-For`. Over the limit, Vercel answers with its own 429 page. The window and limit come from spike S2, and the runbook records them.
+- **Firewall rule.** Hobby allows one rate-limit rule, counted by IP address, with a fixed window of 10 seconds to 10 minutes (Vercel WAF docs, checked 2026-10-15). Vercel sets the address itself and ignores a client's `X-Forwarded-For`. Over the limit, Vercel answers with its own 429 page. The window and limit come from spike S2, and the runbook records them. Vercel checks deployment protection before the project's firewall rules (Vercel Firewall concepts, checked 2026-10-19), so the rule never sees a request that Vercel Authentication turns away, and the check that it answers 429 waits until production is open.
 - **Record links don't prefetch** (spike S2; owner, 2026-10-18). Each record link in the results prefetched its record page as it scrolled into view, so a results page read to the end sent about 50 requests, each counted by the firewall rule. The prefetch held only the route tree, so turning it off, as the filter, page and search links already do, costs nothing when a record opens. A Playwright test scrolls through the results and checks that nothing is prefetched.
 - **The site's own limits off.** With `RATE_LIMITS=off`, the rate-limit check allows every request without touching Redis, and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Today a missing `REDIS_URL` already lets requests through, but logs an error up to once a minute, which would clutter the live site's logs. `REDIS_URL` and `VISITOR_HASH_SALT` aren't needed when the limits are off.
 - **Locally** nothing changes: `.env.local` has no `RATE_LIMITS`, so the limits stay on, and the e2e limit and Redis-failure tests keep running.
@@ -153,4 +153,4 @@ Made with the code:
 ## Still open
 
 - The open questions in the spec: name and domain, announcing before analytics, what search engines may index, a notice when data is behind, upstream's export and the budgets in AC12.
-- The firewall window and limit, from spike S2.
+- How many rate-limit rules Hobby allows. Vercel's docs say one (checked 2026-10-15 and 2026-10-19), but on 2026-10-19 the dashboard's menu for a new rule showed "Rate Limit 0 / 3". If Hobby allows more, a separate, lower limit for downloads is worth proposing.

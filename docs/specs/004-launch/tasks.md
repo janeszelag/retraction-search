@@ -52,6 +52,7 @@ The work goes up in three pull requests:
 
 - [ ] **10. Spike S2 and the firewall rule.** Count the requests in the busiest minute of the e2e tests, then the owner adds the rate-limit rule by IP address on every path except `/_next/static/`. Write the count, the window and the limit into the plan. (AC6)
   - Done when: a short burst from the laptop, past the limit, gets HTTP 429, and the owner browses quickly through results and records without meeting it.
+  - Result so far, 2026-10-19: spike S2's counts are in the plan. The busiest minute of fast browsing was 217 requests, 82% of them record prefetches, which pull request #20 turned off; without them it was 37. The owner published the rule on 2026-10-19: a fixed 60-second window, 300 requests per IP address, every path that doesn't start with `/_next/static/`, and 429 over the limit. Two bursts of 400 and 650 logged-out requests from the laptop all got Vercel's login redirect, none a 429: Vercel checks deployment protection before the project's firewall rules (Vercel docs, checked 2026-10-19). The burst and the owner's quick browsing run right after task 12 opens production, and the task is ticked then.
 
 - [ ] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
   - Done when: the check and its date are recorded under this task, and move into the runbook with task 15.
