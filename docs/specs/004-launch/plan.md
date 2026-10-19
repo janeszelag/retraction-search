@@ -152,5 +152,5 @@ Made with the code:
 
 ## Still open
 
-- The open questions in the spec: name and domain, announcing before analytics, what search engines may index, a notice when data is behind, upstream's export and the budgets in AC12.
+- The open questions in the spec: name and domain, announcing before analytics, what search engines may index, a notice when data is behind, and upstream's export. The owner confirmed the budgets in AC12 on 2026-10-19.
 - How many rate-limit rules Hobby allows. Vercel's docs say one (checked 2026-10-15 and 2026-10-19), but on 2026-10-19 the dashboard's menu for a new rule showed "Rate Limit 0 / 3". If Hobby allows more, a separate, lower limit for downloads is worth proposing.

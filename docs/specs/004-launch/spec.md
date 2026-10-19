@@ -62,7 +62,7 @@ Accepted with decision record [005](../../decisions/005-site-hosting.md), 2026-1
 
 - AC10: Until the owner announces the site, every page tells search engines not to index it, and `robots.txt` disallows everything. A setting in Vercel turns this off at launch, with no code change.
 - AC11: On the live site against the hosted snapshot: the counts for spec 002's fixed set of test queries match a DuckDB query on the same snapshot (spec 002, AC30), and the automated accessibility check finds no WCAG 2.2 AA violations on the start, results, no-results, record and About pages (spec 002, AC32).
-- AC12: Budgets for the live site, to be confirmed by the owner: the server response for spec 002's fixed set of test searches is under 500 ms at the 95th percentile, measured from the owner's laptop, and a shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test.
+- AC12: Budgets for the live site, confirmed by the owner on 2026-10-19: the server response for spec 002's fixed set of test searches is under 500 ms at the 95th percentile, measured from the owner's laptop, and a shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test.
 
 **Running it**
 
@@ -95,4 +95,4 @@ The brief's own success metrics wait for the analytics iteration.
 - **What search engines may index after launch.** A record page lists author names, and names aren't identities: someone searching for a person could land on a record for someone else with the same name. One option is to let search engines index the start and About pages only, and keep results and record pages out of their indexes.
 - **A notice when the data is behind.** The footer shows the data date, which meets the freshness guardrail's "with the data date shown". While daily updates fail, as now, a visitor may not notice the date. The site could say when the data is more than a working day behind the source.
 - **Upstream's lossy export.** If upstream keeps the new format and its lost characters, daily updates can't resume, and this spec can't be done. That decision belongs to spec 003.
-- **The budgets in AC12,** which the owner confirms after spike S1 in the plan measures the hosted round trip.
+- **The budgets in AC12:** the owner confirmed them on 2026-10-19, from task 14's measurements of the live site (95th percentile 464 ms, median Largest Contentful Paint 2.27 s).
