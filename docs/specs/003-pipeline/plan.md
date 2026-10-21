@@ -1,6 +1,6 @@
 # Plan 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
 
 External facts below were checked on 2026-10-14 unless marked otherwise.
 
@@ -41,11 +41,14 @@ pipeline/
   src/diff.js               runs the diff, writes diff.json and diff.md
   src/update.js             the whole update (steps 1–10)
   src/upstream.js           newest upstream commit and working-day staleness, moved out of download.js
+  src/download.js           checks the git blob ID and UTF-8 before the SHA-256 (AC22)
+  src/files.js              git blob IDs, and finding bytes that aren't valid UTF-8 (AC22)
   src/load.js               split into import, switch and clean-up steps; escaped imports and a check
                             of stored documents; keys made optional
   test/diff.test.js, test/update.test.js
   test/fixtures/sample-next.csv   sample.csv with rows added, removed and changed
   test/fixtures/empty-rows.csv    sample.csv followed by empty rows, as upstream wrote them
+  test/fixtures/windows-1252.csv  sample.csv in Windows-1252, as upstream wrote some files (AC22)
 docs/runbook.md             AC21
 data/                       not committed
   diff/<loaded>_to_<new>/diff.json, diff.md
@@ -82,6 +85,19 @@ Values already in the environment, as on GitHub Actions, take precedence over th
 - **Exit status:** 0 when the run loaded a snapshot or found the server up to date, 1 when any step failed.
 - **`result.json`:** the outcome (`updated`, `up-to-date` or `failed`), the failed step and its message, the snapshot before and after, retries, and whether `--accept-changes` was used. The workflow reads it to write the alert.
 - **`summary.md`:** the same information for people, followed by the diff (below).
+
+## Download checks (AC22)
+
+Added 2026-10-21. `download.js` already asks GitLab's files API for the file's headers before downloading. The response has `x-gitlab-content-sha256`, used until now, and `x-gitlab-blob-id`, the file's git blob ID. After the download, the checks run in this order, and the first to fail stops the run:
+
+1. **The file isn't empty and starts with the expected header,** as before.
+2. **Git blob ID.** The SHA-1 of `blob <size>`, a zero byte and the file's bytes, which is how git names a file's contents. It must equal `x-gitlab-blob-id`. Otherwise the error says the download doesn't match GitLab's file, giving both IDs.
+3. **UTF-8.** Node's `isUtf8` checks the whole file in memory (about 67 MB). Only when it fails does a byte-by-byte scan count the bytes that aren't valid UTF-8 and find the line of the first one. The error reads like this, with the 2026-10-19 file: "Upstream's file isn't valid UTF-8: 35,957 bytes aren't, the first on line 34. The download matches GitLab's file (git blob 64f91e05), so the problem is in upstream's file, not the download. See docs/data-issues.md#file-format."
+4. **SHA-256,** as before. It now only ever sees UTF-8 files, where GitLab hashes the stored bytes.
+
+The scan counts invalid bytes the way the data issues page does: a byte that can't start or continue a valid sequence counts once, and so does each byte of a sequence cut short. When GitLab sends no `x-gitlab-blob-id`, step 2 is skipped, as step 4 already is without a SHA-256, and the UTF-8 error leaves out the sentence about the download matching.
+
+Checked on 2026-10-20 and 2026-10-21: for the files of 2026-10-15, 2026-10-19 and 2026-10-20, the blob ID of the raw download equals `x-gitlab-blob-id`, while `x-gitlab-content-sha256` belongs to a converted copy. For the 2026-10-15 file that copy is 35,978 bytes longer. For the 2026-10-19 file it's the file with its 35,957 invalid bytes dropped.
 
 ## Diff (AC4–AC6)
 
@@ -252,6 +268,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | AC9 | `load.test.js`: the import body is pure ASCII and parses back to the same documents, including characters outside the Basic Multilingual Plane. A stored document with one letter missing fails the check and names the record and field, while a reordered `original` object passes. `update.test.js`: a fake server that drops a letter on the first import only: the run retries and succeeds, and the summary reports the retry. Failing twice fails the run. Failing the checks before import isn't retried. |
 | AC10 | A fake server whose post-switch count is wrong: the alias and meta go back, the new collection is deleted, and the run fails |
 | AC11 | Working-day staleness, with dates around weekends and the three-day limit |
+| AC22 | `download.test.js`, with a fake GitLab that reports a blob ID and, like GitLab on 2026-10-19, hashes a non-UTF-8 file with its invalid bytes dropped. `windows-1252.csv` stops with the UTF-8 error, its byte count and line, and the matching blob ID, never "Checksum mismatch", and saves nothing. A download with bytes added fails on the blob ID. A wrong SHA-256 with the right blob ID still fails the checksum. `files.test.js`: blob IDs equal `git hash-object`'s, and the scan counts invalid bytes and finds their line, including overlong forms, surrogates and a sequence cut short at the end. Manual: `npm run download -- --commit a503965f` stops with the new error, and `-- --commit 5338abda` saves. |
 | AC12, AC13 | Manual: the workflow runs on its schedule for the done-when week. `tasks.md` records the hosted data date each day against upstream's newest commit. |
 | AC14 | Manual check (above) |
 | AC15 | A unit test for the 45-day date logic. The issue step is checked once on a run started by hand, with the threshold lowered for that run only. |
@@ -325,6 +342,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 8. **Limits on lost data, not on changed values.** A tight limit on changes would have stopped the 2026-10-09 journal batch and the 2025 reason reclassification, both real edits. The cost is that a broken file that changes values without emptying or removing anything, on fewer than half the records, gets through. The diff still reports it, so a reader can spot it.
 9. **Dropping empty rows instead of stopping on them.** They carry no data, and they appeared for weeks at a time, so stopping would have kept the site stale for weeks. A row with any value at all still goes through every check.
 10. **Checking every stored document after each load.** It costs one export of about 113 MB per load, about $0.17 a month on Railway. In return it catches any change Typesense makes to stored text, not only the import bug that escaping avoids (decision record 004).
+11. **Keeping the SHA-256 check next to the blob ID.** For a UTF-8 file the blob ID already proves the download matches, so the SHA-256 adds little. Keeping it leaves the manifest and the "already have it" check as they are. The UTF-8 check reads the whole file into memory, about 67 MB, which neither the laptop nor the runner notices.
 
 ## Changes to other documents
 
@@ -335,6 +353,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - **Decision record 002:** the first week's measured cost, added to "Expected cost", once known.
 - **Decision record 004:** the Typesense import bug and the fix, agreed 2026-10-15 (in the first pull request).
 - **Plan 002 and data issues:** the cause of the facet-check failure (in the first pull request). Data issues also gets the check of stored documents under "Checks that stop a run" once it's built.
+- **Data issues:** the download checks of AC22 under "Checks that stop a run", and the files of 2026-10-19 and 2026-10-20 under "File format" (with AC22).
+- **Runbook:** under a failed download, that "isn't valid UTF-8" means waiting for upstream's next file. The runbook isn't on `main` yet, so this line goes in with whichever of the two pull requests merges second.
 
 ## Commands
 
@@ -351,3 +371,4 @@ The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep w
 - Whether GitHub's "enable workflow" call alone keeps the schedule alive (see the spec's open questions).
 - When a Typesense release fixes the import bug. [typesense/typesense#3109](https://github.com/typesense/typesense/pull/3109) says it fixes it, and was open and unreviewed on 2026-10-15. Escaping and the check can stay either way (decision record 004).
 - **Whether upstream keeps its new format.** The 2026-10-15 file came in Windows-1252, with line breaks in fields, no trailing comma and dates written `M/D/YYYY 12:00:00 AM` ([data issues](../../data-issues.md#file-format)). The workflow's first run, started by hand at 02:37 UTC on 2026-10-16, stopped at the download with a checksum mismatch. Search kept the 2026-10-14 snapshot, and issue #13 opened. The owner decided to wait for the next exports. The new export also replaced every character Windows-1252 can't hold with `?`: 334,843 characters, mostly Cyrillic, in at least 4,732 records. So adapting to the format isn't enough if it stays. The pipeline would need a source that keeps the text, or upstream would need to fix the export. Two gaps in the checks turned up: the cleaning doesn't stop when dates fail to parse, and nothing stops a UTF-8 file that has lost characters this way. Only the change limits would stop either one, and they would let through a loss that touches fewer than half the records.
+  - **Since then (checked 2026-10-21):** the 2026-10-16 file was UTF-8 in the old format again, and the scheduled run loaded it and closed issue #13. The 2026-10-19 and 2026-10-20 files were Windows-1252 again, in the new export, though with dates back in the `M/D/YYYY 0:00` form. Both stopped at the download, on issue #24. So upstream switches between the two exports with nothing in the commits to tell them apart. The owner reported it to Crossref's support on 2026-10-21. AC22 makes the error name the cause.

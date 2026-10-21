@@ -110,3 +110,9 @@ The work goes up in three pull requests:
 
 - [ ] **21. First-week cost.** Compare the first full week of Railway usage with decision record 002's estimate, and add the measured numbers to its "Expected cost". (Success metrics)
   - Done when: decision record 002 has the measured cost. That completes the spec, and the closing pull request goes up.
+
+**Added 2026-10-21**
+
+- [x] **22. Download checks.** `download.js` checks the git blob ID against `x-gitlab-blob-id`, then that the file is valid UTF-8, before the SHA-256, as the plan's "Download checks" section says. `files.js` gains the blob ID and the scan for invalid bytes. Add `test/fixtures/windows-1252.csv` and a line about it in the fixtures README, and give the fake GitLab a blob ID. Update "Checks that stop a run" and the "File format" row in `docs/data-issues.md`. This goes up as its own pull request. (AC22)
+  - Done when: the plan's tests for AC22 pass with `npm test`. `npm run download -- --commit a503965f` stops with the UTF-8 error and saves nothing, and `npm run download -- --commit 5338abda` saves the file.
+  - Result, 2026-10-21: `npm test` passes (241 pipeline tests, 312 web tests). The 2026-10-19 file stops with "Upstream's file isn't valid UTF-8: 35,957 bytes aren't, the first on line 34. The download matches GitLab's file (git blob 64f91e05)…", and the 2026-10-20 file (`d7ebf06f`) with 35,958 bytes, the first on line 10 (blob `dd149c3a`). Neither is saved. The 2026-10-16 file saves.

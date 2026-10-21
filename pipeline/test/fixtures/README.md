@@ -53,6 +53,7 @@ The other files are built from `sample.csv`:
 | `subject-without-code.csv` | One synthetic row (record ID 900000001) whose first subject has no category code |
 | `empty-rows.csv` | `sample.csv` followed by three rows of 20 commas and nothing else, as some upstream files end (spec 001 AC2) |
 | `sample-next.csv` | `sample.csv` as a next snapshot, for the diff (spec 003): record 102 removed, synthetic records 900000301 and 900000302 added (copies of record 2), a reason added to record 6, record 18 changed from an expression of concern to a retraction, one of record 4's two URLs removed, an institution added to record 34181, and record 69326's notes emptied. It has no trailing comma in the header. |
+| `windows-1252.csv` | `sample.csv` in Windows-1252, as upstream wrote the files of 2026-10-15, 2026-10-19 and 2026-10-20. Characters Windows-1252 can't hold become `?`, as upstream's did: here, one combining accent. It has 47 bytes that aren't valid UTF-8, the first on line 3 (spec 003 AC22). |
 | `names.csv` | Six synthetic rows (record IDs 900000101 to 900000106) with made-up names: author names with backticks, journal spellings that differ only in capitals or an accent, and a tie between two publisher spellings |
 
 ## Rebuilding
@@ -64,6 +65,18 @@ IDS="1 2 4 6 10 12 17 18 35 96 102 148 241 333 698 859 1086 1134 1511 3804 4952 
 awk -F, -v ids="$IDS" 'BEGIN { n = split(ids, a, " "); for (i = 1; i <= n; i++) keep[a[i]] = 1 } NR == 1 || ($1 in keep)' \
   data/raw/retraction_watch-2026-10-09-bc5648dd.csv > pipeline/test/fixtures/sample.csv
 { cat pipeline/test/fixtures/sample.csv; for i in 1 2 3; do printf ',,,,,,,,,,,,,,,,,,,,\n'; done; } > pipeline/test/fixtures/empty-rows.csv
+```
+
+`windows-1252.csv` writes out Windows-1252's characters for bytes 0x80 to 0x9F, because Node 22's `TextDecoder("windows-1252")` decodes that range as ISO-8859-1 and would turn ’ into `?`:
+
+```bash
+node -e '
+const fs = require("node:fs");
+const high = "€\x81‚ƒ„…†‡ˆ‰Š‹Œ\x8DŽ\x8F\x90‘’“”•–—˜™š›œ\x9DžŸ";
+const byteOf = new Map([...Array(256).keys()].map((b) => [b >= 0x80 && b < 0xa0 ? high[b - 0x80] : String.fromCharCode(b), b]));
+const text = fs.readFileSync(process.argv[1], "utf8");
+fs.writeFileSync(process.argv[2], Uint8Array.from([...text], (ch) => byteOf.get(ch) ?? 0x3f));
+' pipeline/test/fixtures/sample.csv pipeline/test/fixtures/windows-1252.csv
 ```
 
 ```sql

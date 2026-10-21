@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { downloadSnapshot, snapshotBaseName } from '../src/download.js';
+import { gitBlobIdOf } from '../src/files.js';
 import { fakeGitlab } from './helpers/fake-gitlab.js';
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
@@ -65,13 +66,53 @@ describe('downloading a snapshot', () => {
     expect(await readdir(rawDir)).toEqual([]);
   });
 
-  it('fails when the file does not match GitLab’s checksum, and saves nothing', async () => {
+  // Wraps the fake GitLab's fetch, letting a test change the headers of the
+  // files API's answer.
+  const withHeaders = (gitlab, change) => async (url, init) => {
+    const response = await gitlab.fetch(url, init);
+    if (!String(url).includes('/repository/files/')) {
+      return response;
+    }
+    const headers = new Headers(response.headers);
+    change(headers);
+    return new Response(null, { headers });
+  };
+
+  it('fails when the download does not match GitLab’s file, and saves nothing', async () => {
     const gitlab = fakeGitlab(commits);
     const corrupt = async (url, init) => {
       const response = await gitlab.fetch(url, init);
       return String(url).includes('/-/raw/') ? new Response(`${await response.text()}extra`) : response;
     };
-    await expect(downloadSnapshot({ fetch: corrupt, rawDir })).rejects.toThrow('Checksum mismatch');
+    await expect(downloadSnapshot({ fetch: corrupt, rawDir })).rejects.toThrow("The download doesn't match GitLab's file");
     expect(await readdir(rawDir)).toEqual([]);
+  });
+
+  it('still fails on a checksum mismatch when the blob ID matches', async () => {
+    const wrongChecksum = withHeaders(fakeGitlab(commits), (headers) => headers.set('x-gitlab-content-sha256', '0'.repeat(64)));
+    await expect(downloadSnapshot({ fetch: wrongChecksum, rawDir })).rejects.toThrow('Checksum mismatch');
+    expect(await readdir(rawDir)).toEqual([]);
+  });
+
+  describe('a file that is not UTF-8 (AC22)', () => {
+    const windows1252 = [{ ...commits[0], file: fixture('windows-1252.csv') }];
+
+    it('says so, confirms the download matches GitLab’s file, and saves nothing', async () => {
+      const blobId = await gitBlobIdOf(fixture('windows-1252.csv'));
+      const error = await downloadSnapshot({ fetch: fakeGitlab(windows1252).fetch, rawDir }).catch((caught) => caught);
+      expect(error.message).toBe(
+        `Upstream's file isn't valid UTF-8: 47 bytes aren't, the first on line 3. The download matches GitLab's file (git blob ${blobId.slice(0, 8)}), so the problem is in upstream's file, not the download. See docs/data-issues.md#file-format.`,
+      );
+      expect(error.message).not.toContain('Checksum mismatch');
+      expect(await readdir(rawDir)).toEqual([]);
+    });
+
+    it('leaves out the match when GitLab reports no blob ID', async () => {
+      const noBlobId = withHeaders(fakeGitlab(windows1252), (headers) => headers.delete('x-gitlab-blob-id'));
+      const error = await downloadSnapshot({ fetch: noBlobId, rawDir }).catch((caught) => caught);
+      expect(error.message).toBe(
+        "Upstream's file isn't valid UTF-8: 47 bytes aren't, the first on line 3. See docs/data-issues.md#file-format.",
+      );
+    });
   });
 });

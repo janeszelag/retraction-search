@@ -36,14 +36,19 @@ export async function findCommit(requestedSha, { fetch: fetchImpl = globalThis.f
   return commits[0];
 }
 
-// GitLab reports the file's SHA-256 in the headers of this request.
-export async function findUpstreamChecksum(commitSha, { fetch: fetchImpl = globalThis.fetch } = {}) {
+// GitLab reports the file's git blob ID and SHA-256 in the headers of this
+// request. The blob ID is of the stored bytes. The SHA-256 is of a copy
+// converted to UTF-8, so it differs for a file that isn't UTF-8 (spec 003, AC22).
+export async function findUpstreamChecksums(commitSha, { fetch: fetchImpl = globalThis.fetch } = {}) {
   const url = `${PROJECT_API}/repository/files/${FILE_NAME}?ref=${commitSha}`;
   const response = await fetchImpl(url, { method: 'HEAD' });
   if (!response.ok) {
     throw new Error(`GitLab returned ${response.status} for ${url}`);
   }
-  return response.headers.get('x-gitlab-content-sha256');
+  return {
+    blobId: response.headers.get('x-gitlab-blob-id'),
+    sha256: response.headers.get('x-gitlab-content-sha256'),
+  };
 }
 
 // Upstream commits once each working day, at about 23:00 UTC. Over the 40

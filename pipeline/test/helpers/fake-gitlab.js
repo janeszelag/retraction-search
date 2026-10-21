@@ -1,5 +1,6 @@
 // A stand-in for GitLab's API and raw files, serving fixture CSVs as upstream
 // commits. Pass its `fetch` wherever the pipeline takes one.
+import { isUtf8 } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
@@ -28,8 +29,13 @@ export function fakeGitlab(commits) {
       if (!commit) {
         return notFound();
       }
-      const sha256 = createHash('sha256').update(readFileSync(commit.file)).digest('hex');
-      return new Response(null, { headers: { 'x-gitlab-content-sha256': sha256 } });
+      const bytes = readFileSync(commit.file);
+      const blobId = createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
+      // GitLab hashes a copy converted to UTF-8. For the 2026-10-19 file, that
+      // copy was the file with its invalid bytes dropped.
+      const converted = isUtf8(bytes) ? bytes : Buffer.from(bytes.toString('utf8').replaceAll('�', ''));
+      const sha256 = createHash('sha256').update(converted).digest('hex');
+      return new Response(null, { headers: { 'x-gitlab-blob-id': blobId, 'x-gitlab-content-sha256': sha256 } });
     }
     match = /\/-\/raw\/([0-9a-f]+)\/retraction_watch\.csv$/.exec(url.pathname);
     if (match) {
