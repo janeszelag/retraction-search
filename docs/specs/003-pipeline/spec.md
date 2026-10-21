@@ -1,6 +1,6 @@
 # Spec 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
 
 ## Problem
 
@@ -36,6 +36,10 @@ Agreed 2026-10-15, after spike S2 (plan):
 
 - Typesense 30.2 sometimes drops one letter from imported text and still reports success: in 6 of 20 test imports, one or two names lost a letter. The load sends text in a form this can't affect, and checks every stored document against the cleaned file, since the facet-value check from plan 002 sees only about half of the damage. See decision record [004](../../decisions/004-typesense-import-escaping.md).
 
+Agreed 2026-10-21, after upstream's 2026-10-15, 2026-10-19 and 2026-10-20 files:
+
+- A file that isn't UTF-8 stops the download with an error that says so (AC22). Those files were in Windows-1252 and lost every character it can't hold, so they shouldn't load. The run reported a checksum mismatch instead, which reads like a broken download. GitLab computes the SHA-256 it reports on a copy it has converted to UTF-8, and the conversion varies from file to file. So the download is first verified by git blob ID, which GitLab computes on the stored bytes. See [data issues](../../data-issues.md#file-format).
+
 From earlier documents:
 
 - The daily diff reports changed records as well as new ones (product brief, Risks).
@@ -70,6 +74,7 @@ From earlier documents:
 - AC9: After each import, the load checks that every document Typesense stored matches the cleaned file, field by field. A load that fails the check is retried once. Every retry is reported in the run's summary, so its rate over the first 30 days can be measured.
 - AC10: After switching, the run checks through the alias that search returns the new data date and the expected number of records. It also checks that the default view's count (retractions, without revised versions) and the count for each notice type match a DuckDB query on the same snapshot. If any of these checks fails, search goes back to the previous snapshot and the run fails.
 - AC11: If the newest upstream snapshot is more than three working days old, the run fails, because the file may have moved or stopped updating. Over the 40 most recent upstream commits (checked 2026-10-14), the longest gap was one missed working day.
+- AC22: When upstream's file isn't valid UTF-8, the download stops and the error says so. It gives the number of bytes that aren't valid UTF-8 and the line of the first one, and confirms by git blob ID that the download matches GitLab's file. A download that doesn't match GitLab's file fails with an error of its own. (Added 2026-10-21.)
 
 **Schedule and alerts**
 
