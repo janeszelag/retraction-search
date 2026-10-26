@@ -1,6 +1,6 @@
 # Plan 001: Data cleaning
 
-Status: draft, 2026-10-12. Implements [spec 001](spec.md).
+Status: draft, 2026-10-12. Implements [spec 001](spec.md). Changed for upstream's second export with the owner's approval, 2026-10-25. Spec 003 builds them, and [plan 003](../003-pipeline/plan.md#upstreams-second-export) has the details.
 
 ## Approach
 
@@ -68,24 +68,25 @@ data/                         not committed
 - `columns.js` lists the 20 expected column names. The loader compares them with the file's columns. A missing or renamed column stops the run with an error that names it. An extra column also stops the run unless it's completely empty, which is the case for the column created by the header's trailing comma.
 - The check runs before anything is written.
 - Changed 2026-10-14 (AC2): `05_empty_rows.sql` runs right after `00_load.sql`, before the column check. It drops rows where every column is empty or only spaces, and keeps their count for the profile report's Snapshot section. Spec 003 builds it; [plan 003](../003-pipeline/plan.md#empty-rows-spec-001-change) has the details.
+- Changed 2026-10-25 (second export): `00_load.sql` reads with `parallel = false`, because DuckDB's parallel reader stops on some files with line breaks inside fields. A new `02_formats.sql`, run right after it, defines the macros that the cleaning and spec 003's diff share: `collapse_space`, `parse_rw_date` and `missing_pubmed_id`. DuckDB skips a leading byte-order mark, so the column check sees `Record ID` either way. `05_empty_rows.sql` treats a value of only spaces, tabs or line breaks as empty.
 
 ## Cleaning rules (`10_records.sql`)
 
 | Output column | Type | Rule | AC |
 |---|---|---|---|
 | `record_id` | integer | From Record ID | AC2 |
-| `title`, `journal`, `publisher` | text | Trimmed and never split; they can contain semicolons | AC9 |
-| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. In `authors`, `institutions` and `countries`, the placeholders "Unknown", "unavailable" and "Not available" (in any capitalization) become "Unknown". | AC9 |
+| `title`, `journal`, `publisher` | text | Trimmed and never split; they can contain semicolons. Changed 2026-10-25: runs of spaces, tabs and line breaks become one space (`collapse_space`). | AC9 |
+| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. Changed 2026-10-25: each entry goes through `collapse_space` before empty ones are dropped, and a line break never splits. In `authors`, `institutions` and `countries`, the placeholders "Unknown", "unavailable" and "Not available" (in any capitalization) become "Unknown". | AC9 |
 | `subjects` | list of (code, name) | Split like the other lists, then `(HSC) Medicine - Surgery` becomes code `HSC` and name `Medicine - Surgery`. A subject without a code gets an empty code and is listed in the profile. | AC9, AC11 |
 | `notice_type` | text | RetractionNature, which must be present | AC12 |
-| `notice_date`, `paper_date` | date | Parsed as month/day/year. A value that can't be parsed becomes empty and is listed in the profile. | AC6 |
+| `notice_date`, `paper_date` | date | Parsed as month/day/year. Changed 2026-10-25: `M/D/YYYY H:MM` or `M/D/YYYY h:mm:ss AM` (`parse_rw_date`). A value that can't be parsed becomes empty and is listed in the profile. | AC6 |
 | `notice_year`, `paper_year` | integer | The year of each date | AC6 |
 | `notice_doi`, `paper_doi` | text | Trimmed, percent-decoded (`%3C` becomes `<`) and lowercased, with stray leading "x" characters before "10." removed. Blank and "unavailable" in any capitalization become empty. DOIs whose source text doesn't start with "10." are listed in the profile. | AC7 |
-| `notice_pubmed_id`, `paper_pubmed_id` | integer | Blank and `0` become empty | AC8 |
+| `notice_pubmed_id`, `paper_pubmed_id` | integer | Blank and `0` become empty. Changed 2026-10-25: so does any value made only of zeros, such as `00000000` (`missing_pubmed_id`). | AC8 |
 | `paywalled` | text | Yes, No or Unknown, as Retraction Watch recorded it | AC12 |
 | `is_revision` | yes/no | "Revision" appears in `article_types` | AC12 |
 | `has_editorial_staff_author` | yes/no | An author contains "editorial staff", in any capitalization | AC12 |
-| `notes` | text | Trimmed, empty when blank, never split | AC9 |
+| `notes` | text | Trimmed, empty when blank, never split. Changed 2026-10-25: line breaks become spaces, like other whitespace (`collapse_space`). | AC9 |
 | `original` | group of text fields | The source text of both dates, both DOIs and both PubMed IDs, plus Author, Institution and Country for records where a placeholder was rewritten | AC4 |
 
 The table is sorted by `record_id`.
@@ -112,6 +113,7 @@ The documents are shaped for Typesense, the leading candidate. If decision recor
 4. **Review lists:** unparseable dates, notices dated before their paper and records dated 1 January 1970 (AC6), DOIs whose source text doesn't start with "10." (AC7), and subjects without a code (AC11).
 5. **List integrity (AC10):** for each list field, the number of list entries next to the number of non-empty semicolon-separated items in the source text. If any pair differs, the run fails rather than just reporting it.
 6. **Flag counts:** revisions, editorial-staff authors and paywalled values (AC12).
+7. **Whitespace** (added 2026-10-25, AC9): for each column, the number of values whose spaces, tabs or line breaks `collapse_space` changed beyond trimming.
 
 ## Size report (`size-report.md`, AC14)
 
@@ -172,11 +174,11 @@ Package versions were checked on npm on 2026-10-12.
 | AC3 | Each broken fixture fails with the column named, and no output folder exists afterwards |
 | AC4 | Originals equal the source text for dates, DOIs and PubMed IDs |
 | AC5 | Two runs give identical JSON and Markdown files and the same Parquet content |
-| AC6 | Known rows get the right dates and years; the 1970 and notice-before-paper rows are listed |
+| AC6 | Known rows get the right dates and years; the 1970 and notice-before-paper rows are listed. Changed 2026-10-25: record 18930's dates parse in the `12:00:00 AM` form too (`second-export.csv`, plan 003). |
 | AC7 | An old-style DOI is decoded and kept whole; "Unavailable" becomes empty; the "x10." DOIs lose their x's and are listed |
-| AC8 | PubMed IDs of `0` and blank become empty |
-| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; placeholder entries become "Unknown" |
-| AC10 | Entries equal source items for every list field, and a deliberately broken split fails the run |
+| AC8 | PubMed IDs of `0` and blank become empty. Changed 2026-10-25: so do `00000000` ones. |
+| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; placeholder entries become "Unknown". Changed 2026-10-25: `second-export.csv` cleans to the same records and search documents as `sample.csv`, and the profile counts its whitespace changes. |
+| AC10 | Entries equal source items for every list field, and a deliberately broken split fails the run. Changed 2026-10-25: an institution item that is only a line break isn't an entry, and the check passes. |
 | AC11 | Codes and names split; the synthetic subject without a code is listed |
 | AC12 | Every record has one notice type; the flags are right on known rows |
 | AC13 | Every document has the expected fields and types |
@@ -188,7 +190,7 @@ Package versions were checked on npm on 2026-10-12.
 
 ## Trade-offs
 
-1. **Originals are kept only for values the cleaning rewrites** (dates, DOIs, PubMed IDs). Lists keep every entry in order, so their source text can be rebuilt by joining entries with "; ". Storing the list fields twice would add about 44 MB, with institutions the largest part (17 MB). The exception is records where a placeholder was rewritten to "Unknown": their author, institution or country text is stored too, because it can't be rebuilt.
+1. **Originals are kept only for values the cleaning rewrites** (dates, DOIs, PubMed IDs). Lists keep every entry in order, so their source text can be rebuilt by joining entries with "; ". Storing the list fields twice would add about 44 MB, with institutions the largest part (17 MB). The exception is records where a placeholder was rewritten to "Unknown": their author, institution or country text is stored too, because it can't be rebuilt. Whitespace isn't stored either (changed 2026-10-25): the second export's line breaks and repeated spaces can't be rebuilt from the cleaned value, but keeping them would store about 40,000 institution fields twice (plan 003, trade-off 12).
 2. **The search documents are shaped for Typesense before decision record 002 is written.** That keeps the size report realistic, and the mapping lives in one file.
 3. **JavaScript rather than TypeScript for the glue.** The logic lives in SQL and the glue is a few hundred lines, so the tests catch what type checks would. If types become worth having, `// @ts-check` with JSDoc comments adds checking without a build step.
 4. **Paywalled stays Yes / No / Unknown** rather than a yes/no flag, because Unknown is information.

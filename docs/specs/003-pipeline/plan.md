@@ -1,6 +1,6 @@
 # Plan 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed, AC23 added and spec 001 changed for the second export with the owner's approval, 2026-10-25. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
 
 External facts below were checked on 2026-10-14 unless marked otherwise.
 
@@ -36,8 +36,10 @@ The same command runs on a laptop against the Docker stack. Every step before 8 
   test.yml                  npm test on pull requests and pushes to main (AC20)
   update.yml                the daily update (AC12–AC15)
 pipeline/
+  sql/02_formats.sql        how the two exports write values: whitespace, dates, missing PubMed IDs
+                            (spec 001 changes, AC4)
   sql/05_empty_rows.sql     drops rows where every field is empty (spec 001 change)
-  sql/40_diff.sql           compares two snapshots' source text
+  sql/40_diff.sql           compares two snapshots' source text, ignoring how values are written (AC4)
   src/diff.js               runs the diff, writes diff.json and diff.md
   src/update.js             the whole update (steps 1–10)
   src/upstream.js           newest upstream commit and working-day staleness, moved out of download.js
@@ -49,6 +51,8 @@ pipeline/
   test/fixtures/sample-next.csv   sample.csv with rows added, removed and changed
   test/fixtures/empty-rows.csv    sample.csv followed by empty rows, as upstream wrote them
   test/fixtures/windows-1252.csv  sample.csv in Windows-1252, as upstream wrote some files (AC22)
+  test/fixtures/second-export.csv sample.csv as upstream's second export writes it (AC4, AC23,
+                                  spec 001 changes)
 docs/runbook.md             AC21
 data/                       not committed
   diff/<loaded>_to_<new>/diff.json, diff.md
@@ -151,6 +155,73 @@ Some upstream files end with rows where every field is empty: 20 commas and noth
 - **`05_empty_rows.sql`** runs right after `00_load.sql`. It counts the rows where every column is empty or only spaces, keeps that count in a one-row table, and deletes those rows from `source`. Everything after it, including the column check, the cleaning, the diff and `npm run check`, sees only rows with data. The SQL files still run in order in the DuckDB CLI.
 - **The profile report's Snapshot section** gives the number of empty rows dropped, so a run on such a file says what it did.
 - **A row with any value at all is kept,** and a missing Record ID in it still stops the cleaning.
+
+## Upstream's second export
+
+Agreed 2026-10-25, for AC4, AC23 and the changes to spec 001's AC4, AC6, AC8, AC9 and AC10. Since 2026-10-15, upstream has published some files from a second export ([data issues](../../data-issues.md#file-format)). Until 2026-10-20 that export came in Windows-1252, and AC22 stops it. The 2026-10-22 (`13d54397`) and 2026-10-23 (`a987928a`) files come from the same export in UTF-8. Both are valid UTF-8, and both match GitLab's SHA-256 and blob ID. They stopped every run from 2026-10-23 on, at the header check (issue #24).
+
+### What the second export writes differently
+
+Measured on 2026-10-25, comparing the 2026-10-16 file (`5338abda`, first export) with the 2026-10-23 file. The 2026-10-22 file has the same byte-order mark and question-mark count as the 2026-10-23 one.
+
+| | First export, 2026-10-16 | Second export, 2026-10-23 | With today's code |
+|---|---|---|---|
+| Start of the file | `Record ID,…` | A UTF-8 byte-order mark (`EF BB BF`), then `Record ID,…` | The header check stops the download. The error shows the mark as nothing, so it reads as if the header were right. |
+| Header | Ends with a comma | No trailing comma | Fine: the column check allows either |
+| Line breaks | None | Institution: 98,315 in 40,128 records, 95,419 of them right after a semicolon and 2,186 inside an entry (in 1,321 records). Notes: 1,324 records. | Institution entries keep a leading line break. Three records with an institution item that is only a line break stop the integrity check: 172,566 entries against 172,563 items. |
+| Repeated spaces and tabs | 98 values with a double space, 6 with a tab | 1,982 and 18, such as 424 author fields, 242 journals and 74 titles with a double space | A journal or author name written with a double space becomes a separate filter value |
+| Separators in URLS | `;` | `; ` | Fine: entries are trimmed |
+| Missing PubMed IDs | `0` | `00000000`: 34,799 notice and 33,810 paper IDs. Real IDs aren't padded. | They become the PubMed ID 0 |
+| Dates | `M/D/YYYY 0:00` | The same, except record 18930's two dates (1753 and 1756), written `M/D/YYYY 12:00:00 AM` | Both become empty, and nothing stops the run |
+| Text | 4,570 question marks | 4,612, and Cyrillic journal names intact | Nothing to change: no text was lost |
+| DuckDB's parallel CSV reader | Reads it | Reads it, with the same 73,356 rows as the single-threaded reader. It stops with "does not support a full read on this file" on the 2026-10-15 file converted to UTF-8, which has about as many lines (173,235 for 73,253 records, against 173,491 for 73,356). | Whether a file of this export loads depends on more than how many line breaks it has |
+
+Non-breaking spaces and other Unicode spaces are the same in both exports: 167 and 168 values with a non-breaking space, and 69 with other Unicode spaces in each. So the rules below leave them alone.
+
+### The rules
+
+- **`sql/02_formats.sql`,** a new file. `loadSource` in `clean.js` runs it right after `00_load.sql`, so the cleaning, the diff and `npm run check` all have its macros. The SQL files still run in order in the DuckDB CLI. It defines:
+  - `collapse_space(value)`: each run of spaces, tabs and line breaks becomes one space, then the value is trimmed. It uses `\s+`, which in DuckDB's regular expressions (RE2) matches only ASCII whitespace.
+  - `parse_rw_date(value)`, moved here from `10_records.sql`: `try_strptime` with the formats `%-m/%-d/%Y %-H:%M` and `%-m/%-d/%Y %-I:%M:%S %p`. Given a list of formats, DuckDB 1.5.6 tries each in turn: `6/24/1756 12:00:00 AM` gives 1756-06-24 and `10/9/2026 0:00` gives 2026-10-09 (checked 2026-10-25).
+  - `missing_pubmed_id(value)`: true when the value is blank or made only of zeros.
+- **`00_load.sql`** reads with `parallel = false`. On the 2026-10-23 file, counting the rows takes about 54 ms, against 23 ms in parallel.
+- **`05_empty_rows.sql`** uses `collapse_space`, so a value of only line breaks counts as empty, like a value of only spaces today.
+- **`10_records.sql`:**
+  - `split_list` applies `collapse_space` to each entry before dropping empty ones. A line break is never a separator.
+  - Title, journal, publisher and notes go through `collapse_space` instead of `trim`. The journal and publisher spellings in `preferred_spellings` are taken after it, so a name written with a double space joins its single-spaced spelling instead of becoming a merge.
+  - `clean_pubmed_id` uses `missing_pubmed_id`.
+  - The `original` group is unchanged. Its dates and PubMed IDs keep the published text, as now. Whitespace changes aren't kept (spec 001 AC4).
+- **AC10's count** (`source_items`) already counts only items with a character other than ASCII whitespace, so it needs no change. With the new split, the three records that stop the cleaning today pass.
+- **Profile report:** a new table gives, for each column, the number of values `collapse_space` changed beyond trimming. On the 2026-10-16 file that's 97 institutions, 5 notes and 2 journals. On the 2026-10-23 file it's 40,224 institutions, 2,143 notes, 424 authors, 249 journals, 74 titles and 67 publishers.
+
+### Download (AC23)
+
+- **`readFirstLine`** drops one leading U+FEFF before comparing the line with `Record ID,`.
+- **The file is saved unchanged,** so the blob ID, the SHA-256 and the "already have it" check keep comparing GitLab's bytes.
+- **DuckDB skips the mark itself:** `read_csv` names the first column `Record ID` (DuckDB 1.5.6, checked 2026-10-25), so the column check and the diff need nothing new.
+- **The header error** writes characters in Unicode's control and format categories, which include U+FEFF, as `\uXXXX`. The 2026-10-23 error would then have read `"\ufeffRecord ID,Title,…"`.
+
+### Diff (AC4)
+
+`40_diff.sql` compares `format_blind(source_column, value)` instead of the published text. This macro is defined in `02_formats.sql`:
+
+- every column: `collapse_space`
+- the seven list columns: no spaces around semicolons
+- the two PubMed ID columns: `0` for any value `missing_pubmed_id` accepts
+- the two date columns: the parsed date, when `parse_rw_date` can parse it
+
+`diff_values` still shows the published text, and "emptied" uses the same comparison. From the 2026-10-16 file to the 2026-10-23 file, these rules leave 146 changed records instead of 62,489. The columns changed most were notes (97 records), URLs (42), authors (8) and titles (3), measured 2026-10-25. The 73 added records and 0 removed are the same either way.
+
+### The first run after the change
+
+The change limits pass, so the next scheduled run loads the newest file and closes issue #24 without `--accept-changes`. Once cleaned, the 2026-10-23 file should differ from the loaded 2026-10-16 data in only three ways: the 73 new records, Retraction Watch's 146 changes, and whitespace fixed in about 100 values that the first export already had, since the rules apply to both exports. The profile report shows the whitespace fixes. Task 26 checks this.
+
+### Alternatives considered
+
+- **Splitting institutions at line breaks.** Of the 2,186 line breaks inside an entry, 1,677 come right after a country name, where a new affiliation starts. In a sample of 30 of the other 509, 6 fell inside one affiliation, such as "Lanzhou" then "University", or "Consiglio" then "Nazionale delle Ricerche, Naples, Italy". So roughly 100, about one in twenty, would split an affiliation in two. Splitting would invent institutions such as "University", and AC10's count couldn't tell. The first export joins these with a space, which is how the site shows them today.
+- **Keeping line breaks in notes** and showing them on record pages. The first export never had them, and the site shows each note as one paragraph. This could come later with a site change.
+- **Removing the byte-order mark from the saved file.** The blob ID and SHA-256 checks would then have to compare a changed file with GitLab's.
+- **Letting the first run through once with `--accept-changes`** and leaving the diff as it is. Every later switch between the exports would stop the run again, and each diff would list about 62,000 records.
 
 ## Load changes (AC9, AC10, AC18)
 
@@ -261,6 +332,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | AC2 | The fake server already holds the newest commit: the run reports "up to date", exits 0 and makes no write requests. `--force` and `--commit` load anyway. |
 | AC3 | The run takes the commit to diff against from the fake meta document, and the meta document it writes has `upstream_commit` |
 | AC4, AC5 | `diff.test.js` on `sample.csv` → `sample-next.csv`. The next file adds two rows and removes one. It changes a reason, a notice type, a URL, and a value from empty to filled. Each shows up correctly in all three results. |
+| AC4 (changed 2026-10-25) | `diff.test.js`: `sample.csv` → `second-export.csv` reports no changed records, and so does the reverse. A reason edited in a copy of `second-export.csv` still shows as a change, with its published old and new text. A filled field that becomes only a line break counts as emptied. Manual: `npm run diff` from the 2026-10-16 file (`5338abda`) to the 2026-10-23 file (`a987928a`) reports 146 changed records. |
+| Spec 001 AC4, AC6, AC8, AC9, AC10 (changed 2026-10-25) | `second-export.csv` is `sample.csv` as the second export writes it: the byte-order mark, no trailing comma, a line break after each semicolon between institutions, a line break inside one institution entry, `; ` between URLs, a double space in a journal and in an author name, a tab in a title, `00000000` for every missing PubMed ID, record 18930's dates in the `12:00:00 AM` form, and a note with a line break. `clean.test.js`: it cleans to the same records and search documents as `sample.csv`. An institution field written `A;` + line break + `;B` gives two entries and passes the integrity check. A date in a third form still becomes empty and is listed. The profile's whitespace table counts the changed values per column. Manual: `npm run check` passes on the 2026-10-16 and 2026-10-23 files. |
 | AC6 | `diff.md` caps its lists and contains no title or author text from the fixtures. With no meta document, the run reports nothing to compare against and loads. |
 | AC7 | A broken fixture (missing column), a failed download and a failed import each stop the run, name the step, and leave the fake server's alias and meta unchanged |
 | AC8 | Fewer records, 51 removals, 101 emptied records and changes to more than half the records each stop the run. Values one below each limit pass. `--accept-changes` lets a stopped run through and is recorded. |
@@ -269,6 +342,7 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 | AC10 | A fake server whose post-switch count is wrong: the alias and meta go back, the new collection is deleted, and the run fails |
 | AC11 | Working-day staleness, with dates around weekends and the three-day limit |
 | AC22 | `download.test.js`, with a fake GitLab that reports a blob ID and, like GitLab on 2026-10-19, hashes a non-UTF-8 file with its invalid bytes dropped. `windows-1252.csv` stops with the UTF-8 error, its byte count and line, and the matching blob ID, never "Checksum mismatch", and saves nothing. A download with bytes added fails on the blob ID. A wrong SHA-256 with the right blob ID still fails the checksum. `files.test.js`: blob IDs equal `git hash-object`'s, and the scan counts invalid bytes and finds their line, including overlong forms, surrogates and a sequence cut short at the end. Manual: `npm run download -- --commit a503965f` stops with the new error, and `-- --commit 5338abda` saves. |
+| AC23 | `download.test.js`: the fake GitLab serves `second-export.csv`, with its byte-order mark. It's saved byte for byte, with the blob ID and SHA-256 that GitLab reports. A file that starts with the mark followed by anything other than `Record ID,` fails the header check, and the error shows `\ufeff`. `clean.test.js`: `second-export.csv` has a first column named `Record ID`. Manual: `npm run download -- --commit a987928a` saves the file. |
 | AC12, AC13 | Manual: the workflow runs on its schedule for the done-when week. `tasks.md` records the hosted data date each day against upstream's newest commit. |
 | AC14 | Manual check (above) |
 | AC15 | A unit test for the 45-day date logic. The issue step is checked once on a run started by hand, with the threshold lowered for that run only. |
@@ -343,6 +417,10 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 9. **Dropping empty rows instead of stopping on them.** They carry no data, and they appeared for weeks at a time, so stopping would have kept the site stale for weeks. A row with any value at all still goes through every check.
 10. **Checking every stored document after each load.** It costs one export of about 113 MB per load, about $0.17 a month on Railway. In return it catches any change Typesense makes to stored text, not only the import bug that escaping avoids (decision record 004).
 11. **Keeping the SHA-256 check next to the blob ID.** For a UTF-8 file the blob ID already proves the download matches, so the SHA-256 adds little. Keeping it leaves the manifest and the "already have it" check as they are. The UTF-8 check reads the whole file into memory, about 67 MB, which neither the laptop nor the runner notices.
+12. **Whitespace isn't kept in `original`.** Keeping it would store about 40,000 institution fields a second time, the largest field, which plan 001's trade-off 1 put at 17 MB in all. The first export never had these line breaks, so record pages show what they've always shown. The cost is that a record page can't show where the second export put a line break.
+13. **Line breaks inside an institution entry become spaces, not separators.** The entries that hold two affiliations stay joined in one, as in the first export and on the site today. The alternative would wrongly split about 100 affiliations.
+14. **The diff ignores formatting.** A real edit that only changes whitespace, such as a journal name gaining a double space, no longer shows in the diff. The cleaned value doesn't change either, so search shows nothing new to report.
+15. **Reading the CSV on one thread.** It costs about 30 ms per file. In return, whether a file loads no longer depends on where its line breaks fall.
 
 ## Changes to other documents
 
@@ -355,6 +433,8 @@ GitHub disables scheduled workflows in a public repository after 60 days without
 - **Plan 002 and data issues:** the cause of the facet-check failure (in the first pull request). Data issues also gets the check of stored documents under "Checks that stop a run" once it's built.
 - **Data issues:** the download checks of AC22 under "Checks that stop a run", and the files of 2026-10-19 and 2026-10-20 under "File format" (with AC22).
 - **Runbook:** under a failed download, that "isn't valid UTF-8" means waiting for upstream's next file. The runbook isn't on `main` yet, so this line goes in with whichever of the two pull requests merges second.
+- **Spec 001 and plan 001:** the changes to AC4, AC6, AC8, AC9 and AC10 for the second export (with this plan's change, 2026-10-25).
+- **Data issues** (with the code for the second export): the 2026-10-22 and 2026-10-23 files under "File format", with the trailing comma's row and the parallel reader. The second date form under "Dates". `00000000` under "Identifiers". Line breaks and repeated spaces under "List fields". The byte-order mark under "Checks that stop a run".
 
 ## Commands
 
@@ -372,3 +452,4 @@ The existing commands (`download`, `clean`, `check`, `load`, `search:up`) keep w
 - When a Typesense release fixes the import bug. [typesense/typesense#3109](https://github.com/typesense/typesense/pull/3109) says it fixes it, and was open and unreviewed on 2026-10-15. Escaping and the check can stay either way (decision record 004).
 - **Whether upstream keeps its new format.** The 2026-10-15 file came in Windows-1252, with line breaks in fields, no trailing comma and dates written `M/D/YYYY 12:00:00 AM` ([data issues](../../data-issues.md#file-format)). The workflow's first run, started by hand at 02:37 UTC on 2026-10-16, stopped at the download with a checksum mismatch. Search kept the 2026-10-14 snapshot, and issue #13 opened. The owner decided to wait for the next exports. The new export also replaced every character Windows-1252 can't hold with `?`: 334,843 characters, mostly Cyrillic, in at least 4,732 records. So adapting to the format isn't enough if it stays. The pipeline would need a source that keeps the text, or upstream would need to fix the export. Two gaps in the checks turned up: the cleaning doesn't stop when dates fail to parse, and nothing stops a UTF-8 file that has lost characters this way. Only the change limits would stop either one, and they would let through a loss that touches fewer than half the records.
   - **Since then (checked 2026-10-21):** the 2026-10-16 file was UTF-8 in the old format again, and the scheduled run loaded it and closed issue #13. The 2026-10-19 and 2026-10-20 files were Windows-1252 again, in the new export, though with dates back in the `M/D/YYYY 0:00` form. Both stopped at the download, on issue #24. So upstream switches between the two exports with nothing in the commits to tell them apart. The owner reported it to Crossref's support on 2026-10-21. AC22 makes the error name the cause.
+  - **Since then (checked 2026-10-25):** the 2026-10-21 file (`f5596565`) wasn't UTF-8 again (35,965 bytes) and stopped on AC22's check. The 2026-10-22 and 2026-10-23 files are the second export in UTF-8, with their text intact. They stopped at the header check instead, because of the byte-order mark. The 2026-10-25 change ("Upstream's second export" above) lets them load. Two gaps remain. A UTF-8 file that has already lost characters to `?` would load (an open question in the spec), and the cleaning still doesn't stop when dates fail to parse.

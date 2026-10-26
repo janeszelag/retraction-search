@@ -116,3 +116,17 @@ The work goes up in three pull requests:
 - [x] **22. Download checks.** `download.js` checks the git blob ID against `x-gitlab-blob-id`, then that the file is valid UTF-8, before the SHA-256, as the plan's "Download checks" section says. `files.js` gains the blob ID and the scan for invalid bytes. Add `test/fixtures/windows-1252.csv` and a line about it in the fixtures README, and give the fake GitLab a blob ID. Update "Checks that stop a run" and the "File format" row in `docs/data-issues.md`. This goes up as its own pull request. (AC22)
   - Done when: the plan's tests for AC22 pass with `npm test`. `npm run download -- --commit a503965f` stops with the UTF-8 error and saves nothing, and `npm run download -- --commit 5338abda` saves the file.
   - Result, 2026-10-21: `npm test` passes (241 pipeline tests, 312 web tests). The 2026-10-19 file stops with "Upstream's file isn't valid UTF-8: 35,957 bytes aren't, the first on line 34. The download matches GitLab's file (git blob 64f91e05)…", and the 2026-10-20 file (`d7ebf06f`) with 35,958 bytes, the first on line 10 (blob `dd149c3a`). Neither is saved. The 2026-10-16 file saves.
+
+**Added 2026-10-25,** for upstream's second export (the plan's "Upstream's second export"), after the owner approved the spec changes. Tasks 23–26 go up as one pull request.
+
+- [ ] **23. Byte-order mark.** `readFirstLine` in `download.js` drops one leading U+FEFF before the header check. The header error writes characters in Unicode's control and format categories as `\uXXXX`. Add `test/fixtures/second-export.csv`, as the plan's tests describe, and a line about it in the fixtures README. (AC23)
+  - Done when: the plan's tests for AC23 pass with `npm test`, and `npm run download -- --commit a987928a` saves the 2026-10-23 file, with the SHA-256 GitLab reports.
+
+- [ ] **24. Cleaning rules for the second export.** Add `sql/02_formats.sql` with `collapse_space`, `parse_rw_date` (moved from `10_records.sql`, with both forms) and `missing_pubmed_id`, and run it from `loadSource`. In `00_load.sql`, set `parallel = false`. `05_empty_rows.sql` and `10_records.sql` use the macros, and the profile report gains its whitespace table. (Spec 001 AC4, AC6, AC8, AC9, AC10)
+  - Done when: the plan's tests for the spec 001 changes pass with `npm test`. `npm run check` passes on the 2026-10-16 file (`5338abda`) and the 2026-10-23 file (`a987928a`). In both, record 18930 is dated 1753 and 1756, no institution entry holds a line break, and no record has the PubMed ID 0.
+
+- [ ] **25. Diff that ignores formatting.** `40_diff.sql` compares `format_blind(source_column, value)`, as the plan's diff section lists. `diff_values` still shows the published text. (AC4)
+  - Done when: the plan's tests for the AC4 change pass, and `npm run diff -- --from <2026-10-16 file> --to <2026-10-23 file>` reports 146 changed records and 73 added.
+
+- [ ] **26. Local end to end, and data issues.** On the local stack, run `npm run update -- --commit 5338abda`, then `npm run update`. Compare the two cleaned snapshots' search documents. Update `docs/data-issues.md` as the plan's "Changes to other documents" lists. (AC1, AC4, AC8, AC23)
+  - Done when: the second run loads the newest snapshot without `--accept-changes`, with every check passing. The cleaned documents differ only in the 73 added records, the 146 changed ones and the whitespace fixes the profile counts. After the pull request merges, the next scheduled run loads the hosted server and closes issue #24. That check is recorded here in a later pull request.
