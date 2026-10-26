@@ -1,6 +1,6 @@
 # Spec 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed and AC23 added with the owner's approval, 2026-10-25. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
 
 ## Problem
 
@@ -40,6 +40,11 @@ Agreed 2026-10-21, after upstream's 2026-10-15, 2026-10-19 and 2026-10-20 files:
 
 - A file that isn't UTF-8 stops the download with an error that says so (AC22). Those files were in Windows-1252 and lost every character it can't hold, so they shouldn't load. The run reported a checksum mismatch instead, which reads like a broken download. GitLab computes the SHA-256 it reports on a copy it has converted to UTF-8, and the conversion varies from file to file. So the download is first verified by git blob ID, which GitLab computes on the stored bytes. See [data issues](../../data-issues.md#file-format).
 
+Agreed 2026-10-25, after upstream's 2026-10-22 and 2026-10-23 files:
+
+- Upstream's second export now comes in UTF-8, and it keeps its text. The 2026-10-23 file has 4,612 question marks, against 4,570 in the 2026-10-16 file, and its Cyrillic journal names are intact. Every run since 2026-10-23 has still stopped at the download, because the file starts with a UTF-8 byte-order mark, which the header check doesn't expect. So the pipeline takes the second export as well as the first. The download accepts the mark (AC23), and spec 001 gains rules for the way the second export writes values ([spec 001](../001-data-cleaning/spec.md), Decisions, 2026-10-25). The details are in the plan.
+- The diff ignores differences in how a value is written (AC4). Compared as published, the 2026-10-16 and 2026-10-23 files differ in 62,489 of 73,283 records, well past the change limit of half (AC8). With formatting ignored, 146 records changed. Upstream switches between the two exports with nothing in the commits to tell them apart, so without this every switch would stop the run.
+
 From earlier documents:
 
 - The daily diff reports changed records as well as new ones (product brief, Risks).
@@ -57,7 +62,7 @@ From earlier documents:
 
 **Diff**
 
-- AC4: Every run that loads a snapshot produces a diff against the loaded snapshot, by Record ID: records added, records removed, records changed, the number of changed records for each source column, and the columns changed in each record. It compares the text Retraction Watch published, not the cleaned values, so it reports Retraction Watch's changes rather than the cleaning's.
+- AC4: Every run that loads a snapshot produces a diff against the loaded snapshot, by Record ID: records added, records removed, records changed, the number of changed records for each source column, and the columns changed in each record. It compares the text Retraction Watch published, not the cleaned values, so it reports Retraction Watch's changes rather than the cleaning's. A difference that only comes from how an export writes a value isn't a change (changed 2026-10-25): runs of spaces, tabs and line breaks, spaces around the semicolons in list fields, a missing PubMed ID written `0` or `00000000`, and a date written in either of spec 001's two forms.
 - AC5: For records whose notice type or reasons changed, the diff gives the old and new values. A changed notice type moves a record between counts, such as an expression of concern that becomes a retraction. Reasons are Retraction Watch's classification and change as new information arrives.
 - AC6: The diff can be read on the run's page on GitHub and downloaded as a file for at least 30 days. What the run page shows lists record IDs, column names, counts, notice types and reasons, but no author names or titles. When the server has no loaded snapshot, the run says there's nothing to compare against and continues.
 
@@ -75,6 +80,7 @@ From earlier documents:
 - AC10: After switching, the run checks through the alias that search returns the new data date and the expected number of records. It also checks that the default view's count (retractions, without revised versions) and the count for each notice type match a DuckDB query on the same snapshot. If any of these checks fails, search goes back to the previous snapshot and the run fails.
 - AC11: If the newest upstream snapshot is more than three working days old, the run fails, because the file may have moved or stopped updating. Over the 40 most recent upstream commits (checked 2026-10-14), the longest gap was one missed working day.
 - AC22: When upstream's file isn't valid UTF-8, the download stops and the error says so. It gives the number of bytes that aren't valid UTF-8 and the line of the first one, and confirms by git blob ID that the download matches GitLab's file. A download that doesn't match GitLab's file fails with an error of its own. (Added 2026-10-21.)
+- AC23: A file that starts with a UTF-8 byte-order mark passes the download's checks and is saved exactly as GitLab serves it. The cleaning and the diff read it as they would the same file without the mark. When the header check fails, the error shows invisible characters, such as the mark, in a form a reader can see. (Added 2026-10-25.)
 
 **Schedule and alerts**
 
@@ -128,3 +134,4 @@ All acceptance criteria pass, and the scheduled run has kept the hosted server c
 ## Open questions
 
 - **Keeping the schedule alive (AC15):** GitHub's docs don't say what counts as repository activity, or whether its API's "enable workflow" call resets the 60-day count. The warning issue meets AC15 either way. Whether the call alone would be enough only becomes clear if the repository goes 60 days without a commit.
+- **A UTF-8 file that has lost text (raised 2026-10-25):** once the second export loads, nothing stops a UTF-8 file in which characters have already become `?`. That would happen if upstream converted its Windows-1252 export to UTF-8 after the loss. The diff would show the damaged records, but at the 2026-10-20 file's scale, at least 5,535 records, that stays under the change limit. A limit on question marks added since the loaded snapshot would catch it. The 2026-10-20 file had 339,441, the 2026-10-16 file 4,570 and the 2026-10-23 file 4,612. This isn't part of the 2026-10-25 change; it needs the owner's decision.
