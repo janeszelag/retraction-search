@@ -91,3 +91,19 @@ FROM (
   UNION ALL SELECT 9, 'Publisher spelling merged into the most common one', count(*) FILTER (WHERE original.publisher IS NOT NULL) FROM records
 )
 ORDER BY position;
+
+-- AC9 (changed 2026-10-25): for each column the whitespace rule applies to, the
+-- number of values whose spaces, tabs or line breaks it changed beyond the
+-- trimming the cleaning always did. Changes to whitespace alone aren't kept in
+-- `original`, so this is where they show.
+CREATE OR REPLACE MACRO whitespace_changed(value) AS
+  CASE WHEN collapse_space(value) <> trim(value) THEN 1 ELSE 0 END;
+
+CREATE OR REPLACE TABLE profile_whitespace AS
+UNPIVOT (
+  SELECT CAST(sum(whitespace_changed(COLUMNS(lambda c: c IN (
+    'Title', 'Subject', 'Institution', 'Journal', 'Publisher', 'Country', 'Author',
+    'URLS', 'ArticleType', 'Reason', 'Notes'
+  )))) AS INTEGER)
+  FROM source
+) ON COLUMNS(*) INTO NAME source_column VALUE changed;

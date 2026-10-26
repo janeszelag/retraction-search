@@ -95,6 +95,22 @@ describe('profile report', () => {
     }
   });
 
+  it('counts the values whose whitespace changed, per column (AC9, changed 2026-10-25)', async () => {
+    const rowsOf = (markdown) =>
+      tableRows(section(markdown, '## Whitespace (AC9)')).filter((row) => !row.startsWith('| Source column'));
+    expect(rowsOf(profile)).toHaveLength(11);
+    expect(rowsOf(profile).every((row) => row.endsWith('| 0 |'))).toBe(true);
+
+    const secondExport = rowsOf(await profileOf('second-export.csv'));
+    expect(secondExport.filter((row) => !row.endsWith('| 0 |'))).toEqual([
+      '| Title | 1 |',
+      '| Institution | 12 |',
+      '| Journal | 1 |',
+      '| Author | 1 |',
+      '| Notes | 1 |',
+    ]);
+  });
+
   it('counts flags and rewrites (AC12)', () => {
     const flags = section(profile, '## Flags and rewrites (AC12)');
     expect(flags).toContain('| Revised version (is_revision) | 1 |');

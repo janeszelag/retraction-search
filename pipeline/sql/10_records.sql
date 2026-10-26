@@ -1,10 +1,6 @@
--- Cleans every source row into one typed record. Reads `source` (see 00_load.sql).
+-- Cleans every source row into one typed record. Reads `source` (see 00_load.sql)
+-- and uses the macros in 02_formats.sql, which also parse dates (AC6).
 -- Comments name the spec 001 acceptance criterion each rule serves.
-
--- AC6: dates are month/day/year, with a time that's always 0:00.
--- A value that can't be parsed becomes NULL and is listed in the profile report.
-CREATE OR REPLACE MACRO parse_rw_date(value) AS
-  CAST(try_strptime(trim(value), '%-m/%-d/%Y %-H:%M') AS DATE);
 
 -- AC7: DOIs are trimmed, percent-decoded (%3C becomes <) and lowercased.
 -- Blank and "unavailable" in any capitalization mean there's no DOI.
@@ -16,17 +12,19 @@ CREATE OR REPLACE MACRO clean_doi(value) AS
     ELSE regexp_replace(lower(url_decode(trim(value))), '^x+(10\.)', '\1')
   END;
 
--- AC8: blank and 0 mean there's no PubMed ID.
+-- AC8: blank, 0 and 00000000 mean there's no PubMed ID.
 CREATE OR REPLACE MACRO clean_pubmed_id(value) AS
   CASE
-    WHEN nullif(trim(value), '') IS NULL OR trim(value) = '0' THEN NULL
+    WHEN missing_pubmed_id(value) THEN NULL
     ELSE CAST(trim(value) AS INTEGER)
   END;
 
--- AC9: splits a semicolon-separated field into a list. Entries are trimmed,
--- empty entries (such as after a trailing semicolon) are dropped, and order is kept.
+-- AC9: splits a semicolon-separated field into a list. Each entry's spaces,
+-- tabs and line breaks are collapsed (changed 2026-10-25), empty entries (such
+-- as after a trailing semicolon) are dropped, and order is kept. A line break
+-- never splits: inside an entry it usually falls within one affiliation.
 CREATE OR REPLACE MACRO split_list(value) AS
-  [trim(entry) FOR entry IN string_split(coalesce(value, ''), ';') IF trim(entry) <> ''];
+  [collapse_space(entry) FOR entry IN string_split(coalesce(value, ''), ';') IF collapse_space(entry) <> ''];
 
 -- AC9: author, institution and country lists write "we don't know" several ways
 -- ("unavailable", "Not available", "unknown"). Every spelling becomes "Unknown".
@@ -52,8 +50,8 @@ FROM (
   SELECT field, value, lower(strip_accents(value)) AS folded,
          row_number() OVER (PARTITION BY field, lower(strip_accents(value)) ORDER BY count(*) DESC, value) AS rank
   FROM (
-    SELECT 'journal' AS field, nullif(trim(Journal), '') AS value FROM source
-    UNION ALL SELECT 'publisher', nullif(trim(Publisher), '') FROM source
+    SELECT 'journal' AS field, nullif(collapse_space(Journal), '') AS value FROM source
+    UNION ALL SELECT 'publisher', nullif(collapse_space(Publisher), '') FROM source
   )
   WHERE value IS NOT NULL
   GROUP BY field, value
@@ -71,9 +69,10 @@ CREATE OR REPLACE TABLE records AS
 SELECT
   CAST("Record ID" AS INTEGER) AS record_id,
   -- AC9: these can contain semicolons but aren't lists, so they're never split.
-  nullif(trim(Title), '') AS title,
-  coalesce(preferred_journal.spelling, nullif(trim(Journal), '')) AS journal,
-  coalesce(preferred_publisher.spelling, nullif(trim(Publisher), '')) AS publisher,
+  -- Their spaces, tabs and line breaks are collapsed, like list entries'.
+  nullif(collapse_space(Title), '') AS title,
+  coalesce(preferred_journal.spelling, nullif(collapse_space(Journal), '')) AS journal,
+  coalesce(preferred_publisher.spelling, nullif(collapse_space(Publisher), '')) AS publisher,
   [clean_author(entry) FOR entry IN split_list_with_unknown(Author)] AS authors,
   split_list_with_unknown(Institution) AS institutions,
   split_list_with_unknown(Country) AS countries,
@@ -95,12 +94,13 @@ SELECT
   nullif(trim(Paywalled), '') AS paywalled,
   list_contains(article_types, 'Revision') AS is_revision,
   len([author FOR author IN authors IF author ILIKE '%editorial staff%']) > 0 AS has_editorial_staff_author,
-  nullif(trim(Notes), '') AS notes,
+  nullif(collapse_space(Notes), '') AS notes,
   -- AC4: the source text of every value above that the cleaning rewrites.
   -- List fields keep every entry in order, so their source text can be rebuilt,
   -- except where a placeholder became "Unknown" or an author's backtick was
   -- fixed; then the source text is kept too. So is a journal or publisher
-  -- spelling that was merged into another.
+  -- spelling that was merged into another. Changes to whitespace alone aren't
+  -- kept (changed 2026-10-25).
   {
     'notice_date': RetractionDate,
     'notice_doi': RetractionDOI,
@@ -112,19 +112,20 @@ SELECT
     'institution': CASE WHEN split_list(Institution) <> institutions THEN Institution END,
     'country': CASE WHEN split_list(Country) <> countries THEN Country END,
     -- (Compared with the preferred spelling: "journal" here would mean the source column.)
-    'journal': CASE WHEN nullif(trim(Journal), '') <> preferred_journal.spelling THEN Journal END,
-    'publisher': CASE WHEN nullif(trim(Publisher), '') <> preferred_publisher.spelling THEN Publisher END
+    'journal': CASE WHEN nullif(collapse_space(Journal), '') <> preferred_journal.spelling THEN Journal END,
+    'publisher': CASE WHEN nullif(collapse_space(Publisher), '') <> preferred_publisher.spelling THEN Publisher END
   } AS original
 FROM source
 LEFT JOIN preferred_spellings AS preferred_journal
-  ON preferred_journal.field = 'journal' AND preferred_journal.folded = lower(strip_accents(nullif(trim(source.Journal), '')))
+  ON preferred_journal.field = 'journal' AND preferred_journal.folded = lower(strip_accents(nullif(collapse_space(source.Journal), '')))
 LEFT JOIN preferred_spellings AS preferred_publisher
-  ON preferred_publisher.field = 'publisher' AND preferred_publisher.folded = lower(strip_accents(nullif(trim(source.Publisher), '')))
+  ON preferred_publisher.field = 'publisher' AND preferred_publisher.folded = lower(strip_accents(nullif(collapse_space(source.Publisher), '')))
 ORDER BY record_id;
 
 -- AC10: splitting loses and invents nothing. For each list field, the number of
--- list entries must equal the number of non-empty semicolon-separated items in
--- the source text, counted here independently with a regular expression.
+-- list entries must equal the number of semicolon-separated items in the source
+-- text that hold something besides spaces, tabs and line breaks, counted here
+-- independently with a regular expression.
 -- A view, so the check always reflects the current tables.
 CREATE OR REPLACE MACRO source_items(value) AS
   len(regexp_extract_all(value, '[^;]*[^;\s][^;]*'));

@@ -26,6 +26,15 @@ async function readFirstLine(file) {
   }
 }
 
+// Upstream's second export starts with a UTF-8 byte-order mark (spec 003, AC23).
+// The file is saved with it, and DuckDB skips it when reading.
+const withoutByteOrderMark = (line) => line.replace(/^﻿/, '');
+
+// Writes characters in Unicode's control and format categories, such as a
+// byte-order mark, as \uXXXX, so an error message doesn't hide them (AC23).
+const showInvisible = (text) =>
+  text.replace(/[\p{Cc}\p{Cf}]/gu, (char) => `\\u${char.codePointAt(0).toString(16).padStart(4, '0')}`);
+
 async function writeManifest(manifestPath, manifest) {
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
@@ -97,8 +106,8 @@ export async function downloadSnapshot({
       throw new Error(`The downloaded file is empty: ${url}`);
     }
     const header = await readFirstLine(partialPath);
-    if (!header.startsWith('Record ID,')) {
-      throw new Error(`The downloaded file doesn't start with the expected header: "${header.slice(0, 80)}"`);
+    if (!withoutByteOrderMark(header).startsWith('Record ID,')) {
+      throw new Error(`The downloaded file doesn't start with the expected header: "${showInvisible(header.slice(0, 80))}"`);
     }
     const blobId = await gitBlobIdOf(partialPath);
     if (upstreamBlobId && blobId !== upstreamBlobId) {

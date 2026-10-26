@@ -1,8 +1,10 @@
 -- Compares two snapshots by Record ID (spec 003, AC4 and AC5). It compares
 -- the text Retraction Watch published, not the cleaned values, so it reports
--- Retraction Watch's changes rather than the cleaning's.
--- Needs two tables, each loaded by 00_load.sql and 05_empty_rows.sql:
--- previous_source (the loaded snapshot) and source (the new one).
+-- Retraction Watch's changes rather than the cleaning's. A difference that only
+-- comes from how an export writes a value isn't a change (format_blind, changed
+-- 2026-10-25); the results still show the published text.
+-- Needs two tables, each loaded by 00_load.sql, 02_formats.sql and
+-- 05_empty_rows.sql: previous_source (the loaded snapshot) and source (the new one).
 -- To run by hand in the DuckDB CLI, load the old file, then
 -- ALTER TABLE source RENAME TO previous_source; then load the new file.
 
@@ -33,11 +35,11 @@ SELECT
   p.source_column,
   p.value AS old_value,
   n.value AS new_value,
-  -- A field that was filled and is now empty or only spaces.
-  nullif(trim(p.value), '') IS NOT NULL AND nullif(trim(n.value), '') IS NULL AS emptied
+  -- A field that was filled and is now empty or only spaces, tabs or line breaks.
+  nullif(collapse_space(p.value), '') IS NOT NULL AND nullif(collapse_space(n.value), '') IS NULL AS emptied
 FROM diff_previous AS p
 JOIN diff_new AS n USING (record_id, source_column)
-WHERE p.value IS DISTINCT FROM n.value;
+WHERE nullif(format_blind(p.source_column, p.value), '') IS DISTINCT FROM nullif(format_blind(n.source_column, n.value), '');
 
 CREATE OR REPLACE TABLE diff_records AS
 WITH ids AS (

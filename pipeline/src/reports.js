@@ -139,7 +139,7 @@ export function sizeReportMarkdown({ file, documents, fileBytes, fieldBytes, lar
   ].join('\n\n')}\n`;
 }
 
-export function profileMarkdown({ snapshot, emptyValues, values, review, listIntegrity, flags }) {
+export function profileMarkdown({ snapshot, emptyValues, values, review, listIntegrity, flags, whitespace }) {
   const checksum =
     snapshot.manifestSha256 === null
       ? `${snapshot.sha256} (no manifest to compare with)`
@@ -212,6 +212,12 @@ export function profileMarkdown({ snapshot, emptyValues, values, review, listInt
     table(
       ['Flag', 'Records'],
       flags.map((row) => [row.flag, formatNumber(row.records)]),
+    ),
+    '## Whitespace (AC9)',
+    'Values in which a run of spaces, tabs or line breaks became one space, beyond trimming the ends. `original` doesn’t keep these changes.',
+    table(
+      ['Source column', 'Values changed'],
+      whitespace.map((row) => [row.source_column, formatNumber(row.changed)]),
     ),
   );
 
