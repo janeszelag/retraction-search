@@ -69,6 +69,85 @@ describe('diff of sample.csv → sample-next.csv (AC4, AC5)', () => {
   });
 });
 
+// second-export.csv is sample.csv as upstream's second export writes it
+// (see fixtures/README.md).
+describe('a diff that ignores how an export writes values (AC4, changed 2026-10-25)', () => {
+  let workDir;
+
+  beforeAll(async () => {
+    workDir = await mkdtemp(path.join(tmpdir(), 'retraction-search-diff-'));
+  });
+
+  afterAll(async () => {
+    await rm(workDir, { recursive: true, force: true });
+  });
+
+  // A copy of second-export.csv with an edit, written by DuckDB.
+  async function editedSecondExport(name, update) {
+    const file = path.join(workDir, name);
+    const db = await openDatabase();
+    await db.run(
+      `CREATE TABLE s AS SELECT * FROM read_csv(${sqlString(fixture('second-export.csv'))}, header = true, all_varchar = true, parallel = false)`,
+    );
+    await db.run(update);
+    await db.run(`COPY s TO ${sqlString(file)} (HEADER)`);
+    return file;
+  }
+
+  it.each([
+    ['sample.csv', 'second-export.csv'],
+    ['second-export.csv', 'sample.csv'],
+  ])('finds no change from %s to %s', async (from, to) => {
+    const diff = await compareSnapshots(fixture(from), fixture(to));
+    expect(diff.counts).toEqual({ added: 0, removed: 0, changed: 0, emptied: 0 });
+    expect(diff.records).toEqual([]);
+  });
+
+  it('still reports an edited reason, with the published old and new text', async () => {
+    const edited = await editedSecondExport(
+      'reason-edited.csv',
+      `UPDATE s SET Reason = 'Concerns/Issues about Data; Results Not Reproducible;' WHERE "Record ID" = '6'`,
+    );
+    const diff = await compareSnapshots(fixture('sample.csv'), edited);
+    expect(diff.records).toEqual([{ record_id: 6, change: 'changed', columns: ['Reason'], emptied: [] }]);
+    expect(diff.values).toEqual([
+      {
+        record_id: 6,
+        column: 'Reason',
+        old: 'Results Not Reproducible;',
+        new: 'Concerns/Issues about Data; Results Not Reproducible;',
+      },
+    ]);
+  });
+
+  it('counts a filled field that becomes only a line break as emptied', async () => {
+    const edited = await editedSecondExport('notes-emptied.csv', `UPDATE s SET Notes = chr(10) WHERE "Record ID" = '69326'`);
+    const diff = await compareSnapshots(fixture('sample.csv'), edited);
+    expect(diff.counts).toEqual({ added: 0, removed: 0, changed: 1, emptied: 1 });
+    expect(diff.records).toEqual([{ record_id: 69326, change: 'changed', columns: ['Notes'], emptied: ['Notes'] }]);
+  });
+
+  it('treats an Institution of None as empty, but still reports one that gets a value', async () => {
+    const edited = await editedSecondExport(
+      'institution-added.csv',
+      `UPDATE s SET Institution = 'Example University' WHERE "Record ID" = '34181'`,
+    );
+    const diff = await compareSnapshots(fixture('second-export.csv'), edited);
+    expect(diff.records).toEqual([{ record_id: 34181, change: 'changed', columns: ['Institution'], emptied: [] }]);
+  });
+
+  it('still reports a real PubMed ID or date that changed', async () => {
+    const edited = await editedSecondExport(
+      'ids-edited.csv',
+      `UPDATE s SET RetractionPubMedID = '12345678', OriginalPaperDate = '1/2/1753 12:00:00 AM' WHERE "Record ID" = '18930'`,
+    );
+    const diff = await compareSnapshots(fixture('sample.csv'), edited);
+    expect(diff.records).toEqual([
+      { record_id: 18930, change: 'changed', columns: ['RetractionPubMedID', 'OriginalPaperDate'], emptied: [] },
+    ]);
+  });
+});
+
 describe('diff of unchanged data', () => {
   it('finds nothing when a file is compared with itself', async () => {
     const diff = await compareSnapshots(fixture('sample.csv'), fixture('sample.csv'));

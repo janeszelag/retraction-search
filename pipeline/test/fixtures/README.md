@@ -54,6 +54,7 @@ The other files are built from `sample.csv`:
 | `empty-rows.csv` | `sample.csv` followed by three rows of 20 commas and nothing else, as some upstream files end (spec 001 AC2) |
 | `sample-next.csv` | `sample.csv` as a next snapshot, for the diff (spec 003): record 102 removed, synthetic records 900000301 and 900000302 added (copies of record 2), a reason added to record 6, record 18 changed from an expression of concern to a retraction, one of record 4's two URLs removed, an institution added to record 34181, and record 69326's notes emptied. It has no trailing comma in the header. |
 | `windows-1252.csv` | `sample.csv` in Windows-1252, as upstream wrote the files of 2026-10-15, 2026-10-19 and 2026-10-20. Characters Windows-1252 can't hold become `?`, as upstream's did: here, one combining accent. It has 47 bytes that aren't valid UTF-8, the first on line 3 (spec 003 AC22). |
+| `second-export.csv` | `sample.csv` as upstream's second export writes it in UTF-8, as in the files of 2026-10-22 and 2026-10-23 (spec 003 AC4 and AC23, spec 001 changes of 2026-10-25): a byte-order mark, no trailing comma in the header, a line break after each semicolon between institutions, line breaks inside record 4952's institution entry where the first export has spaces, `; ` between URLs, a double space in record 1's journal and in one of record 2's authors, a tab in record 1's title, `00000000` for every PubMed ID written `0`, record 18930's dates written `M/D/YYYY 12:00:00 AM`, two line breaks in record 69326's notes, and record 34181's empty institution written `None` |
 | `names.csv` | Six synthetic rows (record IDs 900000101 to 900000106) with made-up names: author names with backticks, journal spellings that differ only in capitals or an accent, and a tie between two publisher spellings |
 
 ## Rebuilding
@@ -111,4 +112,30 @@ COPY (
     FROM s, (VALUES ('900000301'), ('900000302')) AS n(id) WHERE s."Record ID" = '2'
   ) ORDER BY CAST("Record ID" AS INTEGER)
 ) TO 'pipeline/test/fixtures/sample-next.csv' (HEADER);
+```
+
+`second-export.csv` is written by DuckDB, which adds no byte-order mark, so the mark is added afterwards. In the DuckDB CLI, with `s` as above:
+
+```sql
+COPY (
+  SELECT * REPLACE (
+    CASE "Record ID" WHEN '1' THEN replace(Title, 'Genistein ', 'Genistein' || chr(9)) ELSE Title END AS Title,
+    regexp_replace(
+      CASE "Record ID" WHEN '4952' THEN replace(replace(Institution, ' Kantar', chr(10) || 'Kantar'), ' Concord', chr(10) || 'Concord') WHEN '34181' THEN 'None' ELSE Institution END,
+      ';\s*(\S)', ';' || chr(10) || '\1', 'g') AS Institution,
+    CASE "Record ID" WHEN '1' THEN replace(Journal, 'of ', 'of  ') ELSE Journal END AS Journal,
+    CASE "Record ID" WHEN '2' THEN replace(Author, 'Chang Han', 'Chang  Han') ELSE Author END AS Author,
+    replace(URLS, ';', '; ') AS URLS,
+    CASE "Record ID" WHEN '18930' THEN '6/24/1756 12:00:00 AM' ELSE RetractionDate END AS RetractionDate,
+    CASE RetractionPubMedID WHEN '0' THEN '00000000' ELSE RetractionPubMedID END AS RetractionPubMedID,
+    CASE "Record ID" WHEN '18930' THEN '1/1/1753 12:00:00 AM' ELSE OriginalPaperDate END AS OriginalPaperDate,
+    CASE OriginalPaperPubMedID WHEN '0' THEN '00000000' ELSE OriginalPaperPubMedID END AS OriginalPaperPubMedID,
+    CASE "Record ID" WHEN '69326' THEN replace(Notes, 'pdf. See', 'pdf.' || chr(10) || chr(10) || 'See') ELSE Notes END AS Notes
+  ) FROM s
+) TO 'pipeline/test/fixtures/second-export.body.csv' (HEADER);
+```
+
+```bash
+{ printf '\xef\xbb\xbf'; cat pipeline/test/fixtures/second-export.body.csv; } > pipeline/test/fixtures/second-export.csv
+rm pipeline/test/fixtures/second-export.body.csv
 ```

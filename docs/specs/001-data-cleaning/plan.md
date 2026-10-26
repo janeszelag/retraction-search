@@ -76,7 +76,7 @@ data/                         not committed
 |---|---|---|---|
 | `record_id` | integer | From Record ID | AC2 |
 | `title`, `journal`, `publisher` | text | Trimmed and never split; they can contain semicolons. Changed 2026-10-25: runs of spaces, tabs and line breaks become one space (`collapse_space`). | AC9 |
-| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. Changed 2026-10-25: each entry goes through `collapse_space` before empty ones are dropped, and a line break never splits. In `authors`, `institutions` and `countries`, the placeholders "Unknown", "unavailable" and "Not available" (in any capitalization) become "Unknown". | AC9 |
+| `authors`, `institutions`, `countries`, `urls`, `article_types`, `reasons` | list of text | Split on semicolons, entries trimmed, empty entries dropped, order kept. Changed 2026-10-25: each entry goes through `collapse_space` before empty ones are dropped, and a line break never splits. In `authors`, `institutions` and `countries`, the placeholders "Unknown", "unavailable" and "Not available" (in any capitalization) become "Unknown". Changed 2026-10-25: an Institution that is exactly `None` gives an empty list (`none_as_empty`), and its published text stays in `original`. | AC9 |
 | `subjects` | list of (code, name) | Split like the other lists, then `(HSC) Medicine - Surgery` becomes code `HSC` and name `Medicine - Surgery`. A subject without a code gets an empty code and is listed in the profile. | AC9, AC11 |
 | `notice_type` | text | RetractionNature, which must be present | AC12 |
 | `notice_date`, `paper_date` | date | Parsed as month/day/year. Changed 2026-10-25: `M/D/YYYY H:MM` or `M/D/YYYY h:mm:ss AM` (`parse_rw_date`). A value that can't be parsed becomes empty and is listed in the profile. | AC6 |
@@ -114,6 +114,7 @@ The documents are shaped for Typesense, the leading candidate. If decision recor
 5. **List integrity (AC10):** for each list field, the number of list entries next to the number of non-empty semicolon-separated items in the source text. If any pair differs, the run fails rather than just reporting it.
 6. **Flag counts:** revisions, editorial-staff authors and paywalled values (AC12).
 7. **Whitespace** (added 2026-10-25, AC9): for each column, the number of values whose spaces, tabs or line breaks `collapse_space` changed beyond trimming.
+8. **Institution written `None`** (added 2026-10-25, AC9): a row in the flags table with the number of records whose Institution was read as empty. The row for institution placeholders rewritten to "Unknown" leaves these records out.
 
 ## Size report (`size-report.md`, AC14)
 
@@ -177,8 +178,8 @@ Package versions were checked on npm on 2026-10-12.
 | AC6 | Known rows get the right dates and years; the 1970 and notice-before-paper rows are listed. Changed 2026-10-25: record 18930's dates parse in the `12:00:00 AM` form too (`second-export.csv`, plan 003). |
 | AC7 | An old-style DOI is decoded and kept whole; "Unavailable" becomes empty; the "x10." DOIs lose their x's and are listed |
 | AC8 | PubMed IDs of `0` and blank become empty. Changed 2026-10-25: so do `00000000` ones. |
-| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; placeholder entries become "Unknown". Changed 2026-10-25: `second-export.csv` cleans to the same records and search documents as `sample.csv`, and the profile counts its whitespace changes. |
-| AC10 | Entries equal source items for every list field, and a deliberately broken split fails the run. Changed 2026-10-25: an institution item that is only a line break isn't an entry, and the check passes. |
+| AC9 | Lists split correctly; titles and DOIs with semicolons stay whole; placeholder entries become "Unknown". Changed 2026-10-25: `second-export.csv` cleans to the same records and search documents as `sample.csv`, and the profile counts its whitespace changes. Its record 34181 has the Institution `None`, which gives no institutions, keeps `None` in `original` and is counted in the profile; `None` inside a longer list is kept. |
+| AC10 | Entries equal source items for every list field, and a deliberately broken split fails the run. Changed 2026-10-25: an institution item that is only a line break isn't an entry, and neither is an Institution of `None`, and the check passes. |
 | AC11 | Codes and names split; the synthetic subject without a code is listed |
 | AC12 | Every record has one notice type; the flags are right on known rows |
 | AC13 | Every document has the expected fields and types |

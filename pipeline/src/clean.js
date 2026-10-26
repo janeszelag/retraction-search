@@ -12,12 +12,14 @@ import { measureDocuments, profileMarkdown, sizeReportMarkdown } from './reports
 
 export class ColumnCheckError extends Error {}
 
-// Loads the CSV into the `source` table, drops rows where every field is
-// empty (AC2) and checks the columns (AC3). Extra columns are allowed only
-// when completely empty, like the one the header's trailing comma creates.
+// Loads the CSV into the `source` table, defines the macros for how the two
+// exports write values, drops rows where every field is empty (AC2) and checks
+// the columns (AC3). Extra columns are allowed only when completely empty,
+// like the one the header's trailing comma creates.
 export async function loadSource(connection, inputPath) {
   await connection.run(`SET VARIABLE input_path = ${sqlString(inputPath)}`);
   await runSqlFile(connection, '00_load.sql');
+  await runSqlFile(connection, '02_formats.sql');
   await runSqlFile(connection, '05_empty_rows.sql');
 
   const columns = (await queryRows(connection, 'SELECT column_name FROM (DESCRIBE source)')).map(
@@ -138,7 +140,7 @@ async function describeSnapshot(connection, inputPath) {
   };
 }
 
-// The profile report as Markdown (AC1, AC6, AC7, AC10, AC11, AC12).
+// The profile report as Markdown (AC1, AC6, AC7, AC9, AC10, AC11, AC12).
 export async function buildProfile(connection, inputPath) {
   await runSqlFile(connection, '30_profile.sql');
   return profileMarkdown({
@@ -154,6 +156,7 @@ export async function buildProfile(connection, inputPath) {
     ),
     listIntegrity: await queryRows(connection, 'SELECT field, entries, source_items FROM list_integrity ORDER BY field'),
     flags: await queryRows(connection, 'SELECT flag, records FROM profile_flags ORDER BY position'),
+    whitespace: await queryRows(connection, 'SELECT source_column, changed FROM profile_whitespace'),
   });
 }
 

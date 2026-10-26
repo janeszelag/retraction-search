@@ -1,10 +1,10 @@
-import { mkdtemp, readdir, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { downloadSnapshot, snapshotBaseName } from '../src/download.js';
-import { gitBlobIdOf } from '../src/files.js';
+import { gitBlobIdOf, sha256Of } from '../src/files.js';
 import { fakeGitlab } from './helpers/fake-gitlab.js';
 
 const fixture = (name) => fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url));
@@ -113,6 +113,35 @@ describe('downloading a snapshot', () => {
       expect(error.message).toBe(
         "Upstream's file isn't valid UTF-8: 47 bytes aren't, the first on line 3. See docs/data-issues.md#file-format.",
       );
+    });
+  });
+
+  describe('a file that starts with a byte-order mark (AC23)', () => {
+    it('saves it byte for byte, with the blob ID and SHA-256 GitLab reports', async () => {
+      const secondExport = [{ ...commits[0], file: fixture('second-export.csv') }];
+      const result = await downloadSnapshot({ fetch: fakeGitlab(secondExport).fetch, rawDir });
+      const saved = await readFile(result.csvPath);
+      expect(saved.subarray(0, 3)).toEqual(Buffer.from([0xef, 0xbb, 0xbf]));
+      expect(saved.equals(await readFile(fixture('second-export.csv')))).toBe(true);
+      expect(await gitBlobIdOf(result.csvPath)).toBe(await gitBlobIdOf(fixture('second-export.csv')));
+      const manifest = JSON.parse(await readFile(result.manifestPath, 'utf8'));
+      expect(manifest.sha256).toBe(await sha256Of(fixture('second-export.csv')));
+    });
+
+    it('still checks the header after the mark, and shows the mark in the error', async () => {
+      const fileDir = await mkdtemp(path.join(tmpdir(), 'retraction-search-files-'));
+      try {
+        const file = path.join(fileDir, 'renamed-id.csv');
+        await writeFile(file, '﻿RecordID,Title\n1,Example\n');
+        const error = await downloadSnapshot({
+          fetch: fakeGitlab([{ ...commits[0], file }]).fetch,
+          rawDir,
+        }).catch((caught) => caught);
+        expect(error.message).toBe(`The downloaded file doesn't start with the expected header: "\\ufeffRecordID,Title"`);
+        expect(await readdir(rawDir)).toEqual([]);
+      } finally {
+        await rm(fileDir, { recursive: true, force: true });
+      }
     });
   });
 });
