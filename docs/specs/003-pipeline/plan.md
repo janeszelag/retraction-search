@@ -1,6 +1,6 @@
 # Plan 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed, AC23 added and spec 001 changed for the second export with the owner's approval, 2026-10-25. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed, AC23 added and spec 001 changed for the second export with the owner's approval, 2026-10-25, and again for an Institution written `None` at the owner's request the same day. How to build [spec 003](spec.md). Decision records [001](../../decisions/001-languages.md) (JavaScript glue, SQL in DuckDB), [002](../../decisions/002-search-engine.md) (Typesense on Railway, $50 hard limit) and [004](../../decisions/004-typesense-import-escaping.md) (escaped imports, stored documents checked) apply.
 
 External facts below were checked on 2026-10-14 unless marked otherwise.
 
@@ -174,6 +174,7 @@ Measured on 2026-10-25, comparing the 2026-10-16 file (`5338abda`, first export)
 | Missing PubMed IDs | `0` | `00000000`: 34,799 notice and 33,810 paper IDs. Real IDs aren't padded. | They become the PubMed ID 0 |
 | Dates | `M/D/YYYY 0:00` | The same, except record 18930's two dates (1753 and 1756), written `M/D/YYYY 12:00:00 AM` | Both become empty, and nothing stops the run |
 | Text | 4,570 question marks | 4,612, and Cyrillic journal names intact | Nothing to change: no text was lost |
+| Record 34181's Institution (found 2026-10-25, while building the rules below) | Empty, as since at least 2026-10-08. The first export's 2026-09-22 file had `None`. | `None`, in every file of this export | The record lists an institution called "None", and the diff counts the switch as a change |
 | DuckDB's parallel CSV reader | Reads it | Reads it, with the same 73,356 rows as the single-threaded reader. It stops with "does not support a full read on this file" on the 2026-10-15 file converted to UTF-8, which has about as many lines (173,235 for 73,253 records, against 173,491 for 73,356). | Whether a file of this export loads depends on more than how many line breaks it has |
 
 Non-breaking spaces and other Unicode spaces are the same in both exports: 167 and 168 values with a non-breaking space, and 69 with other Unicode spaces in each. So the rules below leave them alone.
@@ -191,8 +192,9 @@ Non-breaking spaces and other Unicode spaces are the same in both exports: 167 a
   - Title, journal, publisher and notes go through `collapse_space` instead of `trim`. The journal and publisher spellings in `preferred_spellings` are taken after it, so a name written with a double space joins its single-spaced spelling instead of becoming a merge.
   - `clean_pubmed_id` uses `missing_pubmed_id`.
   - The `original` group is unchanged. Its dates and PubMed IDs keep the published text, as now. Whitespace changes aren't kept (spec 001 AC4).
-- **AC10's count** (`source_items`) already counts only items with a character other than ASCII whitespace, so it needs no change. With the new split, the three records that stop the cleaning today pass.
-- **Profile report:** a new table gives, for each column, the number of values `collapse_space` changed beyond trimming. On the 2026-10-16 file that's 97 institutions, 5 notes and 2 journals. On the 2026-10-23 file it's 40,224 institutions, 2,143 notes, 424 authors, 249 journals, 74 titles and 67 publishers.
+- **`none_as_empty(value)`**, added to `02_formats.sql` at the owner's request: NULL when `collapse_space(value)` is exactly `None`, otherwise the value. `10_records.sql` splits `none_as_empty(Institution)`, so record 34181 has no institutions. `original.institution` keeps `None`, because the split of the published text differs from the cleaned list, as for any placeholder.
+- **AC10's count** (`source_items`) already counts only items with a character other than ASCII whitespace, so it needs no change for whitespace. With the new split, the three records that stop the cleaning today pass. For institutions it counts the items of `none_as_empty(Institution)`, so `None` is no item, as it's no entry.
+- **Profile report:** a new table gives, for each column, the number of values `collapse_space` changed beyond trimming. On the 2026-10-16 file that's 97 institutions, 5 notes and 2 journals. On the 2026-10-23 file it's 40,224 institutions, 2,143 notes, 424 authors, 249 journals, 74 titles and 67 publishers. The flags table gains a row for institutions written `None` and read as empty, and the row for placeholders rewritten to "Unknown" leaves them out.
 
 ### Download (AC23)
 
@@ -209,18 +211,20 @@ Non-breaking spaces and other Unicode spaces are the same in both exports: 167 a
 - the seven list columns: no spaces around semicolons
 - the two PubMed ID columns: `0` for any value `missing_pubmed_id` accepts
 - the two date columns: the parsed date, when `parse_rw_date` can parse it
+- Institution: empty when `none_as_empty` makes it so (added 2026-10-25)
 
-`diff_values` still shows the published text, and "emptied" uses the same comparison. From the 2026-10-16 file to the 2026-10-23 file, these rules leave 146 changed records instead of 62,489. The columns changed most were notes (97 records), URLs (42), authors (8) and titles (3), measured 2026-10-25. The 73 added records and 0 removed are the same either way.
+`diff_values` still shows the published text, and "emptied" uses the same comparison. From the 2026-10-16 file to the 2026-10-23 file, these rules leave 146 changed records instead of 62,489, and 145 once Institution `None` counts as empty. The columns changed most were notes (97 records), URLs (42), authors (8) and titles (3), measured 2026-10-25. The 73 added records and 0 removed are the same either way.
 
 ### The first run after the change
 
-The change limits pass, so the next scheduled run loads the newest file and closes issue #24 without `--accept-changes`. Once cleaned, the 2026-10-23 file should differ from the loaded 2026-10-16 data in only three ways: the 73 new records, Retraction Watch's 146 changes, and whitespace fixed in about 100 values that the first export already had, since the rules apply to both exports. The profile report shows the whitespace fixes. Task 26 checks this.
+The change limits pass, so the next scheduled run loads the newest file and closes issue #24 without `--accept-changes`. Once cleaned, the 2026-10-23 file should differ from the loaded 2026-10-16 data in only three ways: the 73 new records, Retraction Watch's 146 changes (145 with the `None` rule), and whitespace fixed in about 100 values that the first export already had, since the rules apply to both exports. The profile report shows the whitespace fixes. Task 26 checks this.
 
 ### Alternatives considered
 
 - **Splitting institutions at line breaks.** Of the 2,186 line breaks inside an entry, 1,677 come right after a country name, where a new affiliation starts. In a sample of 30 of the other 509, 6 fell inside one affiliation, such as "Lanzhou" then "University", or "Consiglio" then "Nazionale delle Ricerche, Naples, Italy". So roughly 100, about one in twenty, would split an affiliation in two. Splitting would invent institutions such as "University", and AC10's count couldn't tell. The first export joins these with a space, which is how the site shows them today.
 - **Keeping line breaks in notes** and showing them on record pages. The first export never had them, and the site shows each note as one paragraph. This could come later with a site change.
 - **Removing the byte-order mark from the saved file.** The blob ID and SHA-256 checks would then have to compare a changed file with GitLab's.
+- **Rewriting an Institution of `None` to "Unknown"**, like the other placeholders. The first export has left record 34181's institution empty since at least 2026-10-08, and the site shows no institution for it, so empty keeps the record as it is. Matching `None` in other columns, or as one item of a longer list, found nothing to fix.
 - **Letting the first run through once with `--accept-changes`** and leaving the diff as it is. Every later switch between the exports would stop the run again, and each diff would list about 62,000 records.
 
 ## Load changes (AC9, AC10, AC18)

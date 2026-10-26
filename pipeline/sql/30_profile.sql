@@ -79,7 +79,9 @@ FROM (
     WHERE len([entry FOR entry IN split_list(original.author)
                IF lower(entry) IN ('unknown', 'unavailable', 'not available') AND entry <> 'Unknown']) > 0
   ) FROM records
-  UNION ALL SELECT 4, 'Institution placeholder rewritten to "Unknown"', count(*) FILTER (WHERE original.institution IS NOT NULL) FROM records
+  UNION ALL SELECT 4, 'Institution placeholder rewritten to "Unknown"', count(*) FILTER (
+    WHERE original.institution IS NOT NULL AND none_as_empty(original.institution) IS NOT NULL
+  ) FROM records
   UNION ALL SELECT 5, 'Country placeholder rewritten to "Unknown"', count(*) FILTER (WHERE original.country IS NOT NULL) FROM records
   UNION ALL SELECT 6, 'Stray "x" removed from a DOI', count(*) FILTER (
     WHERE (starts_with(lower(trim(original.notice_doi)), 'x') AND starts_with(notice_doi, '10.'))
@@ -89,6 +91,10 @@ FROM (
   UNION ALL SELECT 7, 'Backtick fixed in an author name', count(*) FILTER (WHERE contains(original.author, '`')) FROM records
   UNION ALL SELECT 8, 'Journal spelling merged into the most common one', count(*) FILTER (WHERE original.journal IS NOT NULL) FROM records
   UNION ALL SELECT 9, 'Publisher spelling merged into the most common one', count(*) FILTER (WHERE original.publisher IS NOT NULL) FROM records
+  -- Changed 2026-10-25 (AC9).
+  UNION ALL SELECT 10, 'Institution written "None", read as empty', count(*) FILTER (
+    WHERE original.institution IS NOT NULL AND none_as_empty(original.institution) IS NULL
+  ) FROM records
 )
 ORDER BY position;
 

@@ -20,13 +20,21 @@ CREATE OR REPLACE MACRO parse_rw_date(value) AS
 CREATE OR REPLACE MACRO missing_pubmed_id(value) AS
   coalesce(regexp_full_match(trim(value), '0*'), true);
 
+-- AC9 (changed 2026-10-25): an Institution that is exactly None means there's
+-- no institution. Record 34181 is written that way in some files and left
+-- empty in others.
+CREATE OR REPLACE MACRO none_as_empty(value) AS
+  CASE WHEN collapse_space(value) = 'None' THEN NULL ELSE value END;
+
 -- Spec 003 AC4 (changed 2026-10-25): a value as the diff compares it, so that
 -- a difference that only comes from how an export writes a value isn't a
 -- change. Every column: runs of spaces, tabs and line breaks. List columns:
 -- spaces around semicolons. PubMed IDs: blank, 0 and 00000000. Dates: either
--- of the two forms. The diff still shows the published text.
+-- of the two forms. Institution: empty and None. The diff still shows the
+-- published text.
 CREATE OR REPLACE MACRO format_blind(source_column, value) AS
   CASE
+    WHEN source_column = 'Institution' AND none_as_empty(value) IS NULL THEN NULL
     WHEN source_column IN ('RetractionPubMedID', 'OriginalPaperPubMedID') AND missing_pubmed_id(value) THEN '0'
     WHEN source_column IN ('RetractionDate', 'OriginalPaperDate') AND parse_rw_date(value) IS NOT NULL
       THEN CAST(parse_rw_date(value) AS VARCHAR)

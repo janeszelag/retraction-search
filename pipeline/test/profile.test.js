@@ -101,7 +101,9 @@ describe('profile report', () => {
     expect(rowsOf(profile)).toHaveLength(11);
     expect(rowsOf(profile).every((row) => row.endsWith('| 0 |'))).toBe(true);
 
-    const secondExport = rowsOf(await profileOf('second-export.csv'));
+    const secondExportProfile = await profileOf('second-export.csv');
+    expect(section(secondExportProfile, '## Flags and rewrites (AC12)')).toContain('| Institution written "None", read as empty | 1 |');
+    const secondExport = rowsOf(secondExportProfile);
     expect(secondExport.filter((row) => !row.endsWith('| 0 |'))).toEqual([
       '| Title | 1 |',
       '| Institution | 12 |',

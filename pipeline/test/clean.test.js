@@ -157,15 +157,16 @@ describe('upstream’s second export (AC4, AC6, AC8, AC9, AC10, changed 2026-10-
          (SELECT CAST(count(*) AS INTEGER) FROM (
             SELECT * EXCLUDE (original) FROM read_parquet(${parquetB})
             EXCEPT SELECT * EXCLUDE (original) FROM read_parquet(${parquetA}))) AS only_first,
-         -- The same records keep a rewritten name or placeholder's source text.
-         (SELECT CAST(count(*) AS INTEGER) FROM read_parquet(${parquetA}) AS a JOIN read_parquet(${parquetB}) AS b USING (record_id)
+         -- The same records keep a rewritten name or placeholder's source text,
+         -- apart from record 34181's institution, which the second export writes None.
+         (SELECT list(record_id ORDER BY record_id) FROM read_parquet(${parquetA}) AS a JOIN read_parquet(${parquetB}) AS b USING (record_id)
             WHERE (a.original.author IS NULL) <> (b.original.author IS NULL)
                OR (a.original.institution IS NULL) <> (b.original.institution IS NULL)
                OR (a.original.country IS NULL) <> (b.original.country IS NULL)
                OR (a.original.journal IS NULL) <> (b.original.journal IS NULL)
                OR (a.original.publisher IS NULL) <> (b.original.publisher IS NULL)) AS original_differs`,
     );
-    expect(counts).toEqual({ only_second: 0, only_first: 0, original_differs: 0 });
+    expect(counts).toEqual({ only_second: 0, only_first: 0, original_differs: [34181] });
   });
 
   it('parses both date forms, empties 00000000 PubMed IDs and keeps what was published in original', async () => {
@@ -252,6 +253,30 @@ describe('upstream’s second export (AC4, AC6, AC8, AC9, AC10, changed 2026-10-
     await cleanRecords(db);
     const [row] = await queryRows(db, 'SELECT institutions FROM records WHERE record_id = 900000401');
     expect(row.institutions).toEqual(['Example University', 'Sample Institute']);
+  });
+
+  it('reads an Institution of exactly None as empty, and keeps None in original (AC9)', async () => {
+    const db = await openDatabase();
+    const inputPath = await sampleWith([
+      syntheticRow('900000403', 'Synthetic row: None inside a longer institution list', {
+        3: '"None;Example University"',
+      }),
+    ]);
+    await loadSource(db, inputPath);
+    await db.run("UPDATE source SET Institution = ' None ' WHERE \"Record ID\" = '34181'");
+    await cleanRecords(db);
+    const rows = await queryRows(
+      db,
+      `SELECT record_id, institutions, original.institution AS source_institution
+       FROM records WHERE record_id IN (34181, 900000403) ORDER BY record_id`,
+    );
+    expect(rows).toEqual([
+      { record_id: 34181, institutions: [], source_institution: ' None ' },
+      { record_id: 900000403, institutions: ['None', 'Example University'], source_institution: null },
+    ]);
+    const flags = await buildProfile(db, inputPath);
+    expect(flags).toContain('| Institution written "None", read as empty | 1 |');
+    expect(flags).toContain('| Institution placeholder rewritten to "Unknown" | 6 |');
   });
 
   it('still empties and lists a date in a third form (AC6)', async () => {

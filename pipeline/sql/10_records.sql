@@ -74,7 +74,7 @@ SELECT
   coalesce(preferred_journal.spelling, nullif(collapse_space(Journal), '')) AS journal,
   coalesce(preferred_publisher.spelling, nullif(collapse_space(Publisher), '')) AS publisher,
   [clean_author(entry) FOR entry IN split_list_with_unknown(Author)] AS authors,
-  split_list_with_unknown(Institution) AS institutions,
+  split_list_with_unknown(none_as_empty(Institution)) AS institutions,
   split_list_with_unknown(Country) AS countries,
   split_list(URLS) AS urls,
   split_list(ArticleType) AS article_types,
@@ -125,7 +125,7 @@ ORDER BY record_id;
 -- AC10: splitting loses and invents nothing. For each list field, the number of
 -- list entries must equal the number of semicolon-separated items in the source
 -- text that hold something besides spaces, tabs and line breaks, counted here
--- independently with a regular expression.
+-- independently with a regular expression. An Institution of None has no items.
 -- A view, so the check always reflects the current tables.
 CREATE OR REPLACE MACRO source_items(value) AS
   len(regexp_extract_all(value, '[^;]*[^;\s][^;]*'));
@@ -145,7 +145,7 @@ WITH entries AS (
 items AS (
   SELECT
     sum(source_items(Author)) AS authors,
-    sum(source_items(Institution)) AS institutions,
+    sum(source_items(none_as_empty(Institution))) AS institutions,
     sum(source_items(Country)) AS countries,
     sum(source_items(URLS)) AS urls,
     sum(source_items(ArticleType)) AS article_types,

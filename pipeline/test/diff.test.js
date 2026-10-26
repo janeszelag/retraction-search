@@ -127,6 +127,15 @@ describe('a diff that ignores how an export writes values (AC4, changed 2026-10-
     expect(diff.records).toEqual([{ record_id: 69326, change: 'changed', columns: ['Notes'], emptied: ['Notes'] }]);
   });
 
+  it('treats an Institution of None as empty, but still reports one that gets a value', async () => {
+    const edited = await editedSecondExport(
+      'institution-added.csv',
+      `UPDATE s SET Institution = 'Example University' WHERE "Record ID" = '34181'`,
+    );
+    const diff = await compareSnapshots(fixture('second-export.csv'), edited);
+    expect(diff.records).toEqual([{ record_id: 34181, change: 'changed', columns: ['Institution'], emptied: [] }]);
+  });
+
   it('still reports a real PubMed ID or date that changed', async () => {
     const edited = await editedSecondExport(
       'ids-edited.csv',

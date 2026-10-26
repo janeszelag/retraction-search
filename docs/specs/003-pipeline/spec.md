@@ -1,6 +1,6 @@
 # Spec 003: Daily pipeline
 
-Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed and AC23 added with the owner's approval, 2026-10-25. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
+Status: approved by the owner, 2026-10-14. AC9 changed with the owner's approval, 2026-10-15. AC22 added with the owner's approval, 2026-10-21. AC4 changed and AC23 added with the owner's approval, 2026-10-25, and AC4 again for an Institution written `None`, at the owner's request the same day. Phase 3 of the [roadmap](../../product-brief.md#roadmap). This phase also sets up the hosted search server, which the roadmap first put in Phase 4 (see Decisions).
 
 ## Problem
 
@@ -62,7 +62,7 @@ From earlier documents:
 
 **Diff**
 
-- AC4: Every run that loads a snapshot produces a diff against the loaded snapshot, by Record ID: records added, records removed, records changed, the number of changed records for each source column, and the columns changed in each record. It compares the text Retraction Watch published, not the cleaned values, so it reports Retraction Watch's changes rather than the cleaning's. A difference that only comes from how an export writes a value isn't a change (changed 2026-10-25): runs of spaces, tabs and line breaks, spaces around the semicolons in list fields, a missing PubMed ID written `0` or `00000000`, and a date written in either of spec 001's two forms.
+- AC4: Every run that loads a snapshot produces a diff against the loaded snapshot, by Record ID: records added, records removed, records changed, the number of changed records for each source column, and the columns changed in each record. It compares the text Retraction Watch published, not the cleaned values, so it reports Retraction Watch's changes rather than the cleaning's. A difference that only comes from how an export writes a value isn't a change (changed 2026-10-25): runs of spaces, tabs and line breaks, spaces around the semicolons in list fields, a missing PubMed ID written `0` or `00000000`, a date written in either of spec 001's two forms, and an Institution that is empty or exactly `None` (spec 001, Decisions, 2026-10-25).
 - AC5: For records whose notice type or reasons changed, the diff gives the old and new values. A changed notice type moves a record between counts, such as an expression of concern that becomes a retraction. Reasons are Retraction Watch's classification and change as new information arrives.
 - AC6: The diff can be read on the run's page on GitHub and downloaded as a file for at least 30 days. What the run page shows lists record IDs, column names, counts, notice types and reasons, but no author names or titles. When the server has no loaded snapshot, the run says there's nothing to compare against and continues.
 

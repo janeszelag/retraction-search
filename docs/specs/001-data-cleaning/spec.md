@@ -1,6 +1,6 @@
 # Spec 001: Data cleaning
 
-Status: draft, 2026-10-12. Phase 1 of the [roadmap](../../product-brief.md#roadmap). AC4, AC6, AC8, AC9 and AC10 changed for upstream's second export with the owner's approval, 2026-10-25 (see Decisions).
+Status: draft, 2026-10-12. Phase 1 of the [roadmap](../../product-brief.md#roadmap). AC4, AC6, AC8, AC9 and AC10 changed for upstream's second export with the owner's approval, 2026-10-25, and AC9 and AC10 again for an Institution written `None`, at the owner's request the same day (see Decisions).
 
 ## Problem
 
@@ -39,6 +39,7 @@ Agreed 2026-10-25, for upstream's second export. [Spec 003](../003-pipeline/spec
   - **PubMed IDs written `00000000`** instead of `0`: 34,799 notice IDs and 33,810 paper IDs. Without a rule they'd become the PubMed ID 0 (AC8).
   - **A second date form.** Record 18930 has the two earliest dates, a 1753 paper and its 1756 notice. Both are written `M/D/YYYY 12:00:00 AM`, as the 2026-10-15 file wrote every date. Without a rule they'd become empty (AC6). Upstream's own issue tracker has reported this date form for the same record since 2026-03-02 ([issue 2](https://gitlab.com/crossref/retraction-watch-data/-/issues/2), open on 2026-10-25).
 - Changes to whitespace alone aren't kept in `original` (AC4), just as trimming isn't today. The first export has no line breaks, so the site has never shown any.
+- **An Institution written `None`** (agreed 2026-10-25, at the owner's request, after the code above was built). Record 34181 has no institution. Every file of the second export writes its Institution as `None` (2026-10-15, 2026-10-21, 2026-10-22 and 2026-10-23), and so did the first export's 2026-09-22 file, but its 2026-10-08 to 2026-10-16 files leave it empty. No other record in those files has an Institution of `None`, in any capitalization. Without a rule, the record would list an institution called "None", and the diff would count every switch as a change. An Institution that is exactly `None` is empty (AC9), as the site shows the record today. The published text stays in `original` (AC4), as for any value the cleaning changes, and the profile report counts these records. Other columns don't have the value, and `None` inside a longer institution list is kept.
 
 ## Source data
 
@@ -89,8 +90,9 @@ Every criterion is checked against one pinned snapshot.
 - AC7: DOIs are lowercase, with percent-encoded characters decoded and no surrounding spaces. Blank values and "unavailable" in any capitalization become empty. Stray "x" characters before "10." are removed. DOIs whose source text doesn't start with "10." are listed in the profile report.
 - AC8: PubMed IDs that are blank or made only of zeros, such as `0` and `00000000`, become empty (changed 2026-10-25).
 - AC9: Author, Country, Institution, Subject, Reason, ArticleType and URLS become lists. They're split on semicolons, entries are trimmed, empty entries are dropped, and author order is kept. Title, Journal, the DOIs and Notes are never split. In Author, Institution and Country, the placeholders "Unknown", "unavailable" and "Not available", in any capitalization, become one value, "Unknown", so Retraction Watch's "we don't know" stays visible in a single spelling.
+  - Changed 2026-10-25: an Institution that is exactly `None`, once its whitespace is collapsed, is empty: the record has no institutions. The profile report gives the number of such records.
   - Changed 2026-10-25: in titles, journals, publishers, notes and list entries, every run of spaces, tabs and line breaks becomes one space, and any at the start or end is removed. An entry left with nothing counts as empty. A line break never splits a list. The profile report gives, for each column, the number of values whose whitespace changed.
-- AC10: Splitting loses and invents nothing: for each list field, the number of list entries equals the number of semicolon-separated items in the raw text that hold something besides spaces, tabs and line breaks (changed 2026-10-25).
+- AC10: Splitting loses and invents nothing: for each list field, the number of list entries equals the number of semicolon-separated items in the raw text that hold something besides spaces, tabs and line breaks (changed 2026-10-25). An Institution of exactly `None` has no items (changed 2026-10-25).
 - AC11: Each subject splits into its code and its name. Subjects without a code are listed in the profile report.
 - AC12: Every record has exactly one notice type and three flags: whether it's a revised version ("Revision" in its article types), whether an author is an "Editorial Staff" placeholder (in any of its forms), and whether its notice is paywalled (yes, no or unknown).
 
