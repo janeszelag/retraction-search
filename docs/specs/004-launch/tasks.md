@@ -73,20 +73,34 @@ The work goes up in three pull requests:
 - [ ] **15. Runbook: the site.** After spec 003's task 17 writes `docs/runbook.md`, add the site section the plan lists: deploying and rolling back, changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. (AC13)
   - Done when: the owner follows it to roll production back to the previous deployment and forward again. The second pull request goes up.
   - So far, 2026-10-19: [the runbook](../../runbook.md#the-website) has the site section: deploying, rolling back (checked against Vercel's docs on 2026-10-19), changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. Still to do: the owner's rollback and undo.
+  - Changed 2026-10-27: the owner will do the rollback later, so the second pull request goes up without it, with the 2026-10-27 spec changes and task 22. This task is ticked in the close-out.
 
 **Close-out**
 
 - [ ] **16. A week of updates.** Once upstream's export loads again, the daily update keeps the hosted data current for seven consecutive days while the live site serves it. Spec 003's unattended week (its task 20) can be the same week. (Done when)
   - Done when: each day's hosted data date is recorded, from the live site's footer.
 
-- [ ] **17. Name and domain.** The owner chooses the site's name, and whether to buy a domain or keep the `vercel.app` address. (Open question)
+- [x] **17. Name and domain.** The owner chooses the site's name, and whether to buy a domain or keep the `vercel.app` address. (Open question)
   - Done when: the site answers at the chosen address over HTTPS, and decision record 005 records the domain's yearly price or the choice to keep the `vercel.app` address.
+  - Result, 2026-10-27: the owner keeps the name "Retraction search" and bought www.retraction-search.com through Vercel (registrar Name.com, Vercel's name servers) for $15 a year, which decision record 005 records. The site answers there over HTTPS, and the bare domain answers 308 to `https://www.retraction-search.com/`.
 
 - [ ] **18. Questions before the announcement.** The owner decides the spec's remaining open questions: announcing before the analytics iteration, what search engines may index, and a notice when data is behind. (Open questions)
   - Done when: each answer is recorded in the spec. An answer that needs new work becomes a spec change or a later iteration before the announcement.
+  - Answered 2026-10-27: announce without analytics and without a notice when data is behind; search engines index the start and About pages only (AC15); downloads get a firewall challenge (AC14). Tasks 21–23 do the new work.
 
-- [ ] **19. Launch.** Set `SITE_INDEXING=on`, redeploy, and announce the site. (AC10, done when)
-  - Done when: `robots.txt` and the pages allow indexing as task 18 decided, and the brief's roadmap marks Phase 4 done. The closing pull request goes up.
+- [ ] **19. Launch.** After tasks 21–23, set `SITE_INDEXING=on`, redeploy, and announce the site. (AC10, AC15, done when)
+  - Done when: `robots.txt` and the pages on the live site match AC15, and the brief's roadmap marks Phase 4 done. The closing pull request goes up.
 
 - [ ] **20. First month.** A month after the announcement, compare Vercel's allowances and Railway's egress with decision record 005's estimates. (Success metrics)
   - Done when: decision record 005 has the measured numbers, in a small pull request of its own.
+
+**Added 2026-10-27,** after the owner bought the domain and answered task 18's questions. Tasks 21–23 come before task 19.
+
+- [ ] **21. The domain's settings and the cost check again.** The owner's steps: in Vercel's domains, redirect the project's `vercel.app` address to `www.retraction-search.com`; in GitHub's `site` environment, change the `SITE_URL` secret to `https://www.retraction-search.com`; in Vercel's billing settings, check the plan is still Hobby. Then the runbook names the domain, and its cost section and dated checks say the account has a card for the domain only. (Task 17, AC8, AC9)
+  - Done when: the `vercel.app` address and the bare domain both answer 308 to `https://www.retraction-search.com/`, a site check started by hand passes, and the runbook records AC8's check again with its date.
+
+- [ ] **22. Index only the start and About pages.** In `indexing.ts`, with `SITE_INDEXING` on, `robots.txt` allows `/` and disallows `/api/`. The root layout keeps `noindex, nofollow` for every page, and the start page and the About page override it, as the plan's "Indexing switch" section says. The runbook's "Turn on indexing at launch" says what gets indexed. (AC15)
+  - Done when: the plan's tests for AC15 pass with `npm test`, and a local production build with `SITE_INDEXING=on` serves the start and About pages without `noindex`, a results page, a record page and a missing page with it, and `robots.txt` with `Disallow: /api/`.
+
+- [ ] **23. Download challenge.** The owner adds the custom firewall rule from the plan's setup, step 8: Log first, then Challenge. The runbook's firewall section adds it. (AC14, AC13)
+  - Done when: a download from the live site in a browser works after the check, `curl` on the same export address gets the challenge instead of the file, and the runbook records the check with its date.

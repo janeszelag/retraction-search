@@ -1,6 +1,6 @@
 # Spec 004: Launch
 
-Status: approved by the owner, 2026-10-17. Phase 4 of the [roadmap](../../product-brief.md#roadmap).
+Status: approved by the owner, 2026-10-17. Changed 2026-10-27 with the owner's approval, after the owner bought the domain and answered the questions before the announcement: decisions, AC8, AC13, new AC14 and AC15, and the open questions. Phase 4 of the [roadmap](../../product-brief.md#roadmap).
 
 ## Problem
 
@@ -33,6 +33,14 @@ Accepted with decision record [005](../../decisions/005-site-hosting.md), 2026-1
 
 - Vercel Hobby for the site, as the brief planned, with one firewall rate-limit rule.
 
+Made 2026-10-27, with the owner's approval:
+
+- **Name and domain:** the site keeps the name "Retraction search", at www.retraction-search.com. The owner bought the domain through Vercel on 2026-10-27. The bare domain redirects to `www`, and so does the project's `vercel.app` address, so search engines find one copy of the site.
+- **Payment method:** buying the domain put a card on the Vercel account. Hobby still doesn't bill usage: past an allowance, Vercel pauses the feature (AC8). The card pays for the domain, a fixed $15 a year.
+- **The announcement** comes without analytics, so its first weeks go unmeasured, and without a notice when the data is behind. Analytics stays a later iteration.
+- **Indexing:** after launch, search engines may index the start and About pages only (AC15).
+- **Downloads:** a firewall rule challenges every download request, so a script can't fetch the full file in a loop (AC14). Hobby allows one rate-limit rule, which the general limit uses, so downloads can't get a lower limit of their own.
+
 ## Acceptance criteria
 
 "The live site" is the production deployment on Vercel. "The hosted server" is the Typesense server on Railway from spec 003.
@@ -52,7 +60,8 @@ Accepted with decision record [005](../../decisions/005-site-hosting.md), 2026-1
 
 - AC6: A firewall rule on Vercel limits requests per IP address before the site's server code runs. Its limit is high enough that a person browsing quickly never reaches it.
 - AC7: On the live site, spec 002's per-visitor limits (AC28) are off by a setting, and the site needs no Redis. The log says so once when the server starts, not as a repeated error. Locally the limits stay on, and their tests still pass.
-- AC8: Each hosted piece either has a spending limit enforced by its provider or can't bill: Railway's $50 hard limit, and Vercel's Hobby plan with no payment method. Decision record 005 gives the worst-case month. This is a manual check, recorded with its date.
+- AC8: Each hosted piece either has a spending limit enforced by its provider or can't bill for usage: Railway's $50 hard limit, and Vercel's Hobby plan, which pauses a feature past its allowance instead of billing it. The card on the Vercel account pays only for the domain, a fixed yearly price. Decision record 005 gives the worst-case month. This is a manual check, recorded with its date. (Changed 2026-10-27: it said "with no payment method".)
+- AC14: A second Vercel firewall rule challenges every request for a download (`/api/export`) with Vercel's browser check, before the site's server code runs. A person downloading in a browser gets the file after the check. A script that can't pass the check gets no file. (Added 2026-10-27.)
 
 **Monitoring**
 
@@ -61,12 +70,13 @@ Accepted with decision record [005](../../decisions/005-site-hosting.md), 2026-1
 **Before the announcement**
 
 - AC10: Until the owner announces the site, every page tells search engines not to index it, and `robots.txt` disallows everything. A setting in Vercel turns this off at launch, with no code change.
+- AC15: Once indexing is on, search engines may index only the start page (the search page with no search, filter, sort or page set) and the About page. Results pages, record pages and the not-found page tell them not to index the page or follow its links, and `robots.txt` disallows `/api/`. `robots.txt` doesn't disallow those pages, since a search engine has to fetch a page to read its noindex. Built before indexing is turned on. (Added 2026-10-27.)
 - AC11: On the live site against the hosted snapshot: the counts for spec 002's fixed set of test queries match a DuckDB query on the same snapshot (spec 002, AC30), and the automated accessibility check finds no WCAG 2.2 AA violations on the start, results, no-results, record and About pages (spec 002, AC32).
 - AC12: Budgets for the live site, confirmed by the owner on 2026-10-19: the server response for spec 002's fixed set of test searches is under 500 ms at the 95th percentile, measured from the owner's laptop, and a shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test.
 
 **Running it**
 
-- AC13: The runbook (spec 003, AC21) covers the site, in plain terms: how it's deployed and rolled back, how to change the search key, how to change the firewall rule, how to turn on indexing at launch, and what happens at each provider's limit.
+- AC13: The runbook (spec 003, AC21) covers the site, in plain terms: how it's deployed and rolled back, how to change the search key, how to change the firewall rule and the download challenge, how to turn on indexing at launch, and what happens at each provider's limit.
 
 ## Done when
 
@@ -90,9 +100,10 @@ The brief's own success metrics wait for the analytics iteration.
 
 ## Open questions
 
-- **Name and domain.** The brief's open question. The site can go live on its `vercel.app` address. A domain is a fixed yearly cost and needs to be chosen before the announcement.
-- **Announcing before analytics.** The brief sets targets after four weeks of launch data. If the site is announced before the analytics iteration, those first weeks go unmeasured.
-- **What search engines may index after launch.** A record page lists author names, and names aren't identities: someone searching for a person could land on a record for someone else with the same name. One option is to let search engines index the start and About pages only, and keep results and record pages out of their indexes.
-- **A notice when the data is behind.** The footer shows the data date, which meets the freshness guardrail's "with the data date shown". While daily updates fail, as now, a visitor may not notice the date. The site could say when the data is more than a working day behind the source.
-- **Upstream's lossy export.** If upstream keeps the new format and its lost characters, daily updates can't resume, and this spec can't be done. That decision belongs to spec 003.
+- **Name and domain.** The brief's open question. The site can go live on its `vercel.app` address. A domain is a fixed yearly cost and needs to be chosen before the announcement. Answered by the owner, 2026-10-27: "Retraction search" at www.retraction-search.com (Decisions).
+- **Announcing before analytics.** The brief sets targets after four weeks of launch data. If the site is announced before the analytics iteration, those first weeks go unmeasured. Answered by the owner, 2026-10-27: announce without analytics, and accept the unmeasured weeks.
+- **What search engines may index after launch.** A record page lists author names, and names aren't identities: someone searching for a person could land on a record for someone else with the same name. One option is to let search engines index the start and About pages only, and keep results and record pages out of their indexes. Answered by the owner, 2026-10-27: that option (AC15).
+- **A notice when the data is behind.** The footer shows the data date, which meets the freshness guardrail's "with the data date shown". While daily updates fail, as now, a visitor may not notice the date. The site could say when the data is more than a working day behind the source. Answered by the owner, 2026-10-27: not before the announcement. Daily updates load again since 2026-10-26.
+- **Upstream's lossy export.** If upstream keeps the new format and its lost characters, daily updates can't resume, and this spec can't be done. That decision belongs to spec 003. Resolved for now: upstream's second export comes in UTF-8 without lost text since 2026-10-22, and loads since 2026-10-26 (spec 003, tasks 23–27). If the lossy export returns, the update stops at the download and search keeps the last good snapshot.
+- **A separate limit for downloads.** Answered 2026-10-27: Hobby allows one rate-limit rule, within its 3 custom firewall rules (Vercel WAF docs, checked 2026-10-27), and the general limit uses it. The owner chose a challenge on downloads instead (AC14).
 - **The budgets in AC12:** the owner confirmed them on 2026-10-19, from task 14's measurements of the live site (95th percentile 464 ms, median Largest Contentful Paint 2.27 s).

@@ -1,6 +1,6 @@
 # Product brief: Retraction search
 
-Status: draft, 2026-10-12. "Retraction search" is a working name.
+Status: draft, 2026-10-12. "Retraction search" began as a working name; the owner kept it on 2026-10-27, at www.retraction-search.com.
 
 **In one sentence:** Filtering the Retraction Watch database by reason, subject or notice type currently means downloading and cleaning a 65 MB CSV; this site offers those filters in a browser, with live counts and no result cap.
 
@@ -158,4 +158,4 @@ Phase 6+ candidates, each with the evidence that would justify it:
 ## Open questions
 
 - Which analytics tool records custom events without cookies, within the cost guardrail? Decide in the analytics iteration. Decision record 005 lists the options checked on 2026-10-15.
-- Name and domain.
+- Name and domain. Answered 2026-10-27: "Retraction search", at www.retraction-search.com (spec 004).
