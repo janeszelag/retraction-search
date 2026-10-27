@@ -123,7 +123,7 @@ Each one is written into this plan before the code that depends on it.
 | Site key reuse and creation, and that it never prints the key | Unit, with a fake Typesense | AC4 |
 | `RATE_LIMITS=off` allows every request, never opens a Redis connection and logs once | Unit | AC7 |
 | Robots and metadata with and without `SITE_INDEXING` | Unit | AC10 |
-| With `SITE_INDEXING` on: `robots.txt` disallows `/api/`; the start page and About page can be indexed; a results page, a record page and the not-found page can't | Unit, calling each page's metadata | AC15 |
+| With `SITE_INDEXING` on: `robots.txt` disallows `/api/`; the start page and About page can be indexed; a results page, a record page and the not-found page can't | Unit, on the metadata functions in `indexing.ts` that the pages call (the unit tests run only `.ts` files, and the pages are `.tsx`), then a local production build with the switch on | AC15 |
 | Health route: data date and total, and 503 when Typesense can't be reached | Unit | AC9 |
 | Site check and alert labels | Unit, like spec 003's alert tests | AC9 |
 | Noindex by default | Playwright, locally | AC10 |

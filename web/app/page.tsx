@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { FilterDrawer } from '@/components/filters/filter-drawer';
 import { DimWhilePending, PendingProvider } from '@/components/filters/pending';
 import { FilterSidebar } from '@/components/filters/sidebar';
@@ -9,6 +10,7 @@ import { ui } from '@/components/ui';
 import { DEFAULT_NOTICE_TYPE, FILTER_KEYS, type Query } from '@/lib/query/types';
 import { describeQuery, resultsAnnouncement } from '@/lib/query/describe';
 import { parseQuery, queryHref } from '@/lib/query/url';
+import { searchPageMetadata } from '@/lib/server/indexing';
 import { siteOrigin } from '@/lib/server/origin';
 import { checkLimit } from '@/lib/server/rate-limit';
 import { getMeta, runSearch } from '@/lib/server/search';
@@ -27,6 +29,12 @@ function activeFilters(query: Query): number {
     count += range.from !== null || range.to !== null ? 1 : 0;
   }
   return count + (query.revisions === 'include' ? 1 : 0) + (query.editorialStaff === 'exclude' ? 1 : 0);
+}
+
+// Search engines may index the start page once SITE_INDEXING is on, but not
+// results pages (spec 004 AC15).
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  return searchPageMetadata(await searchParams);
 }
 
 // The search page (spec 002). A server component: Next.js runs it on the

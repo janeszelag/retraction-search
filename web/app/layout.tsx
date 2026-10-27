@@ -3,7 +3,7 @@ import { IBM_Plex_Mono, Public_Sans } from 'next/font/google';
 import { connection } from 'next/server';
 import { NavigationMemory } from '@/components/navigation-memory';
 import { SiteFooter } from '@/components/site-footer';
-import { robotsMeta } from '@/lib/server/indexing';
+import { NOT_INDEXED } from '@/lib/server/indexing';
 import { siteOrigin } from '@/lib/server/origin';
 import { getMeta } from '@/lib/server/search';
 import './globals.css';
@@ -16,8 +16,9 @@ const plexMono = IBM_Plex_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400'
 export const metadata: Metadata = {
   title: 'Retraction search',
   description: 'A faceted search over the Retraction Watch database.',
-  // noindex, nofollow on every page until SITE_INDEXING is on (spec 004 AC10).
-  robots: robotsMeta(),
+  // noindex, nofollow on every page (spec 004 AC10). Once SITE_INDEXING is on,
+  // the start page and the About page override it (AC15).
+  robots: NOT_INDEXED,
 };
 
 // A server component: it runs on the server for every request, reads the data

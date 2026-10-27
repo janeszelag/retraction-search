@@ -252,11 +252,14 @@ Things to know before changing the numbers:
 
 ### Turn on indexing at launch
 
-Until launch, `robots.txt` disallows everything and every page carries `noindex, nofollow`. Spec 004's open questions decide what search engines may index; follow that decision.
+Until launch, `robots.txt` disallows everything and every page carries `noindex, nofollow`. With indexing on, search engines may index only the start page and the About page (spec 004 AC15). Results pages, record pages and the not-found page keep `noindex, nofollow`, so a search for a person's name doesn't land on a record about someone else with the same name, and crawlers don't walk the filter links. `robots.txt` then allows everything but `/api/`.
 
 1. In Vercel, **Settings**, **Environment Variables**: add `SITE_INDEXING` with the value `on`, for Production only.
 2. Redeploy production. `robots.txt` is built with the site, so it changes only with a new deployment.
-3. Check that `/robots.txt` no longer says `Disallow: /` and that the start page has no `<meta name="robots" content="noindex, nofollow">`.
+3. Check the live site:
+   - `/robots.txt` reads `Allow: /` and `Disallow: /api/`.
+   - The start page (`/`, with no search or filter) and `/about` have `<meta name="robots" content="index, follow">`.
+   - A search, such as `/?q=neuron`, and a record page have `<meta name="robots" content="noindex, nofollow">`.
 
 To turn it off again, delete the variable and redeploy.
 
