@@ -40,7 +40,7 @@ Other settings:
 |---|---|---|
 | `TYPESENSE_URL` | GitHub `search` secret, Vercel (Production and Preview), `.env.hosted` | The search server's HTTPS address |
 | `RATE_LIMITS` | Vercel (Production and Preview) | `off`: the site's own per-visitor limits stay off while the firewall rule does the job |
-| `SITE_INDEXING` | Vercel (Production) | Unset until launch, so `robots.txt` and every page ask search engines to stay away |
+| `SITE_INDEXING` | Vercel (Production) | `on` since 2026-10-27, so search engines may index the start and About pages only (spec 004 AC15). Without it, `robots.txt` and every page ask search engines to stay away |
 | `SITE_URL` | GitHub `site` environment, as a secret | The live site's address. A secret, not a variable: the workflow reads only secrets, and GitHub masks secrets in logs |
 
 The `search` and `site` environments only let workflows on `main` read their secrets.
@@ -313,6 +313,7 @@ Manual checks the specs asked for, so the next person knows what has been tried.
 | 2026-10-27 | Payment settings, again | Railway's limits unchanged. Vercel is on Hobby, with a card that pays only for the domain ($15 a year); a second rate-limit rule asks for a paid plan |
 | 2026-10-27 | Site check on the domain | Run 40447539869, started by hand after `SITE_URL` changed, passed. The old address redirects to the domain, so it would likely have passed too |
 | 2026-10-27 | Download rule | On Challenge, `curl` on two export links got HTTP 429 with `x-vercel-mitigated: challenge`, while `/` and `/api/health` answered 200; the site's Download CSV button failed the same way. Back on Log, an export answers 200 with the file, and a download in the owner's browser works |
+| 2026-10-27 | Indexing on | After the deployment with `SITE_INDEXING=on`, `robots.txt` reads `Allow: /` and `Disallow: /api/`. The start page and `/about` carry `index, follow`. A search, a filter, a sort, page 2, a record page and a missing page (404) carry `noindex, nofollow`. The default sort and an unknown sort show the start page, so they're indexable too |
 
 Still to do:
 

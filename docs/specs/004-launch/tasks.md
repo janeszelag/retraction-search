@@ -91,6 +91,7 @@ The work goes up in three pull requests:
 - [ ] **19. Launch.** After tasks 21–24, set `SITE_INDEXING=on`, redeploy, and announce the site. (AC10, AC15, done when)
   - Done when: `robots.txt` and the pages on the live site match AC15, and the brief's roadmap marks Phase 4 done. The closing pull request goes up.
   - So far, 2026-10-27: the owner set `SITE_INDEXING=on` for Production. It takes effect with the next production deployment, the merge of task 24's pull request.
+  - Checked, 2026-10-27: Vercel deployed the merge of task 24's pull request at 04:23 UTC. On www.retraction-search.com, `robots.txt` reads `Allow: /` and `Disallow: /api/`. `/`, `/?page=1`, `/?utm_source=newsletter` and `/about` carry `index, follow`. `/?q=neuron`, `/?page=2`, `/?sort=oldest`, `/?type=all`, `/?country=Germany` and `/record/7962` carry `noindex, nofollow`, and a missing page answers 404 with `noindex, nofollow`. `/?sort=newest`, the default order without a search, and an unknown sort show the start page, so they carry `index, follow` too. An export still answers 200 with the file. Still to do: the owner's announcement, and the brief's roadmap once Phase 4 is done (the week of updates, task 16, and the rollback drill, task 15).
 
 - [ ] **20. First month.** A month after the announcement, compare Vercel's allowances and Railway's egress with decision record 005's estimates. (Success metrics)
   - Done when: decision record 005 has the measured numbers, in a small pull request of its own.
