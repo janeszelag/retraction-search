@@ -9,10 +9,10 @@ Facts about providers carry the date they were checked. Prices and limits change
 | Piece | Where | What it does |
 |---|---|---|
 | Search server | Typesense 30.2 on Railway, Hobby plan | Holds the search index on a volume at `/data`, reached over HTTPS |
-| Daily update | GitHub Actions, `.github/workflows/update.yml` | Loads each new upstream snapshot into the search server, at 01:17 and 07:17 UTC |
+| Daily update | GitHub Actions, `.github/workflows/update.yml` | Loads each new upstream snapshot into the search server, scheduled for 01:17 and 07:17 UTC |
 | Website | Vercel, Hobby plan, deployed from `main` | Serves the pages. Its server code runs in Washington, D.C. (`iad1`), next to the search server, and is the only thing the site uses to search |
 | Firewall rule | Vercel, the project's Firewall | Limits each IP address to 300 requests a minute |
-| Site check | GitHub Actions, `.github/workflows/site-check.yml` | Loads the live site every 6 hours, at 02:47, 08:47, 14:47 and 20:47 UTC |
+| Site check | GitHub Actions, `.github/workflows/site-check.yml` | Loads the live site every 6 hours, scheduled for 02:47, 08:47, 14:47 and 20:47 UTC |
 | Tests | GitHub Actions, `.github/workflows/test.yml` | Runs `npm test` on every pull request and push to `main` |
 
 Every failure that matters opens or updates a GitHub issue, labeled by what failed:
@@ -49,7 +49,7 @@ The `search` and `site` environments only let workflows on `main` read their sec
 
 ## The daily update
 
-Upstream (Crossref's copy of the Retraction Watch database, https://gitlab.com/crossref/retraction-watch-data) commits a new `retraction_watch.csv` at about 23:00 UTC on working days. The update runs at 01:17 UTC, and again at 07:17 UTC in case the first run was delayed, dropped or failed. On most days the second run finds nothing new and ends within a minute.
+Upstream (Crossref's copy of the Retraction Watch database, https://gitlab.com/crossref/retraction-watch-data) commits a new `retraction_watch.csv` at about 23:00 UTC on working days. The update is scheduled for 01:17 UTC, and again for 07:17 UTC in case the first run was delayed, dropped or failed. GitHub starts scheduled runs hours late: from 2026-10-17 to 2026-10-26, the 01:17 run started between 05:33 and 06:09 UTC, and the 07:17 run between 11:36 and 14:40. Site checks from 2026-10-23 to 2026-10-27 started 2 to 7 hours after their times. On most days the second run finds nothing new and ends within a minute.
 
 Each run, in order:
 
@@ -106,14 +106,18 @@ Open the run from the link in the issue. The issue gives the step that failed an
 
 - **Upstream is stale** ("more than the limit of 3"): check the commits on GitLab. Over long holidays, such as late December, upstream may simply not commit: the check counts working days but knows no holidays. Wait, and the first run after upstream's next commit closes the issue. If upstream has moved the file, the pipeline needs a change.
 - **A change limit:** read the diff. If the changes are real edits, let one run past the limits (below). If they look broken, wait for the next upstream commit.
-- **Download or cleaning:** upstream's file may have changed format, as on 2026-10-15 (see [data issues](data-issues.md#file-format)). Compare the file with the last one that loaded. A format change needs a pipeline change; record it in data issues.
+- **Download:** the message says which check stopped it ([data issues](data-issues.md#checks-that-stop-a-run) lists them).
+  - "isn't valid UTF-8": upstream published a file that lost text, as on 2026-10-15 and from 2026-10-19 to 2026-10-21 (see [data issues](data-issues.md#file-format)). Nothing on this side can fix the file, and **accept_changes** doesn't skip this check. Wait: the first run after upstream's next UTF-8 file loads it and closes the issue.
+  - "Download failed", "is empty" or "doesn't match GitLab's file": the download broke on the way. Rerun.
+  - Any other download error, or one that comes back after a rerun: upstream's file may have changed format, as on 2026-10-22 (issue #24). Compare the file with the last one that loaded. A format change needs a pipeline change; record it in data issues.
+- **Cleaning:** upstream's file may have changed format, as on 2026-10-15. Compare the file with the last one that loaded. A format change needs a pipeline change; record it in data issues.
 - **The check of stored records** failed twice: Typesense changed text it stored. Rerun once. If it fails again, see decision record 004.
 - **A check after the switch:** the alias already went back. Rerun once. If it fails again, the pipeline needs looking into; the message says which count differed.
 - **A timeout or a cancelled run:** rerun.
 
 ### Rerun a failed day
 
-A failed 01:17 run is retried at 07:17 by the schedule. To rerun at once, after fixing the cause:
+A failed first run is retried by the schedule's second run, six to eight hours later. To rerun at once, after fixing the cause:
 
 1. Open the repository's **Actions** tab, then **Update** in the list of workflows.
 2. Click **Run workflow**, leave the branch on `main` and every input as it is, and click **Run workflow**.
@@ -293,6 +297,7 @@ Manual checks the specs asked for, so the next person knows what has been tried.
 | 2026-10-19 | Production opened | Searches the hosted snapshot without a login; `robots.txt` disallows everything; pages carry `noindex` |
 | 2026-10-19 | Site check | Passed; failed on a missing path and opened issue #22; passed again and closed it. The address showed in neither the logs nor the issue |
 | 2026-10-19 | Live checks | 49 search checks pass on the hosted snapshot; no accessibility violations on five pages; searches 464 ms at the 95th percentile; Largest Contentful Paint 2.27 s |
+| 2026-10-26 | First load of upstream's second export, started by hand | Loaded upstream commit `a987928a` (2026-10-23) in 2 minutes, with 73 records added and 145 changed, and closed issue #24. The next scheduled run said up to date, and asked GitHub to keep both schedules on. No part of the admin key, and not the server's host, appears in either run's log or the issue |
 
 Still to do:
 
