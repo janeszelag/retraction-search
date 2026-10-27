@@ -1,6 +1,6 @@
 # 005: Vercel Hobby and a firewall rule for the first release
 
-Status: accepted, 2026-10-17. Drafted 2026-10-15; on 2026-10-17 the site's own rate limits and analytics moved to later iterations. Changed 2026-10-27 with the owner's approval: the account has a card for the domain, and downloads get a firewall challenge (spec 004, AC8 and AC14).
+Status: accepted, 2026-10-17. Drafted 2026-10-15; on 2026-10-17 the site's own rate limits and analytics moved to later iterations. Changed 2026-10-27 with the owner's approval: the account has a card for the domain, and a second firewall rule logs downloads (spec 004, AC8 and AC14).
 
 ## Context
 
@@ -14,7 +14,7 @@ Status: accepted, 2026-10-17. Drafted 2026-10-15; on 2026-10-17 the site's own r
 
 **Site: Vercel Hobby,** deployed from `main` with `web` as the root directory. Its server code runs in a single region, the one closest to the Railway search server. Hobby doesn't bill usage: past a limit, Vercel pauses the feature instead. The account had no payment method until 2026-10-27, when buying the domain added a card. The card pays for the domain only.
 
-**Limits in the first release: one Vercel firewall rate-limit rule per IP address.** It needs no code, account or store, and stops a flood before any server code runs. The site's own per-visitor limits (spec 002, AC28) are switched off on the live site, so the first release needs no Redis. Added 2026-10-27: a second firewall rule, not a rate limit, challenges every download request with Vercel's browser check, so a script can't fetch the full file in a loop (spec 004, AC14).
+**Limits in the first release: one Vercel firewall rate-limit rule per IP address.** It needs no code, account or store, and stops a flood before any server code runs. The site's own per-visitor limits (spec 002, AC28) are switched off on the live site, so the first release needs no Redis. Added 2026-10-27: a second firewall rule, not a rate limit, logs every download request, so the firewall shows how many there are (spec 004, AC14). A challenge was tried first, and it stopped the site's own download button too, since a background fetch can't pass Vercel's browser check. A second rate limit needs a paid plan.
 
 **Later iterations, each with its own decision when it starts:**
 
@@ -89,7 +89,7 @@ The Hobby allowance most likely to run out first is 10 GB of fast origin transfe
 ## Consequences
 
 - Spec 002's per-visitor limits (AC28) are off on the live site until the rate-limit iteration. Locally they stay on, with their tests. `CLAUDE.md`'s hard constraint now reads that each visitor's requests are rate-limited, which the firewall rule does.
-- The firewall rule answers with Vercel's plain 429 page, not spec 002's notice with the time to try again. It can't limit downloads separately, since Hobby allows one rule with a window of at most 10 minutes. Downloads get a challenge instead (2026-10-27), which stops scripts that can't pass Vercel's browser check, but not one that drives a real browser.
+- The firewall rule answers with Vercel's plain 429 page, not spec 002's notice with the time to try again. It can't limit downloads separately, since Hobby allows one rule with a window of at most 10 minutes. A challenge on downloads (2026-10-27) stopped the site's own download button as well as scripts, so the second rule only logs downloads.
 - The owner opens one new account, on Vercel, with no payment method. Since 2026-10-27 it has a card, for the domain. Upgrading to Pro or adding a paid feature is then a click away, so `CLAUDE.md`'s rule applies: no paid service without a decision record giving its worst-case month.
 - Until the analytics iteration, the site keeps no count of visits or downloads.
 - If a Vercel allowance runs out, the site may be down for up to 30 days. The firewall rule makes that less likely. Moving to Pro would need a new decision record, since Pro bills by usage.

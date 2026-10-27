@@ -9,7 +9,7 @@ Visitor's browser
    │ HTTPS
    ▼
 Vercel: CDN and firewall ── one rate-limit rule per IP address (AC6),
-   │                           a challenge on downloads (AC14)
+   │                           a log of downloads (AC14)
    │
    ▼
 Next.js server code, one region (Vercel Hobby), own limits off (AC7)
@@ -36,7 +36,7 @@ These need accounts, so they're the owner's steps. None of them takes a payment 
 5. **Firewall rule:** rate limit by IP address on every path except `/_next/static/`, with the window and limit from spike S2.
 6. **GitHub:** create a `site` environment, limited to `main`. Add the secret `SITE_URL` once production is open: until then the site check would only meet Vercel's login, so without the secret it passes without loading anything.
 7. **Domain** (added 2026-10-27): the owner bought www.retraction-search.com through Vercel on 2026-10-27, which added a card to the account. Vercel put it on its own name servers and in the project's domains, with the bare domain redirecting to `www` (308, checked 2026-10-27). Then: set the project's `vercel.app` address to redirect to `www.retraction-search.com` too, and change the `SITE_URL` secret to `https://www.retraction-search.com`. Unverified: that Hobby lets the `vercel.app` address redirect.
-8. **Download challenge** (AC14, added 2026-10-27): a custom firewall rule for requests whose path starts with `/api/export`, first with the Log action to watch what it matches, as Vercel's docs advise, then with Challenge.
+8. **Download rule** (AC14, added 2026-10-27): a custom firewall rule for requests whose path starts with `/api/export`, with the Log action. It was briefly on Challenge (see "Limits").
 
 ## Spikes first
 
@@ -90,6 +90,8 @@ Each one is written into this plan before the code that depends on it.
 - **The site's own limits off.** With `RATE_LIMITS=off`, the rate-limit check allows every request without touching Redis, and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Today a missing `REDIS_URL` already lets requests through, but logs an error up to once a minute, which would clutter the live site's logs. `REDIS_URL` and `VISITOR_HASH_SALT` aren't needed when the limits are off.
 - **Locally** nothing changes: `.env.local` has no `RATE_LIMITS`, so the limits stay on, and the e2e limit and Redis-failure tests keep running.
 - **Downloads get a challenge** (AC14; owner, 2026-10-27). Hobby allows one rate-limit rule within its 3 custom firewall rules (Vercel WAF docs, checked 2026-10-27), and the general limit uses it, so downloads can't get a lower limit of their own. A custom rule can still log, deny, challenge, bypass or redirect. A second rule challenges every request whose path starts with `/api/export`, before the site's code runs. A browser passes Vercel's check once and then downloads as usual. A script that can't run the check gets the challenge page instead of the file, and the challenge costs no origin transfer. That stops the cheapest way of using up the 10 GB of origin transfer, a loop of full downloads (spike S1: about 150 to 750 of them), but not a script driving a real browser, which passes the check and then meets only the general limit. Blocking a client for a while after a failed check ("persistent actions") is for Pro and Enterprise only. A download limit of the site's own waits for the rate-limit iteration. Unverified until task 23: that a challenged download works in a browser, and how long a passed check lasts.
+- **Downloads are logged, not challenged** (AC14, changed 2026-10-27). On Challenge, `curl` got Vercel's check page with HTTP 429 instead of the file, as planned. But the site's Download CSV button fetches the file in the background, so a fetch can't run the check, and it got the same 429. It took that for the site's own limit and said "Each visitor can download 6 files per hour", its fallback when the answer doesn't say. The dashboard asks for a paid plan before a second rate limit (owner, 2026-10-27), so the owner set the rule to Log: it shows downloads in the firewall's traffic view and blocks nothing.
+- **The button and Vercel's answers** (AC16). The site's own limit answers 429 with JSON giving the limit (`limitedResponse`); Vercel answers with an HTML page and an `x-vercel-mitigated` header. The button now shows the download-limit notice only for the site's JSON. Any other 429, such as the firewall's rate limit, gets a note to wait a minute. At `x-vercel-mitigated: challenge`, from a firewall rule or from Vercel's own platform protection (which challenged a burst with HTTP 403 on 2026-10-19), the button opens the link, so the browser shows Vercel's check, passes it and downloads. What the visitor sees after the check, with the file arriving, is untested on the live site. The same change fixes "11:05 p.m.." in the notice, where the time already ends the sentence.
 
 ## Indexing switch (AC10)
 
@@ -127,8 +129,9 @@ Each one is written into this plan before the code that depends on it.
 | Health route: data date and total, and 503 when Typesense can't be reached | Unit | AC9 |
 | Site check and alert labels | Unit, like spec 003's alert tests | AC9 |
 | Noindex by default | Playwright, locally | AC10 |
+| The download button, given Vercel's 429 or its challenge instead of the file: no download-limit notice; a note to wait, or the link opened and the file downloaded. The site's own limit notice ends with one period | Playwright, locally, with Vercel's answers faked by `page.route` | AC16 |
 
-Manual checks, recorded in the runbook with their dates: preview protection (AC2), a search for the key in the page source, build log and repository (AC5), the firewall rule answering 429 past its limit (AC6), the payment settings of each provider (AC8), and one forced failure of the site check, by pointing it at a missing path for a run (AC9). Added 2026-10-27: a download in a browser after the challenge, and `curl` getting the challenge instead of the file (AC14), and the live site's `robots.txt` and page metadata once indexing is on (AC15).
+Manual checks, recorded in the runbook with their dates: preview protection (AC2), a search for the key in the page source, build log and repository (AC5), the firewall rule answering 429 past its limit (AC6), the payment settings of each provider (AC8), and one forced failure of the site check, by pointing it at a missing path for a run (AC9). Added 2026-10-27: the download rule logging downloads while a download in a browser works (AC14), and the live site's `robots.txt` and page metadata once indexing is on (AC15).
 
 ## Order of work
 
@@ -163,9 +166,9 @@ Made with the code:
 
 Made with the 2026-10-27 changes:
 
-- **`CLAUDE.md`:** the stack's site line names the domain and says the account's card pays only for it. With tasks 22 and 23, it also names the download challenge and what may be indexed.
-- **Decision record 005:** the card, the domain's yearly price, the download challenge, and the facts checked on 2026-10-27.
-- **Runbook,** with tasks 21–23: the domain, the download challenge, and what search engines may index.
+- **`CLAUDE.md`:** the stack's site line names the domain and says the account's card pays only for it. With task 22, it also says what may be indexed.
+- **Decision record 005:** the card, the domain's yearly price, the download rule, and the facts checked on 2026-10-27.
+- **Runbook,** with tasks 21–24: the domain, the download rule and why it isn't a challenge, and what search engines may index.
 
 ## Still open
 
