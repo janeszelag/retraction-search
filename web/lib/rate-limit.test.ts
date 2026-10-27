@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_RULES, formatClockTime, formatPeriod, formatWait, judge, windowOf } from './rate-limit';
+import { DEFAULT_RULES, endSentence, formatClockTime, formatPeriod, formatWait, judge, windowOf } from './rate-limit';
 
 const at = (time: string) => Date.parse(`2026-10-14T${time}Z`);
 
@@ -45,5 +45,10 @@ describe('wording the wait', () => {
     expect(formatClockTime(new Date(2026, 9, 14, 12, 0))).toBe('noon');
     expect(formatClockTime(new Date(2026, 9, 14, 0, 0))).toBe('midnight');
     expect(formatClockTime(new Date(2026, 9, 14, 0, 30))).toBe('12:30 a.m.');
+  });
+
+  it('ends a sentence after a clock time with one period', () => {
+    expect(endSentence('11:05 p.m.')).toBe('11:05 p.m.');
+    expect(endSentence('noon')).toBe('noon.');
   });
 });

@@ -47,6 +47,12 @@ export function formatPeriod(rule: LimitRule): string {
 }
 
 // A clock time in AP style, in the given date's local time zone: "3 p.m.", "3:45 p.m.", "noon".
+// Ends a sentence with a period, unless it already ends with one, as a time
+// in "a.m." or "p.m." does.
+export function endSentence(text: string): string {
+  return text.endsWith('.') ? text : `${text}.`;
+}
+
 export function formatClockTime(date: Date): string {
   const hours = date.getHours();
   const minutes = date.getMinutes();

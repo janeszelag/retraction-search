@@ -10,8 +10,8 @@ Facts about providers carry the date they were checked. Prices and limits change
 |---|---|---|
 | Search server | Typesense 30.2 on Railway, Hobby plan | Holds the search index on a volume at `/data`, reached over HTTPS |
 | Daily update | GitHub Actions, `.github/workflows/update.yml` | Loads each new upstream snapshot into the search server, scheduled for 01:17 and 07:17 UTC |
-| Website | Vercel, Hobby plan, deployed from `main` | Serves the pages. Its server code runs in Washington, D.C. (`iad1`), next to the search server, and is the only thing the site uses to search |
-| Firewall rule | Vercel, the project's Firewall | Limits each IP address to 300 requests a minute |
+| Website | Vercel, Hobby plan, deployed from `main` | Serves the pages at www.retraction-search.com. The bare domain and the project's `vercel.app` address redirect there. Its server code runs in Washington, D.C. (`iad1`), next to the search server, and is the only thing the site uses to search |
+| Firewall rules | Vercel, the project's Firewall | Limit each IP address to 300 requests a minute, and log every download request |
 | Site check | GitHub Actions, `.github/workflows/site-check.yml` | Loads the live site every 6 hours, scheduled for 02:47, 08:47, 14:47 and 20:47 UTC |
 | Tests | GitHub Actions, `.github/workflows/test.yml` | Runs `npm test` on every pull request and push to `main` |
 
@@ -236,17 +236,25 @@ Do this if the site key may have leaked, or after moving the search server. `npm
 
 ### Change the firewall rule
 
-The rule, published on 2026-10-19 (spike S2, plan 004):
+The rate limit, published on 2026-10-19 (spike S2, plan 004):
 
 - **If:** the request path does not start with `/_next/static/`
 - **Then:** rate limit, fixed window of 60 seconds, 300 requests, counted by IP address, answering 429 (Too Many Requests)
 
-To change it, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production.
+The download rule, published on 2026-10-27 (spec 004 AC14):
+
+- **If:** the request path starts with `/api/export`
+- **Then:** log. It blocks nothing, so the firewall's traffic view shows how many downloads there are and from where. Downloads count toward the rate limit like any other request.
+
+**Don't set the download rule to Challenge.** On 2026-10-27 it was, for a few minutes: `curl` got Vercel's check page (HTTP 429) instead of the file, but so did the site's Download CSV button, which fetches the file in the background and can't pass the check. The button now opens the link itself when Vercel challenges a download (AC16), but that's untested on the live site.
+
+To change a rule, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production.
 
 Things to know before changing the numbers:
 
 - Browsing faster than a person can sent at most 37 requests a minute, and as fast as a browser can go 230 (spike S2). The limit leaves room for several people behind one address, such as a university network, and for `npm run check:speed -- --url`.
-- Hobby's docs list one rate-limit rule per project (checked 2026-10-19), though the dashboard offered three.
+- Hobby allows one rate-limit rule within 3 custom rules in all (Vercel docs, checked 2026-10-27). The dashboard counts all custom rules as "2 / 3", and asks for a paid plan before a second rate limit.
+- The site's "Download limit reached" notice is the site's own limit (spec 002), which is off on the live site. When Vercel's rate limit stops a download, the button says "Too many requests from your network just now" instead (AC16).
 - Vercel checks Deployment Protection before firewall rules, so the rule never sees a request that the Vercel login turned away.
 - Vercel's own platform protection acts without any rule. A burst of about 100 requests a second from the laptop met its "Security Checkpoint" challenge after 130 requests, and the address stayed challenged for about 10 minutes (2026-10-19).
 
@@ -265,10 +273,10 @@ To turn it off again, delete the variable and redeploy.
 
 ### What happens at Vercel's limits
 
-The account is on Hobby and has no payment method, so it can't be billed (decision record 005). Each month, Hobby includes 1,000,000 function invocations, 1,000,000 CDN requests, 10 GB of fast origin transfer, 100 GB of fast data transfer and 4 hours of active CPU, among others (Vercel Hobby plan, checked 2026-10-19).
+The account is on Hobby, which doesn't bill usage (decision record 005). Since 2026-10-27 it has a card, which pays only for the domain: $15 a year, renewing each year unless renewal is turned off. Each month, Hobby includes 1,000,000 function invocations, 1,000,000 CDN requests, 10 GB of fast origin transfer, 100 GB of fast data transfer and 4 hours of active CPU, among others (Vercel Hobby plan, checked 2026-10-19).
 
 - **Over an allowance,** Vercel stops that feature "in most cases" until 30 days have passed. What visitors see then is unverified.
-- **The most likely to run out** is 10 GB of fast origin transfer. It covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the risk; downloads have no limit of their own yet.
+- **The most likely to run out** is 10 GB of fast origin transfer. It covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the risk; downloads have no limit of their own yet, and the download rule only logs them.
 - **The firewall rule's own allowance** is 1,000,000 requests a month on Hobby.
 - **Runtime logs** on Hobby go back 1 hour.
 
@@ -301,6 +309,10 @@ Manual checks the specs asked for, so the next person knows what has been tried.
 | 2026-10-19 | Site check | Passed; failed on a missing path and opened issue #22; passed again and closed it. The address showed in neither the logs nor the issue |
 | 2026-10-19 | Live checks | 49 search checks pass on the hosted snapshot; no accessibility violations on five pages; searches 464 ms at the 95th percentile; Largest Contentful Paint 2.27 s |
 | 2026-10-26 | First load of upstream's second export, started by hand | Loaded upstream commit `a987928a` (2026-10-23) in 2 minutes, with 73 records added and 145 changed, and closed issue #24. The next scheduled run said up to date, and asked GitHub to keep both schedules on. No part of the admin key, and not the server's host, appears in either run's log or the issue |
+| 2026-10-27 | Domain | www.retraction-search.com answers over HTTPS. The bare domain and the project's `vercel.app` address answer 308 to it, keeping the path and query |
+| 2026-10-27 | Payment settings, again | Railway's limits unchanged. Vercel is on Hobby, with a card that pays only for the domain ($15 a year); a second rate-limit rule asks for a paid plan |
+| 2026-10-27 | Site check on the domain | Run 40447539869, started by hand after `SITE_URL` changed, passed. The old address redirects to the domain, so it would likely have passed too |
+| 2026-10-27 | Download rule | On Challenge, `curl` on two export links got HTTP 429 with `x-vercel-mitigated: challenge`, while `/` and `/api/health` answered 200; the site's Download CSV button failed the same way. Back on Log, an export answers 200 with the file, and a download in the owner's browser works |
 
 Still to do:
 

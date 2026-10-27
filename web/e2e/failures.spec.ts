@@ -56,6 +56,45 @@ test('past the download limit, the page says when to download again (AC28)', asy
   }
   await button.click();
   await expect(page.getByText('Download limit reached')).toBeVisible();
-  await expect(page.getByText(/Each visitor can download 2 files per hour\. You can download again at .+\. Searching still works\./)).toBeVisible();
+  // One period after the time, also when it ends in "a.m." or "p.m.".
+  await expect(
+    page.getByText(/Each visitor can download 2 files per hour\. You can download again at (\d{1,2}(:\d{2})? [ap]\.m\.|noon\.|midnight\.) Searching still works\./),
+  ).toBeVisible();
   await expect(button).toHaveAttribute('aria-disabled', 'true');
+});
+
+// Vercel's firewall answers some requests itself, before the site's code runs
+// (spec 004 AC6). These fake its answers, since the local site has no firewall.
+test('a 429 from Vercel’s firewall isn’t taken for the download limit (spec 004)', async ({ page }) => {
+  await page.route('**/api/export**', (route) =>
+    route.fulfill({ status: 429, contentType: 'text/html', headers: { 'x-vercel-mitigated': 'deny' }, body: '<!doctype html><title>429</title>' }),
+  );
+  await page.goto('/?q=neuron');
+  const button = page.getByRole('link', { name: 'Download CSV' });
+  await button.click();
+  await expect(page.getByText('Too many requests from your network just now. Wait a minute and try again.')).toBeVisible();
+  await expect(page.getByText('Download limit reached')).toHaveCount(0);
+  await expect(button).not.toHaveAttribute('aria-disabled', 'true');
+});
+
+test('a challenge from Vercel opens the download link, so the browser can pass it (spec 004)', async ({ page }) => {
+  let requests = 0;
+  await page.route('**/api/export**', (route) => {
+    requests += 1;
+    // The page's own fetch meets the challenge; the browser, opening the link, gets the file.
+    return requests === 1
+      ? route.fulfill({ status: 429, contentType: 'text/html', headers: { 'x-vercel-mitigated': 'challenge' }, body: '<!doctype html><title>Checkpoint</title>' })
+      : route.fulfill({
+          status: 200,
+          contentType: 'text/csv',
+          headers: { 'Content-Disposition': 'attachment; filename="retraction-search-2026-10-23.csv"' },
+          body: 'Record ID\n1\n',
+        });
+  });
+  await page.goto('/?q=neuron');
+  const download = page.waitForEvent('download');
+  await page.getByRole('link', { name: 'Download CSV' }).click();
+  expect((await download).suggestedFilename()).toBe('retraction-search-2026-10-23.csv');
+  expect(requests).toBe(2);
+  await expect(page.getByText('Download limit reached')).toHaveCount(0);
 });
