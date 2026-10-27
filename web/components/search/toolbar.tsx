@@ -5,10 +5,11 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { DownloadIcon } from '@/components/icons';
 import { ui } from '@/components/ui';
-import { formatClockTime, formatPeriod } from '@/lib/rate-limit';
+import { endSentence, formatClockTime, formatPeriod } from '@/lib/rate-limit';
 
 const DOWNLOAD_UNAVAILABLE = 'Search is unavailable right now, so the file can’t be made. Try again in a few minutes.';
 const DOWNLOAD_FAILED = 'The download stopped before the file was complete. Try again.';
+const TOO_MANY_REQUESTS = 'Too many requests from your network just now. Wait a minute and try again.';
 
 // retraction-search-2026-10-09.csv, from `attachment; filename="…"`.
 function fileName(disposition: string | null): string {
@@ -22,7 +23,13 @@ interface DownloadLimit {
   windowSeconds: number;
 }
 
-async function readLimit(response: Response): Promise<DownloadLimit> {
+// The site's own limit answers 429 with JSON saying what the limit is. Vercel's
+// firewall can also answer 429, before the site's code runs, with a page of its
+// own (spec 004 AC6). That isn't the download limit, so it gives null.
+async function readLimit(response: Response): Promise<DownloadLimit | null> {
+  if (!response.headers.get('Content-Type')?.includes('application/json')) {
+    return null;
+  }
   const body = (await response.json().catch(() => ({}))) as { max?: number; windowSeconds?: number };
   const retryAfter = Number(response.headers.get('Retry-After')) || 3600;
   return { until: Date.now() + retryAfter * 1000, max: body.max ?? 6, windowSeconds: body.windowSeconds ?? 3600 };
@@ -99,9 +106,21 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
     show('Preparing the file…');
     try {
       const response = await fetch(downloadHref, { signal: controller.signal });
-      if (response.status === 429) {
+      // Vercel can answer with its browser check instead of the file, which a
+      // fetch can't pass. Opening the link lets the browser pass it and download.
+      if (response.headers.get('x-vercel-mitigated') === 'challenge') {
         show('');
-        setLimit(await readLimit(response));
+        window.location.assign(downloadHref);
+        return;
+      }
+      if (response.status === 429) {
+        const reached = await readLimit(response);
+        if (reached) {
+          show('');
+          setLimit(reached);
+        } else {
+          flash(TOO_MANY_REQUESTS);
+        }
         return;
       }
       if (!response.ok || !response.body) {
@@ -159,7 +178,7 @@ export function Toolbar({ sort, citation, downloadHref }: { sort: ReactNode; cit
           <p className="font-bold">Download limit reached</p>
           <p className="mt-1 text-sm">
             Each visitor can download {limit.max} files per {formatPeriod({ max: limit.max, windowSeconds: limit.windowSeconds })}. You can download again
-            at {formatClockTime(new Date(limit.until))}. Searching still works.
+            at {endSentence(formatClockTime(new Date(limit.until)))} Searching still works.
           </p>
         </div>
       )}
