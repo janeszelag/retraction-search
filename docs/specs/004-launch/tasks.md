@@ -1,6 +1,6 @@
 # Tasks 004: Launch
 
-Status: in progress, 2026-10-18. Tasks 1–8 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
+Status: in progress, 2026-10-19. Tasks 1–14 are done. Follows [plan 004](plan.md). Work one task at a time, and tick a task off once its "done when" check passes. If a spike or task shows the spec can't be met as written, stop and propose a spec change first.
 
 The work goes up in three pull requests:
 
@@ -46,40 +46,62 @@ The work goes up in three pull requests:
 
 **Going live**
 
-- [ ] **9. Production settings.** The owner adds `RATE_LIMITS=off` to Production and Preview, gives Preview the same Typesense variables, and creates the GitHub `site` environment, limited to `main`, without `SITE_URL` for now, so the site check passes without loading anything while production is behind the login. (AC1, AC2, AC5)
+- [x] **9. Production settings.** The owner adds `RATE_LIMITS=off` to Production and Preview, gives Preview the same Typesense variables, and creates the GitHub `site` environment, limited to `main`, without `SITE_URL` for now, so the site check passes without loading anything while production is behind the login. (AC1, AC2, AC5)
   - Done when: the merge of the first pull request deploys production. A preview of a test pull request asks for a Vercel login in a private window. A search of the page source, the build log and the repository finds no part of the search key.
+  - Result, 2026-10-19: the merge of pull request #19 deployed production, and so did the merge of #20, which turned off record prefetches (spike S2). Logged out, production answers every path with a redirect to Vercel's login. The `site` environment exists, limited to `main`, with no secrets. The preview of pull request #20 asked for a Vercel login in the owner's private window, and once logged in it searched the hosted server, so Preview has the Typesense variables. No 8-character piece of the hosted search key or admin key appears in any file or commit message on any branch or tag of the repository, in its issues and pull requests, or in production's build log, and none of the local key appears in a local production build. Once task 12 opened production, nor did any piece appear in the live site's answers: seven pages, including a record page and the 404 page, two client-side navigations, `robots.txt`, the health route, a value search, a small download, and the 12 scripts and stylesheets the pages load.
 
-- [ ] **10. Spike S2 and the firewall rule.** Count the requests in the busiest minute of the e2e tests, then the owner adds the rate-limit rule by IP address on every path except `/_next/static/`. Write the count, the window and the limit into the plan. (AC6)
+- [x] **10. Spike S2 and the firewall rule.** Count the requests in the busiest minute of the e2e tests, then the owner adds the rate-limit rule by IP address on every path except `/_next/static/`. Write the count, the window and the limit into the plan. (AC6)
   - Done when: a short burst from the laptop, past the limit, gets HTTP 429, and the owner browses quickly through results and records without meeting it.
+  - Result, 2026-10-19: spike S2's counts are in the plan. The busiest minute of fast browsing was 217 requests, 82% of them record prefetches, which pull request #20 turned off; without them it was 37. The owner published the rule on 2026-10-19: a fixed 60-second window, 300 requests per IP address, every path that doesn't start with `/_next/static/`, and 429 over the limit. Two bursts of 400 and 650 logged-out requests from the laptop all got Vercel's login redirect, none a 429: Vercel checks deployment protection before the project's firewall rules (Vercel docs, checked 2026-10-19). Once task 12 opened production, a burst of 650 requests for `robots.txt`, 10 at a time, got 130 answers before Vercel's own platform protection answered the rest with its "Security Checkpoint" challenge (HTTP 403, `x-vercel-mitigated: challenge`), and kept challenging the laptop's address for about 10 minutes. The rule never saw those. A slower run of 8 requests a second then got 296 answers and then HTTP 429 (`Too Many Requests`, `x-vercel-mitigated: deny`) after 37.5 seconds, so the rule's limit of 300 a minute holds. The owner then browsed results and records quickly and never met the limit or a challenge.
 
-- [ ] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
+- [x] **11. Cost check.** The owner confirms Railway's $50 hard limit and $10 alert, and that the Vercel account has no payment method. (AC8)
   - Done when: the check and its date are recorded under this task, and move into the runbook with task 15.
+  - Result, 2026-10-19: the owner confirmed Railway's billing limits are set, and that the Vercel account has no payment method. The owner plans to buy the domain from Vercel (task 17), which puts a card on the account. Vercel's docs (checked 2026-10-19) say Hobby has no billing cycles, and that going over an allowance pauses the feature for up to 30 days rather than charging, so the card would pay only for what the owner buys, such as the domain and its renewal. AC8 and decision record 005 say "no payment method", so task 17 proposes that change before the purchase.
 
-- [ ] **12. Open production.** The owner switches Deployment Protection from All Deployments back to Standard Protection, so production opens and previews stay behind the login, with `SITE_INDEXING` still unset. (AC1, AC3, AC10)
+- [x] **12. Open production.** The owner switches Deployment Protection from All Deployments back to Standard Protection, so production opens and previews stay behind the login, with `SITE_INDEXING` still unset. (AC1, AC3, AC10)
   - Done when: in a private window the site searches the hosted server, and its footer shows the hosted snapshot's data date and commit. `robots.txt` disallows everything, and pages carry `noindex`.
+  - Result, 2026-10-19: the owner switched to Standard Protection with `SITE_INDEXING` unset. Without a login, the start page, a search, the About page, `robots.txt` and the health route answered HTTP 200, with functions running in `iad1`. The start page showed 67,566 retractions, and the health route the same total with data date 2026-10-16. The footer gave the snapshot of 16 October 2026, commit `5338abda`, with 73,283 records, matching the hosted server: its alias points to the collection loaded on 17 October from upstream commit `5338abda`, which holds 73,283 records. `robots.txt` disallows everything, and the start page carries `noindex, nofollow`. The preview of pull request #20 still redirects to Vercel's login.
 
-- [ ] **13. Live site check.** The owner adds the secret `SITE_URL` to the `site` environment. Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
+- [x] **13. Live site check.** The owner adds the secret `SITE_URL` to the `site` environment. Start `site-check.yml` by hand, then once with `SITE_URL` pointing at a missing path, then again with the right address. (AC9)
   - Done when: the first run passes, the second opens a `site-check` issue with the step, the status and the time, and the third closes it. Neither the logs nor the issue show the address.
+  - Result, 2026-10-19: `SITE_URL` first went in as an environment variable, which the workflow doesn't read and GitHub doesn't mask, so a run passed without loading anything; the owner moved it to the environment's secrets. Run 1 then passed in 16 seconds: the site answered with the snapshot of 2026-10-16 and 67,566 records in the default view. Run 2, with `SITE_URL` pointing at a missing path, failed and opened issue #22, "Site check failed", labeled `site-check`, which names the step (the start page), the status (HTTP 404), the time and the run. Run 3, back on the right address, passed and closed the issue with a comment. GitHub masked the address in all three logs, and neither the issue nor the comment contains it.
 
-- [ ] **14. Live checks.** Run `check:search -- --server-env .env.hosted`, compare the live site's default total with it, run the `live` Playwright project, and run `check:speed -- --url` against the live site. (AC11, AC12)
+- [x] **14. Live checks.** Run `check:search -- --server-env .env.hosted`, compare the live site's default total with it, run the `live` Playwright project, and run `check:speed -- --url` against the live site. (AC11, AC12)
   - Done when: the counts match, axe finds no violations on the five pages, and the owner confirms AC12's budgets from the measured numbers, or a spec change is proposed.
+  - Result, 2026-10-19: the hosted snapshot, `2026-10-16-5338abda`, was downloaded and cleaned here (73,283 records, as on the hosted server). `check:search -- --server-env .env.hosted` passed all 49 checks. DuckDB counts 67,566 retractions that aren't revised versions, the live site's default total. The `live` Playwright project found no WCAG 2.2 AA violations on the start, results, no-results, record and About pages. `check:speed -- --url` on the live site, from the owner's laptop through Vercel's San Francisco edge: 95th percentile 464 ms across spec 002's 14 searches, against the 500 ms budget, though two searches alone were just over it (`q=of` 514 ms, all of two reasons 502 ms). Lighthouse's mobile test gave a median Largest Contentful Paint of 2.27 s over five runs, against 2.5 s, with scores of 95 to 99. The local miss in task 7 (2.76 s on a local production build) doesn't show on the live site.
 
 - [ ] **15. Runbook: the site.** After spec 003's task 17 writes `docs/runbook.md`, add the site section the plan lists: deploying and rolling back, changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. (AC13)
   - Done when: the owner follows it to roll production back to the previous deployment and forward again. The second pull request goes up.
+  - So far, 2026-10-19: [the runbook](../../runbook.md#the-website) has the site section: deploying, rolling back (checked against Vercel's docs on 2026-10-19), changing the search key and the firewall rule, turning on indexing, each provider's limits, and the dated checks from tasks 9–14. Still to do: the owner's rollback and undo.
+  - Changed 2026-10-27: the owner will do the rollback later, so the second pull request goes up without it, with the 2026-10-27 spec changes and task 22. This task is ticked in the close-out.
 
 **Close-out**
 
 - [ ] **16. A week of updates.** Once upstream's export loads again, the daily update keeps the hosted data current for seven consecutive days while the live site serves it. Spec 003's unattended week (its task 20) can be the same week. (Done when)
   - Done when: each day's hosted data date is recorded, from the live site's footer.
 
-- [ ] **17. Name and domain.** The owner chooses the site's name, and whether to buy a domain or keep the `vercel.app` address. (Open question)
+- [x] **17. Name and domain.** The owner chooses the site's name, and whether to buy a domain or keep the `vercel.app` address. (Open question)
   - Done when: the site answers at the chosen address over HTTPS, and decision record 005 records the domain's yearly price or the choice to keep the `vercel.app` address.
+  - Result, 2026-10-27: the owner keeps the name "Retraction search" and bought www.retraction-search.com through Vercel (registrar Name.com, Vercel's name servers) for $15 a year, which decision record 005 records. The site answers there over HTTPS, and the bare domain answers 308 to `https://www.retraction-search.com/`.
 
 - [ ] **18. Questions before the announcement.** The owner decides the spec's remaining open questions: announcing before the analytics iteration, what search engines may index, and a notice when data is behind. (Open questions)
   - Done when: each answer is recorded in the spec. An answer that needs new work becomes a spec change or a later iteration before the announcement.
+  - Answered 2026-10-27: announce without analytics and without a notice when data is behind; search engines index the start and About pages only (AC15); downloads get a firewall challenge (AC14). Tasks 21–23 do the new work.
 
-- [ ] **19. Launch.** Set `SITE_INDEXING=on`, redeploy, and announce the site. (AC10, done when)
-  - Done when: `robots.txt` and the pages allow indexing as task 18 decided, and the brief's roadmap marks Phase 4 done. The closing pull request goes up.
+- [ ] **19. Launch.** After tasks 21–23, set `SITE_INDEXING=on`, redeploy, and announce the site. (AC10, AC15, done when)
+  - Done when: `robots.txt` and the pages on the live site match AC15, and the brief's roadmap marks Phase 4 done. The closing pull request goes up.
 
 - [ ] **20. First month.** A month after the announcement, compare Vercel's allowances and Railway's egress with decision record 005's estimates. (Success metrics)
   - Done when: decision record 005 has the measured numbers, in a small pull request of its own.
+
+**Added 2026-10-27,** after the owner bought the domain and answered task 18's questions. Tasks 21–23 come before task 19.
+
+- [ ] **21. The domain's settings and the cost check again.** The owner's steps: in Vercel's domains, redirect the project's `vercel.app` address to `www.retraction-search.com`; in GitHub's `site` environment, change the `SITE_URL` secret to `https://www.retraction-search.com`; in Vercel's billing settings, check the plan is still Hobby. Then the runbook names the domain, and its cost section and dated checks say the account has a card for the domain only. (Task 17, AC8, AC9)
+  - Done when: the `vercel.app` address and the bare domain both answer 308 to `https://www.retraction-search.com/`, a site check started by hand passes, and the runbook records AC8's check again with its date.
+
+- [x] **22. Index only the start and About pages.** In `indexing.ts`, with `SITE_INDEXING` on, `robots.txt` allows `/` and disallows `/api/`. The root layout keeps `noindex, nofollow` for every page, and the start page and the About page override it, as the plan's "Indexing switch" section says. The runbook's "Turn on indexing at launch" says what gets indexed. (AC15)
+  - Done when: the plan's tests for AC15 pass with `npm test`, and a local production build with `SITE_INDEXING=on` serves the start and About pages without `noindex`, a results page, a record page and a missing page with it, and `robots.txt` with `Disallow: /api/`.
+  - Result, 2026-10-27: `npm test` passes (258 pipeline tests, 315 web tests), and the 32 browser tests pass with the switch off. On a local production build with `SITE_INDEXING=on`, against the local snapshot: `/`, `/?utm_source=newsletter` and `/about` carry `index, follow`; `/?q=neuron`, `/?page=2`, `/?country=China` and `/record/7962` carry `noindex, nofollow`; a missing page and a missing record answer 404 with `noindex, nofollow`, beside Next.js's own `noindex`. Every tag is in the page's head. `robots.txt` reads `Allow: /` and `Disallow: /api/`. The runbook's "Turn on indexing at launch" lists what to check on the live site.
+
+- [ ] **23. Download challenge.** The owner adds the custom firewall rule from the plan's setup, step 8: Log first, then Challenge. The runbook's firewall section adds it. (AC14, AC13)
+  - Done when: a download from the live site in a browser works after the check, `curl` on the same export address gets the challenge instead of the file, and the runbook records the check with its date.

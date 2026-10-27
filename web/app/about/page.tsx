@@ -6,6 +6,7 @@ import { ui } from '@/components/ui';
 import { formatDataDate } from '@/lib/format/dates';
 import { formatNumber } from '@/lib/format/numbers';
 import { CROSSREF_LICENSES, DATA_ISSUES, DATA_SOURCE, REPOSITORY, RW_METHODOLOGY, RW_USER_GUIDE, issueUrl } from '@/lib/links';
+import { indexedMetadata } from '@/lib/server/indexing';
 import { getMeta } from '@/lib/server/search';
 
 // The About page (spec 002 AC26): where the data comes from, its license,
@@ -13,7 +14,8 @@ import { getMeta } from '@/lib/server/search';
 // hide, and how to report a missing retraction. The filters' "Read more"
 // links point at the section ids here.
 
-export const metadata: Metadata = { title: 'About this data · Retraction search' };
+// One of the two pages search engines may index once SITE_INDEXING is on (spec 004 AC15).
+export const metadata: Metadata = { title: 'About this data · Retraction search', ...indexedMetadata() };
 
 const external = { target: '_blank', rel: 'noopener' } as const;
 

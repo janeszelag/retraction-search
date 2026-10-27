@@ -1,6 +1,6 @@
 # Plan 004: Launch
 
-Status: approved by the owner, 2026-10-17. How to build [spec 004](spec.md). Decision record [005](../../decisions/005-site-hosting.md) (Vercel Hobby, one firewall rule, no Redis or analytics in the first release) applies.
+Status: approved by the owner, 2026-10-17. Changed 2026-10-27 with the owner's approval, for the domain, the download challenge (AC14) and what search engines may index (AC15). How to build [spec 004](spec.md). Decision record [005](../../decisions/005-site-hosting.md) (Vercel Hobby, one firewall rule, no Redis or analytics in the first release) applies.
 
 ## How it fits together
 
@@ -8,7 +8,8 @@ Status: approved by the owner, 2026-10-17. How to build [spec 004](spec.md). Dec
 Visitor's browser
    │ HTTPS
    ▼
-Vercel: CDN and firewall ── one rate-limit rule per IP address (AC6)
+Vercel: CDN and firewall ── one rate-limit rule per IP address (AC6),
+   │                           a challenge on downloads (AC14)
    │
    ▼
 Next.js server code, one region (Vercel Hobby), own limits off (AC7)
@@ -26,7 +27,7 @@ The site's code is spec 002's. This phase adds a setting that turns its own limi
 
 ## Owner's setup
 
-These need accounts, so they're the owner's steps. None of them takes a payment method.
+These need accounts, so they're the owner's steps. None of them takes a payment method. Buying the domain did (step 7).
 
 1. **Railway:** note the search server's region (service settings). The site's functions go in the nearest Vercel region.
 2. **Site key:** run `npm run site-key -- --server-env .env.hosted`. It writes `TYPESENSE_SEARCH_KEY` into that file.
@@ -34,6 +35,8 @@ These need accounts, so they're the owner's steps. None of them takes a payment 
 4. **Vercel variables,** for Production and Preview: `TYPESENSE_URL`, `TYPESENSE_SEARCH_KEY` (marked sensitive) and `RATE_LIMITS=off`. `SITE_INDEXING` stays unset until launch.
 5. **Firewall rule:** rate limit by IP address on every path except `/_next/static/`, with the window and limit from spike S2.
 6. **GitHub:** create a `site` environment, limited to `main`. Add the secret `SITE_URL` once production is open: until then the site check would only meet Vercel's login, so without the secret it passes without loading anything.
+7. **Domain** (added 2026-10-27): the owner bought www.retraction-search.com through Vercel on 2026-10-27, which added a card to the account. Vercel put it on its own name servers and in the project's domains, with the bare domain redirecting to `www` (308, checked 2026-10-27). Then: set the project's `vercel.app` address to redirect to `www.retraction-search.com` too, and change the `SITE_URL` secret to `https://www.retraction-search.com`. Unverified: that Hobby lets the `vercel.app` address redirect.
+8. **Download challenge** (AC14, added 2026-10-27): a custom firewall rule for requests whose path starts with `/api/export`, first with the Log action to watch what it matches, as Vercel's docs advise, then with Challenge.
 
 ## Spikes first
 
@@ -62,7 +65,7 @@ Each one is written into this plan before the code that depends on it.
   - **Prefetches are most of it:** 301 of the 367 requests at the human pace, and 1,687 of 2,026 at full speed. Each record link in the results prefetches `/record/<id>` as it scrolls into view, so a results page read to the end sends about 50. For a server-rendered page with no loading state, the prefetch answer is 299 bytes and holds only the route tree, not the record, so opening the record still makes its own request.
   - **Allowances:** every prefetch is also a CDN request and a request the firewall rule allows, and probably a function invocation (unverified). Hobby includes 1,000,000 of each a month (decision record 005), so with prefetches a results page read to the end uses about 50 of each.
   - **With record prefetches off** (see "Limits"), the same script on a new build sent no prefetches. At the fast human pace: 66 requests in two minutes, at most 37 in any 60 seconds and 11 in any 10 seconds. As fast as the browser goes: at most 230 in any 60 seconds and 42 in any 10 seconds. About half of what's left is `/icon.svg`, which the browser checks again after most navigations.
-  - **Proposed rule:** a 60-second window and 300 requests per IP address. That's about eight times the fast human minute, which leaves room for several people behind one address, such as a university network, and for `check:speed -- --url` (about 150 requests over a couple of minutes). Task 10 records what the owner sets.
+  - **The rule:** a fixed 60-second window and 300 requests per IP address, on every path that doesn't start with `/_next/static/`, answering 429 over the limit. That's about eight times the fast human minute, which leaves room for several people behind one address, such as a university network, and for `check:speed -- --url` (about 150 requests over a couple of minutes). The owner published it on 2026-10-19.
 
 ## Build and deploy (AC1, AC2)
 
@@ -82,18 +85,23 @@ Each one is written into this plan before the code that depends on it.
 
 ## Limits (AC6, AC7)
 
-- **Firewall rule.** Hobby allows one rate-limit rule, counted by IP address, with a fixed window of 10 seconds to 10 minutes (Vercel WAF docs, checked 2026-10-15). Vercel sets the address itself and ignores a client's `X-Forwarded-For`. Over the limit, Vercel answers with its own 429 page. The window and limit come from spike S2, and the runbook records them.
+- **Firewall rule.** Hobby allows one rate-limit rule, counted by IP address, with a fixed window of 10 seconds to 10 minutes (Vercel WAF docs, checked 2026-10-15). Vercel sets the address itself and ignores a client's `X-Forwarded-For`. Over the limit, Vercel answers with its own 429 page. The window and limit come from spike S2, and the runbook records them. Vercel checks deployment protection before the project's firewall rules (Vercel Firewall concepts, checked 2026-10-19), so the rule never sees a request that Vercel Authentication turns away, and the check that it answers 429 waits until production is open. Vercel's platform protection also acts without any rule: on 2026-10-19, a burst of about 100 requests a second from one address met its "Security Checkpoint" challenge (HTTP 403) after 130 requests, before the rule's limit, and the address stayed challenged for about 10 minutes. At a steady 8 requests a second, the rule answered 429 after 296.
 - **Record links don't prefetch** (spike S2; owner, 2026-10-18). Each record link in the results prefetched its record page as it scrolled into view, so a results page read to the end sent about 50 requests, each counted by the firewall rule. The prefetch held only the route tree, so turning it off, as the filter, page and search links already do, costs nothing when a record opens. A Playwright test scrolls through the results and checks that nothing is prefetched.
 - **The site's own limits off.** With `RATE_LIMITS=off`, the rate-limit check allows every request without touching Redis, and logs "Rate limits are off (RATE_LIMITS=off)" once per server start. Today a missing `REDIS_URL` already lets requests through, but logs an error up to once a minute, which would clutter the live site's logs. `REDIS_URL` and `VISITOR_HASH_SALT` aren't needed when the limits are off.
 - **Locally** nothing changes: `.env.local` has no `RATE_LIMITS`, so the limits stay on, and the e2e limit and Redis-failure tests keep running.
-- **Downloads** get no limit of their own until the rate-limit iteration, since the one rule covers every path. Spike S1 measures how much of Vercel's allowance a download uses.
+- **Downloads get a challenge** (AC14; owner, 2026-10-27). Hobby allows one rate-limit rule within its 3 custom firewall rules (Vercel WAF docs, checked 2026-10-27), and the general limit uses it, so downloads can't get a lower limit of their own. A custom rule can still log, deny, challenge, bypass or redirect. A second rule challenges every request whose path starts with `/api/export`, before the site's code runs. A browser passes Vercel's check once and then downloads as usual. A script that can't run the check gets the challenge page instead of the file, and the challenge costs no origin transfer. That stops the cheapest way of using up the 10 GB of origin transfer, a loop of full downloads (spike S1: about 150 to 750 of them), but not a script driving a real browser, which passes the check and then meets only the general limit. Blocking a client for a while after a failed check ("persistent actions") is for Pro and Enterprise only. A download limit of the site's own waits for the rate-limit iteration. Unverified until task 23: that a challenged download works in a browser, and how long a passed check lasts.
 
 ## Indexing switch (AC10)
 
 - `app/robots.ts` returns `Disallow: /` unless `SITE_INDEXING` is `on`.
 - The root layout's metadata sets `robots: { index: false, follow: false }` unless `SITE_INDEXING` is `on`.
 - Vercel applies a changed variable on the next deployment, so turning indexing on is: set the variable, then redeploy from the dashboard. The runbook says so.
-- What stays out of search engines after launch is an open question in the spec. If the owner chooses to keep record and results pages out, the same switch covers them.
+- **After launch** (AC15; owner, 2026-10-27), search engines may index the start and About pages only:
+  - The root layout keeps `robots: { index: false, follow: false }` whether the switch is on or off. With the switch on, the start page and the About page override it with `{ index: true, follow: true }`. Results pages, record pages and the not-found page inherit the layout's noindex.
+  - The start page is the search page whose query has nothing set: `queryHref(parseQuery(searchParams))` is `/`. Any search, filter, sort or page makes it a results page.
+  - `nofollow` on results and record pages keeps crawlers from walking the filter links, where every combination is a new address and a new search. From the start page, they follow its links one step, to results and record pages that tell them to stop.
+  - `robots.txt` with the switch on: allow `/`, disallow `/api/`. It doesn't disallow results or record pages: a crawler has to fetch a page to read its noindex, and a search engine can list a disallowed address it finds through links, without its content.
+  - The start page lists the 50 newest retractions with their authors, so a search engine indexes whichever records were newest when it last crawled. That's one page of names, changing daily, against tens of thousands of record pages kept out.
 
 ## Monitoring (AC9)
 
@@ -115,11 +123,12 @@ Each one is written into this plan before the code that depends on it.
 | Site key reuse and creation, and that it never prints the key | Unit, with a fake Typesense | AC4 |
 | `RATE_LIMITS=off` allows every request, never opens a Redis connection and logs once | Unit | AC7 |
 | Robots and metadata with and without `SITE_INDEXING` | Unit | AC10 |
+| With `SITE_INDEXING` on: `robots.txt` disallows `/api/`; the start page and About page can be indexed; a results page, a record page and the not-found page can't | Unit, on the metadata functions in `indexing.ts` that the pages call (the unit tests run only `.ts` files, and the pages are `.tsx`), then a local production build with the switch on | AC15 |
 | Health route: data date and total, and 503 when Typesense can't be reached | Unit | AC9 |
 | Site check and alert labels | Unit, like spec 003's alert tests | AC9 |
 | Noindex by default | Playwright, locally | AC10 |
 
-Manual checks, recorded in the runbook with their dates: preview protection (AC2), a search for the key in the page source, build log and repository (AC5), the firewall rule answering 429 past its limit (AC6), the payment settings of each provider (AC8), and one forced failure of the site check, by pointing it at a missing path for a run (AC9).
+Manual checks, recorded in the runbook with their dates: preview protection (AC2), a search for the key in the page source, build log and repository (AC5), the firewall rule answering 429 past its limit (AC6), the payment settings of each provider (AC8), and one forced failure of the site check, by pointing it at a missing path for a run (AC9). Added 2026-10-27: a download in a browser after the challenge, and `curl` getting the challenge instead of the file (AC14), and the live site's `robots.txt` and page metadata once indexing is on (AC15).
 
 ## Order of work
 
@@ -128,6 +137,8 @@ Three pull requests, as in spec 003:
 1. **Local code:** site-key command, `RATE_LIMITS=off`, indexing switch, health route, site-check workflow, and their tests. Spike S1 can run alongside, since it deploys `main` as it is behind Vercel Authentication.
 2. **Live:** the owner's setup, spike S2, the firewall rule, then production protection off with indexing still off. Then the live checks (AC11, AC12) and the runbook's site section (AC13).
 3. **Close-out,** once daily updates load again: the week of updates, the name and domain, indexing on, and the announcement.
+
+Changed 2026-10-27: the owner moved the rollback drill (task 15) to later, so the second pull request goes up without it. It also carries the 2026-10-27 spec changes and AC15's code, since indexing can only be turned on once that code is deployed. Task 15 is ticked in the close-out.
 
 ## Trade-offs
 
@@ -150,7 +161,13 @@ Made with the code:
 - **Plan 002:** the rate-limit note on prefetches says the results' record links no longer prefetch.
 - **Runbook:** spec 003's task 17 writes it. This spec adds the site section afterwards (AC13).
 
+Made with the 2026-10-27 changes:
+
+- **`CLAUDE.md`:** the stack's site line names the domain and says the account's card pays only for it. With tasks 22 and 23, it also names the download challenge and what may be indexed.
+- **Decision record 005:** the card, the domain's yearly price, the download challenge, and the facts checked on 2026-10-27.
+- **Runbook,** with tasks 21–23: the domain, the download challenge, and what search engines may index.
+
 ## Still open
 
-- The open questions in the spec: name and domain, announcing before analytics, what search engines may index, a notice when data is behind, upstream's export and the budgets in AC12.
-- The firewall window and limit, from spike S2.
+- The spec's open questions were answered by the owner on 2026-10-27, and upstream's export loads again. The owner confirmed the budgets in AC12 on 2026-10-19.
+- How many rate-limit rules Hobby allows. Answered 2026-10-27: one, within 3 custom firewall rules in all. Vercel's docs say "Hobby projects can have one WAF Rate Limiting rule within their total of 3 custom firewall rules" (checked 2026-10-27), so the dashboard's "Rate Limit 0 / 3" of 2026-10-19 counted custom rules.

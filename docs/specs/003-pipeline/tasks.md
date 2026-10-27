@@ -64,7 +64,7 @@ The work goes up in three pull requests:
 
 **Hosted server**
 
-- [ ] **12. Railway setup and spike S3.** The owner's steps first: create the Railway account, subscribe to Hobby, set the $50 hard limit and the $10 alert, then create the service, volume, variables and domain as the plan lists. Then run the checks:
+- [x] **12. Railway setup and spike S3.** The owner's steps first: create the Railway account, subscribe to Hobby, set the $50 hard limit and the $10 alert, then create the service, volume, variables and domain as the plan lists. Then run the checks:
   - HTTPS, and HTTP 401 without a key
   - the port, a load from the laptop with `--server-env .env.hosted`, and the upload time
   - memory with one, two and three collections
@@ -72,6 +72,7 @@ The work goes up in three pull requests:
 
   Decide whether the hosted server keeps the previous collection (plan trade-off 4). (AC16, AC19)
   - Done when: the results and the decision are in the plan's spike list, and the runbook records each check with its date.
+  - Result, 2026-10-19: spike S3's results and the owner's decision to delete the previous collection have been in the plan's spike list since 2026-10-15. [The runbook](../../runbook.md#checks-and-their-dates) now records each check with its date: HTTPS and 401, the port, the load from the laptop, memory and a restart.
 
 - [x] **13. GitHub environment.** The owner creates the `search` environment, limits it to `main`, and adds the secrets `TYPESENSE_URL` and `TYPESENSE_ADMIN_KEY`. The owner also turns on email for failed workflows in GitHub's notification settings. (AC17)
   - Done when: the environment exists with both secrets, and only `main` can deploy to it.
@@ -79,22 +80,26 @@ The work goes up in three pull requests:
 
 **Daily workflow**
 
-- [ ] **14. Update workflow.** `.github/workflows/update.yml`. It has the two schedules, `workflow_dispatch` with `commit`, `force` and `accept_changes` passed through environment variables, `concurrency`, the `search` environment, the plan's permissions and a 30-minute timeout. Its steps install only the pipeline workspace, run the update, write the job summary and upload the artifact for 30 days. (AC12, AC13, AC17)
+- [x] **14. Update workflow.** `.github/workflows/update.yml`. It has the two schedules, `workflow_dispatch` with `commit`, `force` and `accept_changes` passed through environment variables, `concurrency`, the `search` environment, the plan's permissions and a 30-minute timeout. Its steps install only the pipeline workspace, run the update, write the job summary and upload the artifact for 30 days. (AC12, AC13, AC17)
   - Done when: a run started by hand loads the hosted server, and the job summary shows the diff. The artifact downloads, and a second run says "up to date". A search of the logs, the summary and the repository finds no part of the admin key.
   - Partly checked, 2026-10-16: the first run started by hand (run 38841398791, 02:37 UTC) installed only the pipeline's packages on Linux, added `summary.md` to the job summary and uploaded an artifact that downloads. No part of the admin key, and not the server's host, appears in its log, the artifact, issue #13 or the repository's history. It stopped at the download, because upstream's 2026-10-15 file changed format ([data issues](../../data-issues.md#file-format)). Still to check: a run that loads, with its diff, then "up to date".
+  - Result, 2026-10-26: run 40266778373, started by hand at the owner's request, loaded the 2026-10-23 file (`a987928a`) on the hosted server in 2 minutes. Its log gives the diff, 73 added, 0 removed and 145 changed, and the job summary step added `summary.md`, which holds the diff. Its artifact uploaded (6,010 bytes). The next run, scheduled (40278056168, 06:08 UTC), said the server already had the newest snapshot. No 8-character piece of the admin key, and not the server's host, appears in either run's log or in issue #24.
 
 - [ ] **15. Alerts.** On failure, comment on the open `daily-update` issue or open one with the step, the message and the run's link. On the next success, comment and close it. (AC14)
   - Done when: the plan's manual check passes. A run started with a commit that doesn't exist opens the issue, and the owner gets an email. The next run closes the issue.
   - Partly checked, 2026-10-16: the failed run above opened issue #13, "Daily update failed", with the step, the message and the run's link, so `gh` works on the runner. Still to check: the owner's email, and a successful run closing #13.
+  - So far, 2026-10-26: the scheduled run of 2026-10-17 loaded `5338abda` and closed #13, and run 40266778373 closed #24 with "Resolved: this run updated search to 2026-10-23 (upstream commit a987928a)" and the run's link. Still to check: the owner's email.
 
 - [ ] **16. Keepalive.** Every successful run calls the "enable workflow" endpoint. Every run checks the last commit on `main`, and from day 45 opens one warning issue. (AC15)
   - Done when: a unit test covers the date logic, and a run started by hand with the threshold lowered for that run opens the warning issue once. Tasks 12–16 go up as a pull request before this check and those of tasks 14 and 15 can run.
   - So far, 2026-10-16: on the failed run above, the warning step ran and opened nothing, as expected with a commit that day. The enable call runs only after a successful run, so it's unchecked.
+  - So far, 2026-10-26: after each successful run that day (40266778373, 40278056168, 40337851455), the enable call printed "Asked GitHub to keep update.yml and site-check.yml enabled." Still to check: a run started by hand with `warn_after_days` lowered opens the warning issue once.
 
 **Running it**
 
 - [ ] **17. Runbook.** `docs/runbook.md`, with the contents the plan lists, written for someone who hasn't run a server before. (AC21)
   - Done when: the owner reads it and follows its rollback steps once: load an older commit by hand, then the newest.
+  - So far, 2026-10-19: [`docs/runbook.md`](../../runbook.md) covers each item of AC21 and the plan's list, with spec 004's site section (its task 15). Still to do: the owner's reading and the rollback.
 
 - [ ] **18. Recovery check.** Delete the hosted server's collections, then start the workflow by hand. (AC19)
   - Done when: the run rebuilds the index from the CSV with no other steps, and the runbook records the check with its date.
@@ -137,6 +142,7 @@ The work goes up in three pull requests:
   - Compared with the 2026-10-16 documents as the hosted server has them (cleaned with the rules before this change), the 2026-10-23 documents have the 73 added records, and differences in shown fields in 160 others: 145 of the 146 changed records, and 15 records where the new whitespace rule fixes a value the first export already had (8 institution lists, 5 notes, 2 journals). Nothing else differs in a shown field. The 146th changed record, 69908, differs only in its published text: its paper PubMed ID 69063 is written `00069063`, which still cleans to 69063.
   - Two more kinds of difference follow from those, beyond what this task expected. `url_record_counts` changes in 1,299 other records, because 5 links they list are also listed by added records or records whose links changed. And `original` keeps the second export's published text in 34,827 records: PubMed IDs written `00000000` instead of `0`, record 18930's two dates in the `12:00:00 AM` form, and one placeholder institution with a line break. Record pages show that text as the published value. Spec 001 AC4 asks for this, but it means the published values on about 34,800 record pages change whenever upstream switches between its exports.
   - Also found: the second export writes record 34181's empty institution as `None` (in the 2026-10-15, 2026-10-21, 2026-10-22 and 2026-10-23 files; the 2026-10-14 and 2026-10-16 files leave it empty), so the record gets an institution named "None", and the diff counts it as a change. Task 27 adds a rule for it. `docs/data-issues.md` is updated, with both findings.
+  - On the hosted server, 2026-10-26: after the pull request merged, run 40266778373, started by hand at the owner's request rather than the next scheduled run, loaded the 2026-10-23 file with every check passing: 73 added, 0 removed, 145 changed. Search through the alias returns 73,356 documents, 67,637 in the default view, and the run closed issue #24. The scheduled runs that followed, at 06:08 and 14:14 UTC, said the server already had the newest snapshot.
 
 - [x] **27. Institution written `None`.** Added 2026-10-25 at the owner's request, after task 26 found it; goes up with tasks 23–26. Add `none_as_empty` to `02_formats.sql`. `10_records.sql` splits `none_as_empty(Institution)` and counts its items for AC10, `format_blind` treats an Institution of `None` as empty, and the profile's flags table counts these records apart from the placeholders rewritten to "Unknown". `second-export.csv` writes record 34181's institution as `None`. (Spec 001 AC9, AC10; spec 003 AC4)
   - Done when: the tests pass with `npm test`, `npm run check` passes on the 2026-10-23 file, and `npm run diff` from the 2026-10-16 file to the 2026-10-23 file reports 145 changed records.
