@@ -113,3 +113,9 @@ The work goes up in three pull requests:
 - [x] **24. The button and Vercel's answers.** Added 2026-10-27, after task 23. The Download CSV button shows the download-limit notice only for the site's own JSON 429, says to wait a minute at any other 429, and opens the link at `x-vercel-mitigated: challenge`. The notice gets one period after a time ending in "a.m." or "p.m.". (AC16; spec 002, AC28)
   - Done when: the plan's tests for AC16 pass, with the existing download-limit test checking for one period.
   - Result, 2026-10-27: `npm test` passes (258 pipeline tests, 316 web tests), and so do the 34 browser tests, including the two that fake Vercel's 429 and its challenge. At the challenge, the browser opens the link and downloads the file. What a visitor sees after a real Vercel check is untested, since the live rule now only logs.
+
+**Added 2026-11-01,** after Vercel warned that the account had used 75% of its active CPU.
+
+- [ ] **25. Keep crawlers off the filter links.** The owner blocks the busiest crawler's address (done 2026-11-01). In `indexing.ts`, with `SITE_INDEXING` on, `robots.txt` also disallows `/*?`. The runbook records the block, what to check and which allowances ran short. (AC15, AC13)
+  - Done when: the plan's tests for AC15 pass with `npm test`, a production build with `SITE_INDEXING=on` writes `Disallow: /*?`, the live `robots.txt` reads the same, and Vercel's firewall traffic view shows Google's requests falling within a few days.
+  - Result so far, 2026-11-01: the block is published. `npm test` passes (258 pipeline tests, 316 web tests). A production build with `SITE_INDEXING=on` writes `Allow: /`, `Disallow: /api/` and `Disallow: /*?`. The live checks come after the merge.

@@ -13,17 +13,19 @@ export function indexingOn(env: Env = process.env): boolean {
   return env.SITE_INDEXING === 'on';
 }
 
-// What robots.txt says. Once indexing is on it disallows only /api/: results
-// and record pages stay crawlable, since a search engine has to fetch a page
-// to read its noindex, and may list a disallowed address it finds through links.
+// What robots.txt says. Once indexing is on it disallows /api/ and every address
+// with a query string, since crawlers on the filter links used up most of Vercel's
+// allowances despite the nofollow below. Record pages stay crawlable: a search
+// engine has to fetch a page to read its noindex, and may list a disallowed
+// address it finds through links.
 export function robotsRules(env: Env = process.env): MetadataRoute.Robots {
-  return { rules: indexingOn(env) ? { userAgent: '*', allow: '/', disallow: '/api/' } : { userAgent: '*', disallow: '/' } };
+  return { rules: indexingOn(env) ? { userAgent: '*', allow: '/', disallow: ['/api/', '/*?'] } : { userAgent: '*', disallow: '/' } };
 }
 
 // The robots meta tag every page gets from the root layout, with indexing on
 // or off. Without one, search engines may index a page and follow its links.
-// nofollow keeps crawlers off the filter links, where every combination is a
-// new address and a new search.
+// nofollow asks crawlers to stay off the filter links, where every combination
+// is a new address and a new search.
 export const NOT_INDEXED: Metadata['robots'] = { index: false, follow: false };
 
 // Metadata for the two pages search engines may index once indexing is on,

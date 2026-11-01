@@ -246,9 +246,14 @@ The download rule, published on 2026-10-27 (spec 004 AC14):
 - **If:** the request path starts with `/api/export`
 - **Then:** log. It blocks nothing, so the firewall's traffic view shows how many downloads there are and from where. Downloads count toward the rate limit like any other request.
 
+The IP block, published on 2026-11-01:
+
+- **Address:** `148.251.75.59`, on every domain in the project
+- **Why:** this one address, calling itself QlyzeBot, sent about 19,700 of 40,900 requests in a day, nearly all to the search page. That's about 14 a minute, well under the rate limit. Its information page asks for a login, so who runs it and whether it reads `robots.txt` are unknown.
+
 **Don't set the download rule to Challenge.** On 2026-10-27 it was, for a few minutes: `curl` got Vercel's check page (HTTP 429) instead of the file, but so did the site's Download CSV button, which fetches the file in the background and can't pass the check. The button now opens the link itself when Vercel challenges a download (AC16), but that's untested on the live site.
 
-To change a rule, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production.
+To change a rule, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production. IP blocks are on the same page, under **IP Blocking**. To find what's sending traffic, open **Firewall**, then **Traffic**, which lists the top addresses, user agents, networks and paths for the past day.
 
 Things to know before changing the numbers:
 
@@ -257,15 +262,17 @@ Things to know before changing the numbers:
 - The site's "Download limit reached" notice is the site's own limit (spec 002), which is off on the live site. When Vercel's rate limit stops a download, the button says "Too many requests from your network just now" instead (AC16).
 - Vercel checks Deployment Protection before firewall rules, so the rule never sees a request that the Vercel login turned away.
 - Vercel's own platform protection acts without any rule. A burst of about 100 requests a second from the laptop met its "Security Checkpoint" challenge after 130 requests, and the address stayed challenged for about 10 minutes (2026-10-19).
+- Bot Protection and Attack Mode let verified bots through, Google's crawlers among them, so they don't reduce Google's crawling (Vercel docs, checked 2026-11-01). Only `robots.txt` does that. Requests the firewall blocks, challenges or rate limits don't count as CDN requests or data transfer.
+- Hobby allows 10 IP blocks (Vercel docs, checked 2026-11-01).
 
 ### Turn on indexing at launch
 
-Until launch, `robots.txt` disallows everything and every page carries `noindex, nofollow`. With indexing on, search engines may index only the start page and the About page (spec 004 AC15). Results pages, record pages and the not-found page keep `noindex, nofollow`, so a search for a person's name doesn't land on a record about someone else with the same name, and crawlers don't walk the filter links. `robots.txt` then allows everything but `/api/`.
+Until launch, `robots.txt` disallows everything and every page carries `noindex, nofollow`. With indexing on, search engines may index only the start page and the About page (spec 004 AC15). Results pages, record pages and the not-found page keep `noindex, nofollow`, so a search for a person's name doesn't land on a record about someone else with the same name. `robots.txt` then allows everything but `/api/` and addresses with a query string, which keeps crawlers off the filter links.
 
 1. In Vercel, **Settings**, **Environment Variables**: add `SITE_INDEXING` with the value `on`, for Production only.
 2. Redeploy production. `robots.txt` is built with the site, so it changes only with a new deployment.
 3. Check the live site:
-   - `/robots.txt` reads `Allow: /` and `Disallow: /api/`.
+   - `/robots.txt` reads `Allow: /`, `Disallow: /api/` and `Disallow: /*?`.
    - The start page (`/`, with no search or filter) and `/about` have `<meta name="robots" content="index, follow">`.
    - A search, such as `/?q=neuron`, and a record page have `<meta name="robots" content="noindex, nofollow">`.
 
@@ -276,11 +283,11 @@ To turn it off again, delete the variable and redeploy.
 The account is on Hobby, which doesn't bill usage (decision record 005). Since 2026-10-27 it has a card, which pays only for the domain: $15 a year, renewing each year unless renewal is turned off. Each month, Hobby includes 1,000,000 function invocations, 1,000,000 CDN requests, 10 GB of fast origin transfer, 100 GB of fast data transfer and 4 hours of active CPU, among others (Vercel Hobby plan, checked 2026-10-19).
 
 - **Over an allowance,** Vercel stops that feature "in most cases" until 30 days have passed. What visitors see then is unverified.
-- **The most likely to run out** is 10 GB of fast origin transfer. It covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the risk; downloads have no limit of their own yet, and the download rule only logs them.
+- **The most likely to run out** are 4 hours of active CPU and 10 GB of fast origin transfer. Five days after indexing went on, the site had used 3 hours 1 minute and 7.15 GB of them, mostly on crawlers, over about 232,000 function invocations (2026-11-01). Fast origin transfer covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the other risk; downloads have no limit of their own yet, and the download rule only logs them.
 - **The firewall rule's own allowance** is 1,000,000 requests a month on Hobby.
 - **Runtime logs** on Hobby go back 1 hour.
 
-Vercel's **Usage** page shows each allowance for the current month.
+Vercel's **Usage** page shows each allowance for the last 30 days. Vercel emails the account at 75% and 90%.
 
 ### GitHub's limits
 
