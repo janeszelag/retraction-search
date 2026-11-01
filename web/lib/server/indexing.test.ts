@@ -22,8 +22,8 @@ describe('indexing switch (spec 004, task 4, AC10)', () => {
 });
 
 describe('what search engines may index once indexing is on (spec 004, task 22, AC15)', () => {
-  it('allows crawling everything but /api/', () => {
-    expect(robotsRules(ON)).toEqual({ rules: { userAgent: '*', allow: '/', disallow: '/api/' } });
+  it('allows crawling everything but /api/ and addresses with a query string', () => {
+    expect(robotsRules(ON)).toEqual({ rules: { userAgent: '*', allow: '/', disallow: ['/api/', '/*?'] } });
   });
 
   it('lets the About page be indexed', () => {

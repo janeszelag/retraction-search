@@ -1,6 +1,6 @@
 # Spec 004: Launch
 
-Status: approved by the owner, 2026-10-17. Changed 2026-10-27 with the owner's approval, after the owner bought the domain and answered the questions before the announcement: decisions, AC8, AC13, new AC14 and AC15, and the open questions. Phase 4 of the [roadmap](../../product-brief.md#roadmap).
+Status: approved by the owner, 2026-10-17. Changed 2026-10-27 with the owner's approval, after the owner bought the domain and answered the questions before the announcement: decisions, AC8, AC13, new AC14 and AC15, and the open questions. Changed 2026-11-01 with the owner's approval, after crawlers used up most of two Vercel allowances: AC15. Phase 4 of the [roadmap](../../product-brief.md#roadmap).
 
 ## Problem
 
@@ -71,7 +71,7 @@ Made 2026-10-27, with the owner's approval:
 **Before the announcement**
 
 - AC10: Until the owner announces the site, every page tells search engines not to index it, and `robots.txt` disallows everything. A setting in Vercel turns this off at launch, with no code change.
-- AC15: Once indexing is on, search engines may index only the start page (the search page with no search, filter, sort or page set) and the About page. Results pages, record pages and the not-found page tell them not to index the page or follow its links, and `robots.txt` disallows `/api/`. `robots.txt` doesn't disallow those pages, since a search engine has to fetch a page to read its noindex. Built before indexing is turned on. (Added 2026-10-27.)
+- AC15: Once indexing is on, search engines may index only the start page (the search page with no search, filter, sort or page set) and the About page. Results pages, record pages and the not-found page tell them not to index the page or follow its links, and `robots.txt` disallows `/api/` and every address with a query string, so crawlers stay off searches, filters and pages of results. `robots.txt` doesn't disallow record pages, since a search engine has to fetch a page to read its noindex. Built before indexing is turned on. (Added 2026-10-27. Changed 2026-11-01.)
 - AC11: On the live site against the hosted snapshot: the counts for spec 002's fixed set of test queries match a DuckDB query on the same snapshot (spec 002, AC30), and the automated accessibility check finds no WCAG 2.2 AA violations on the start, results, no-results, record and About pages (spec 002, AC32).
 - AC12: Budgets for the live site, confirmed by the owner on 2026-10-19: the server response for spec 002's fixed set of test searches is under 500 ms at the 95th percentile, measured from the owner's laptop, and a shared URL reaches Largest Contentful Paint in under 2.5 seconds in Lighthouse's mobile test.
 
