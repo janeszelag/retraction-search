@@ -1,6 +1,6 @@
 # Spec 005: Less server work per page
 
-Status: draft for the owner's review, 2026-11-02. Nothing here is approved, and no code has been written. How to build it: [plan 005](plan.md). The store it needs: proposed decision record [006](../../decisions/006-counter-store.md).
+Status: draft for the owner's review, 2026-11-02. Nothing here is approved, and no code has been written. Updated the same day, after the owner set Bot Protection to Challenge. How to build it: [plan 005](plan.md). The store it needs: proposed decision record [006](../../decisions/006-counter-store.md).
 
 ## Problem
 
@@ -11,13 +11,13 @@ In the 30 days to 2026-11-02, three crawlers (QlyzeBot, Google's and Meta's) too
 The firewall and `robots.txt` didn't prevent this, and they won't prevent the next one:
 
 - `robots.txt` is voluntary, and one of the three crawlers fetched addresses it disallows.
-- The firewall stops a crawler only after the owner has seen it and named it.
+- Until 2026-11-02 the firewall stopped a crawler only after the owner had seen it and named it. Bot Protection, on Challenge since that day, stops clients that don't behave like browsers. It lets every verified bot through, though, and that list includes Google's crawlers and several SEO crawlers. A crawler driving a real browser may pass it too.
 - The search page links to hundreds of filter addresses, and each of those links to hundreds more, so a crawler never runs out of new pages.
 - The firewall's rate limit counts per address. All three crawlers stayed under it.
 
 Past an allowance, Vercel can pause the site for up to 30 days. As of 2026-11-02, 660 s of CPU and 0.91 GB of transfer remain until the heavy days leave the 30-day window, around November 27.
 
-Downloads are a larger risk per request, and they haven't caused trouble only by luck. The whole default view is a 64 MB file (14 MB with gzip), and the page links to it. One script fetching it once a minute stays well under the firewall's limit and would use the 10 GB in 3 to 12 hours, depending on how Vercel counts a streamed file.
+Downloads are a larger risk per request. The whole default view is a 64 MB file (14 MB with gzip), and the page links to it. One client fetching it once a minute stays well under the firewall's rate limit and would use the 10 GB in 3 to 12 hours, depending on how Vercel counts a streamed file. Since 2026-11-02 Bot Protection stops `curl` and Node's `fetch` from doing this, but not a verified bot.
 
 ## Users
 
@@ -30,6 +30,10 @@ Downloads are a larger risk per request, and they haven't caused trouble only by
 We believe that serving repeat pages from the CDN, plus a site-wide ceiling on the pages and downloads the server produces, keeps any crawler that ignores `robots.txt` and the firewall inside Hobby's allowances for long enough to deal with it during a working day. We'll know when a week of ordinary traffic shows repeat pages answered without a function run, Usage shows a daily rate that fits the 30-day allowances, and a simulated crawl stops at the ceiling.
 
 ## Decisions
+
+Made by the owner, 2026-11-02:
+
+- **Bot Protection is on Challenge,** instead of a week in Log mode first. The site has kept working. The scheduled site check can't pass a challenge, so it fails until the owner's separate pull request lets it through.
 
 Proposed, for the owner to approve. The trade-offs behind each are in [plan 005](plan.md#trade-offs).
 
@@ -70,8 +74,8 @@ Proposed, for the owner to approve. The trade-offs behind each are in [plan 005]
 
 **Firewall (the owner's steps, recorded as manual checks)**
 
-- AC16: A firewall rule denies `/api/export` to clients that send no `Sec-Fetch-Site` header. The Download CSV button still works in Chrome, Firefox and Safari, and a request from `curl` gets 403. This replaces spec 004 AC14's rule, which only logs.
-- AC17: Bot Protection runs in Log mode for a week. The owner reviews what it would have caught, and decides how to use the last custom firewall rule (plan 005, "Firewall").
+- AC16: A firewall rule denies `/api/export` to clients that send no `Sec-Fetch-Site` header. The Download CSV button still works in Chrome, Firefox and Safari, and a request from `curl` gets 403 (`x-vercel-mitigated: deny`), where Bot Protection alone answers 429. Unlike Bot Protection, the rule also applies to verified bots. This replaces spec 004 AC14's rule, which only logs.
+- AC17: Bot Protection is on Challenge (done by the owner, 2026-11-02). A bypass rule lets the scheduled site check through, and the check passes again. A week later, the owner reviews what was challenged and confirms that people using browsers aren't being stopped.
 
 **Checking the result**
 
@@ -95,6 +99,7 @@ All acceptance criteria pass, and one week of Usage after the last pull request 
 - Caching in-app requests. Clicking a filter runs server code as it does today.
 - Purging the cache when a snapshot loads.
 - Moving off Hobby or off Vercel. Removing or restructuring the filter sidebar, the links or the number of results per page.
+- The site check's way through Bot Protection, which is the owner's separate pull request.
 - A guarantee against a determined attacker. A flood that imitates a browser still counts toward Vercel's 1,000,000 requests, and only the firewall can stop those.
 
 ## Open questions
@@ -106,4 +111,4 @@ Each has a recommendation, for the owner to accept or change.
 3. **Where to set the ceilings (AC7, AC8).** Recommended: 1,600 pages in 6 hours and 100,000 records in 24 hours. If a crawler held both ceilings for 30 days, that would use about 61% of the CPU allowance and at most 87% of the transfer allowance (plan 005). Until about November 27, 144 pages in 6 hours fits what remains. People's use on a quiet day should be read from Usage first, because that value is low.
 4. **A new account with a new provider (decision record 006).** Recommended: yes, with no card.
 5. **A full download can now be refused (AC8).** One file still has no row cap (spec 002 AC23), but about one full download a day fits under the recommended ceiling. Recommended: accept it, since the brief's users can get the whole dataset from Crossref's CSV.
-6. **Scripts lose the download (AC16).** Recommended: accept it, for the same reason. A script can still fetch Crossref's file.
+6. **Scripts have lost the download (AC16).** Bot Protection's challenge already stops them, and AC16 keeps that true if Bot Protection is ever relaxed. Recommended: accept it, for the same reason. A script can still fetch Crossref's file.

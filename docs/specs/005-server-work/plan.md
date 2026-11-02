@@ -1,17 +1,20 @@
 # Plan 005: Less server work per page
 
-Status: draft for the owner's review, 2026-11-02. How to build [spec 005](spec.md). Facts about other services were checked on 2026-11-02 and are listed under [Checked facts](#checked-facts). Measurements were taken the same day.
+Status: draft for the owner's review, 2026-11-02. Updated the same day, after the owner set Bot Protection to Challenge. How to build [spec 005](spec.md). Facts about other services were checked on 2026-11-02 and are listed under [Checked facts](#checked-facts). Measurements were taken the same day.
 
 ## Recommendation
 
-Do four things, in this order, and stay on Hobby:
+Do these, in this order, and stay on Hobby:
 
-1. **Today, the owner:** deny downloads to clients that aren't browsers, and turn on Bot Protection in Log mode. Both are firewall settings and take a few minutes. The first closes the fastest way to lose the site.
-2. **First pull request:** cache pages at the CDN for an hour, and make failed pages answer with a server error so they're never cached.
-3. **Second pull request:** add site-wide ceilings on pages and downloads, with their counters in Upstash Redis Free, and an alert when one is reached.
-4. **Leave the pages' size alone.** It isn't what uses the CPU.
+1. **Done, by the owner, 2026-11-02:** Bot Protection is on Challenge. It stops `curl`, `curl` posing as Chrome and Node's `fetch` before they count toward anything.
+2. **Next, the owner:** let the site check through Bot Protection, in a separate pull request, and deny downloads to clients with no `sec-fetch-site` header. The download rule is no longer urgent, but it covers the verified bots that Bot Protection lets through.
+3. **First pull request:** cache pages at the CDN for an hour, and make failed pages answer with a server error so they're never cached.
+4. **Second pull request:** add site-wide ceilings on pages and downloads, with their counters in Upstash Redis Free, and an alert when one is reached.
+5. **Leave the pages' size alone.** It isn't what uses the CPU.
 
 Each layer covers what the one before it can't. Caching can't help with addresses nobody has asked for yet, which is most of a crawl. The ceiling can't stop requests from counting toward Vercel's 1,000,000. Only the firewall stops them before they count, and it stops only what it can recognize.
+
+Bot Protection makes a repeat of this incident less likely, not impossible. QlyzeBot, which sent 48% of the requests, isn't on Vercel's list of verified bots, so it would probably have been challenged. Google's crawlers, which sent 47%, are on it and pass, as do SEO crawlers such as `ahrefsbot` and `semrush`. That lowers the urgency of the ceilings, which is why a week of Usage comes before them. They stay in the plan as the only bound that doesn't depend on recognizing a crawler.
 
 ## How it fits together
 
@@ -19,9 +22,10 @@ Each layer covers what the one before it can't. Caching can't help with addresse
 Visitor or crawler
    │
    ▼
-Vercel firewall ── IP blocks, AI crawlers denied, one rate limit per address,
-   │               and non-browser downloads denied (AC16). A request stopped
-   │               here counts toward nothing.
+Vercel firewall ── IP blocks, one rate limit per address, non-browser downloads
+   │               denied (AC16), AI crawlers denied, and a challenge for clients
+   │               that don't behave like browsers. A request stopped here
+   │               counts toward nothing.
    ▼
 Vercel CDN ─────── a repeat full-page request ends here (AC1): one CDN request,
    │               no function run, no Active CPU, no origin transfer.
@@ -45,18 +49,19 @@ Typesense on Railway
 
 | When | Step |
 |---|---|
-| Today | Change the download rule and turn on Bot Protection in Log mode ([Firewall](#firewall-ac16-ac17)). |
+| Done, 2026-11-02 | Bot Protection on Challenge. |
+| Next | A way through for the site check, in the owner's separate pull request. The download rule ([Firewall](#firewall-ac16-ac17)). |
 | Before the first pull request ships | Set `PAGE_CACHE_SECONDS=3600` for Production in Vercel. It's read at build time, so it takes effect with the next deployment. |
 | Before the second pull request ships | Create a free Upstash account with no card, and one Redis database in `us-east-1`, next to `iad1`. Add its `rediss://` address to Vercel as `REDIS_URL`, marked sensitive, for Production only. |
 | When the second pull request ships | Set `CEILING_PAGES` and `CEILING_RECORDS` in Vercel, from spec 005's open question 3. |
 
 ## Spikes first
 
-**S1: does the CDN keep a page marked `private`?** Vercel's docs say `Vercel-CDN-Cache-Control` overrides `Cache-Control`, including `private`. One line on the CDN cache page reads the other way, so this needs a live test. Send only `/about` through the new header, in a small pull request, and request it twice with `curl`. Passing looks like `x-vercel-cache: HIT` on the second request. `/about` has no search to go stale, and production needs no preview bypass secret. If it fails, stop and rethink the caching half of this plan. The ceilings don't depend on it.
+**S1: does the CDN keep a page marked `private`?** Vercel's docs say `Vercel-CDN-Cache-Control` overrides `Cache-Control`, including `private`. One line on the CDN cache page reads the other way, so this needs a live test. Send only `/about` through the new header, in a small pull request, and request it twice. `curl` now gets Bot Protection's challenge, so use a browser's network panel, or `curl` with the site check's header if its bypass rule covers the page. Passing looks like `x-vercel-cache: HIT` on the second request. `/about` has no search to go stale, and production needs no preview bypass secret. If it fails, stop and rethink the caching half of this plan. The ceilings don't depend on it.
 
 **S2: does a stale page survive an outage?** AC4 relies on `stale-if-error` for an answer of 500 from a page. Vercel's docs list the directive but don't describe this case. Load the start page, wait 2 hours, restart the search server on Railway at a quiet time, and request the page during the restart. Request a page that isn't cached twice during the same restart: both should answer `x-vercel-cache: MISS`, which confirms a 500 is never kept (AC3). If the CDN answers the stale page's address with the error instead, AC4's first sentence is dropped and the failure page is what visitors see.
 
-**S3: how much does the store add to a page?** After the second pull request, repeat `check:speed` against the live site with the ceilings on, and compare with the 500 ms budget (spec 004 AC12). Upstash in the same region should add about a millisecond, but that's unverified.
+**S3: how much does the store add to a page?** After the second pull request, repeat `check:speed` against the live site with the ceilings on, and compare with the 500 ms budget (spec 004 AC12). It needs the site check's header, because Node's `fetch` gets a challenge. Upstash in the same region should add about a millisecond, but that's unverified.
 
 ## Caching (AC1–AC6)
 
@@ -144,26 +149,28 @@ export async function checkCeiling(kind: 'pages' | 'records', amount = 1): Promi
 
 `/api/health` adds `ceilings: { pagesReached, recordsReached, store }`, for the current or last window. It keeps the store's answer in memory for 60 seconds, so a script hammering it can't spend the store's allowance. It still answers `Cache-Control: no-store`, so the site check keeps seeing the search server directly, whatever the CDN holds.
 
-`site-check.js` gains a step after `health` that fails on a reached ceiling or a failing store, and says which. Its `start page` step may now be answered by the CDN, which is fine, since `health` runs a real search. The check runs every 6 hours, and the two-window keys mean a ceiling reached between checks is still seen.
+`site-check.js` gains a step after `health` that fails on a reached ceiling or a failing store, and says which. Its `start page` step may now be answered by the CDN, which is fine, since `health` runs a real search. Both steps need the bypass rule to get past Bot Protection ([Firewall](#firewall-ac16-ac17)). The check runs every 6 hours, and the two-window keys mean a ceiling reached between checks is still seen.
 
 The issue's comment should point to the runbook's new section: read Firewall traffic, block what can be named, and turn on Attack Mode if nothing can. Attack Mode is free on all plans, challenges visitors for 1, 6 or 24 hours, and lets verified bots through. Scripts can't pass a challenge, so the site check also fails while it's on.
 
 ## Firewall (AC16, AC17)
 
-Hobby allows 3 custom rules, and 2 are used. Editing the download rule keeps the third free.
+Hobby allows 3 custom rules, and 2 are used. Editing the download rule, rather than adding one, keeps the third free for the site check.
 
-**Downloads, today.** In Firewall, edit the rule that logs `/api/export`: add the condition *Request Header* `sec-fetch-site` *does not exist*, and change the action to Deny. Browsers always send this header to an HTTPS site, and scripts can't remove it there. Non-browser clients don't send it: Node's `fetch` sends `sec-fetch-mode` but not this one (tested 2026-11-02), and `curl` sends neither. `Sec-Fetch-Site` has been in every major browser since March 2023.
+**Bot Protection, done.** The owner set it to Challenge on 2026-11-02, and the site has kept working. On the live site the same day, `curl`, `curl` with Chrome's user agent and Node's `fetch` each got 429 with `x-vercel-mitigated: challenge` from `/api/export`, and Node's `fetch` got the same from `/api/health`. It covers every address, so the option in this plan's first draft, a rule denying search addresses from non-browsers, is dropped. What gets past it:
 
-Check: `curl -sI 'https://www.retraction-search.com/api/export?q=zzzz'` answers 403, and Download CSV works in a browser. What's lost is the log of allowed downloads (spec 004 AC14) until the ceiling counts them, and any script that used this address. A headless browser gets through, so the ceiling still matters.
+- **Verified bots,** which it never evaluates. Attack Mode lets them through too. Stopping one takes an IP block or a user-agent condition in a custom rule.
+- **A crawler driving a real browser,** which may pass the challenge.
 
-**Bot Protection, today.** Set it to Log under Firewall, Bot Management. It blocks nothing. A week later, read what it would have caught.
+Link previews from services on Vercel's verified list, such as `twitterbot` and `linkedinbot`, keep working. AI crawlers on that list are denied by the AI Bots rule, not by Bot Protection.
 
-**The last custom rule, after that week.** There are two uses for it, and the log decides:
+**The site check, the owner's separate pull request.** A custom rule with the Bypass action skips Bot Protection. It needs a secret header, since GitHub Actions has no fixed address to allow. That takes the third custom rule. The rule has to cover `/` and `/api/health`, and shouldn't cover `/api/export`. If it covers every page except `/api/export`, the same header also lets `curl` and `check:speed -- --url` reach the site for this plan's live checks. If not, those checks need a browser.
 
-| Option | Covers | Cost |
-|---|---|---|
-| Deny search addresses from clients with no `sec-fetch-site` | Filter pages only, which is where a crawl gets its endless addresses | A `query` condition needs a named parameter, so the rule repeats its conditions for each of the keys the site's links use. The conditions are verified for headers, inferred for queries. Link previews of a filtered search stop working. |
-| Bot Protection on Challenge, with a bypass rule for the site check | Every address | Needs a secret header on the site check. People it suspects see a challenge. |
+**Downloads, no longer urgent.** In Firewall, edit the rule that logs `/api/export`: add the condition *Request Header* `sec-fetch-site` *does not exist*, and change the action to Deny. Custom rules run before Bot Protection, so this applies first, and to verified bots as well. Browsers always send this header to an HTTPS site, and scripts can't remove it there. Non-browser clients don't send it: Node's `fetch` sends `sec-fetch-mode` but not this one (tested 2026-11-02), and `curl` sends neither. `Sec-Fetch-Site` has been in every major browser since March 2023.
+
+Check: `curl -sI 'https://www.retraction-search.com/api/export?q=zzzz'` answers 403 with `x-vercel-mitigated: deny`, where it answers 429 with `challenge` today, and Download CSV works in a browser. What's lost is the log of allowed downloads (spec 004 AC14) until the ceiling counts them, and any script that used this address. A headless browser gets through, so the ceiling still matters.
+
+**A week later,** the owner reviews what Bot Protection challenged, and confirms that people using browsers aren't being stopped (AC17).
 
 ## Measurements
 
@@ -230,7 +237,7 @@ A crawler that remembers where it's been gets almost nothing from the cache. Tha
 
 The last row uses what's left: 660 s of CPU over 25 days is 26 s a day. CPU runs out before transfer.
 
-**A flood of 160 requests a minute, from clients the firewall doesn't recognize.** A refused page is estimated at 10.6 ms live, which is the local ratio applied to 46 ms.
+**A flood of 160 requests a minute, from clients the firewall doesn't recognize.** Bot Protection now stops most such clients, so this is the case that remains: a verified bot, or a crawler that passes the challenge. A refused page is estimated at 10.6 ms live, which is the local ratio applied to 46 ms.
 
 | Limit | Today | With the ceiling |
 |---|---|---|
@@ -238,38 +245,39 @@ The last row uses what's left: 660 s of CPU over 25 days is 26 s a day. CPU runs
 | Origin transfer | 1.4 days | 10.2 days |
 | 1,000,000 invocations and CDN requests | 4.3 days | 4.3 days |
 
-So the ceiling gives about 3 times as long, and then the request limit decides. A refusal still counts as an invocation, because the code has to run to refuse. This is the honest limit of "can't threaten the site": the alert arrives within about 6 hours, and the owner then has 4 days to name the crawler or turn on Attack Mode. At 14 requests a minute, the rate of the slowest crawler, the request limit is about 50 days away.
+So the ceiling gives about 3 times as long, and then the request limit decides. A refusal still counts as an invocation, because the code has to run to refuse. This is the honest limit of "can't threaten the site": once the site check is back, the alert arrives within about 6 hours, and the owner then has 4 days to block the crawler. At 14 requests a minute, the rate of the slowest crawler, the request limit is about 50 days away.
 
 ## Tests
 
 | What | How |
 |---|---|
-| AC1, AC2, AC3, AC5 | Manual on the live site with `curl`, recorded with its date: `x-vercel-cache` on a repeat, on an `rsc` request and on `/api/health`. A new snapshot's date appears within 2 hours. An end-to-end test covers the header under `next start`. |
+| AC1, AC2, AC3, AC5 | Manual on the live site, in a browser's network panel or with `curl` and the site check's header, recorded with its date: `x-vercel-cache` on a repeat, on an `rsc` request and on `/api/health`. A new snapshot's date appears within 2 hours. An end-to-end test covers the header under `next start`. |
 | AC4, AC9 | End-to-end, against a search server that's down: the status, the message and the attribution with JavaScript on. Manual for S2. |
 | AC6 | Unit test of the headers with and without the setting. The build refuses `PAGE_CACHE_SECONDS` together with limits on. |
 | AC7, AC8, AC10, AC11, AC12, AC13 | Unit tests with a fake store, as `web/lib/server/rate-limit.test.ts` does: windows, amounts, no store call after a ceiling, a failing store, and a count of commands per page. A test computes the month's commands at the defaults. |
 | AC14, AC15 | Unit tests for `health` and `site-check.js`, with fake answers, in the existing files. |
-| AC16, AC17 | Manual: `curl` and a browser, as above. |
+| AC16, AC17 | Manual: `curl` and a browser, as above. The site check passing again, and the review of a week's challenges. |
 | AC18 | A script requests new addresses against the local stack with low ceilings set, and confirms the refusals, the health report and the site check's failure. |
 | AC19 | Manual: the Usage figures, in a table here. |
 
-`check:speed -- --url` would time the cache once pages are cached. It adds an unused query parameter, which changes the cache key and forces a build, so it keeps timing the server.
+`check:speed -- --url` would time the cache once pages are cached. It adds an unused query parameter, which changes the cache key and forces a build, so it keeps timing the server. It also sends the site check's header, since its `fetch` calls get a challenge otherwise.
 
 ## Order of work
 
-1. The owner's firewall steps, today.
+1. The owner's firewall steps: Bot Protection (done), the site check's way through, and the download rule.
 2. S1, then the caching and failed-page changes, in the first pull request.
-3. A week of Usage against the estimate. Read Bot Protection's log.
+3. A week of Usage against the estimate, with Bot Protection on Challenge, and a review of what it challenged.
 4. The owner creates the Upstash database and accepts decision record 006.
 5. The ceilings and alerts, in the second pull request.
 6. S3, AC18 and the closing check.
 
-The first pull request is small and doesn't need the store, so it goes first with only 660 s of CPU left. It doesn't protect against new addresses, so the margin stays thin until the second ships.
+The first pull request is small and doesn't need the store, so it goes first with only 660 s of CPU left. It doesn't protect against new addresses. Bot Protection now covers most of that risk, but a verified bot can still use up the margin until the second ships.
 
 ## Trade-offs
 
 | Option | What it would do | Cost | Verdict |
 |---|---|---|---|
+| Bot Protection on Challenge | Stops clients that don't behave like browsers, at every address, before they count | Scripts and the site check need a bypass. Verified bots pass. People it suspects see a challenge | **Done,** by the owner |
 | CDN caching | Ends repeat requests at the CDN | Pages up to 2 hours old, blank failed pages without JavaScript | **Yes.** Small, and it pays on every repeat |
 | Site-wide ceiling | Bounds pages and downloads, whoever sends them | A new provider, and people refused during a crawl unless their page is cached | **Yes.** The only bound that doesn't depend on recognizing the crawler |
 | Per-visitor limits (decision record 005's plan) | Limit each address to 60 pages a minute | A store call on every page | No. None of the three crawlers would have been stopped |
@@ -286,9 +294,9 @@ The first pull request is small and doesn't need the store, so it goes first wit
 None are in this pull request, to keep clear of the open runbook changes. They come with the work:
 
 - **Spec 002:** AC29 (open question 1), and a note on AC23 (open question 5).
-- **Spec 004:** AC7 ("the site needs no Redis"), AC9 (what the check reads) and AC14 (deny instead of log). Plan 004 still says 50 results a page; the code has 20.
+- **Spec 004:** AC7 ("the site needs no Redis"), AC9 (what the check reads, and how it passes Bot Protection) and AC14 (deny instead of log). Plan 004 still says 50 results a page; the code has 20.
 - **Decision record 005:** "Later iterations", which 006 settles for the store.
-- **Runbook:** the Upstash database, the new settings, what to do when a ceiling is reached, Attack Mode, and rollback of caching (unset `PAGE_CACHE_SECONDS` and redeploy).
+- **Runbook:** Bot Protection's setting and what it does to scripts, the Upstash database, the new settings, what to do when a ceiling is reached, Attack Mode, and rollback of caching (unset `PAGE_CACHE_SECONDS` and redeploy).
 - **`CLAUDE.md`:** the stack's line on `RATE_LIMITS=off`, and any new command.
 - **Product brief:** the roadmap's line on the site's own rate limits.
 
@@ -311,7 +319,10 @@ All checked on 2026-11-02. The date in brackets is the page's own.
 | A fixed `rateLimitKey` makes a rule "effectively global" | [Rate limiting SDK](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting-sdk) (2026-07-23) |
 | Conditions: `header` with `nex` tests a missing header. `query` needs a `key`. Attack Mode runs for 1, 6 or 24 hours | [`vercel firewall`](https://vercel.com/docs/cli/firewall) (2026-09-16) |
 | Attack Mode is on all plans, free and unlimited, and lets known bots through | [Attack Mode](https://vercel.com/docs/vercel-firewall/attack-mode) (2026-08-11) |
-| Bot Protection is Log or Challenge, excludes verified bots, and doesn't work behind a proxy | [Bot management](https://vercel.com/docs/bot-management) (2026-09-10) |
+| Bot Protection is Log or Challenge, excludes verified bots, stops a `curl` request identifying as Chrome, and doesn't work behind a proxy | [Bot management](https://vercel.com/docs/bot-management) (2026-09-10) |
+| Verified bots include `googlebot`, `ahrefsbot`, `semrush`, `meta-externalagent`, `twitterbot` and `linkedinbot`. A custom rule can block them | Bot management (2026-09-10) |
+| Custom rules run before managed rulesets. A custom rule with Bypass skips Bot Protection | [Managed rulesets](https://vercel.com/docs/vercel-firewall/vercel-waf/managed-rulesets) (2026-09-10), Bot management |
+| On the live site, a challenge answers 429 with `x-vercel-mitigated: challenge` | Live check, 2026-11-02 |
 | Pro: $20 a month with $20 of credit. Spend Management can pause, some minutes late | [Pro plan](https://vercel.com/docs/plans/pro-plan) (2026-09-15), [Spend Management](https://vercel.com/docs/spend-management) (2026-09-18) |
 | `Sec-Fetch-Site` is a forbidden header, in all major browsers since March 2023, sent only to trustworthy URLs | [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site) |
 | Next.js sends a dynamic page `private, no-cache, no-store`. `_rsc` must stay in a CDN's key | [CDN caching guide](https://nextjs.org/docs/app/guides/cdn-caching) (2026-08-25) |
@@ -320,8 +331,9 @@ All checked on 2026-11-02. The date in brackets is the page's own.
 ## Still open
 
 - **Unverified:** whether origin transfer counts a streamed download's raw or compressed bytes. The first real download after the rule change, on a quiet day, could settle it from Usage. Until then the ceiling assumes raw.
-- **Unverified:** that a firewall `query` condition takes `ex`. It's documented for headers only.
 - **Unverified:** that Vercel applies `stale-if-error` to a page's 500 (S2).
-- **Unknown until measured:** the share of real traffic the CDN answers, and how much of the live 46 ms is cold starts.
+- **Unverified:** whether Lighthouse in `check:speed` and Chrome in `test:live` pass Bot Protection's challenge. Both run a real browser, under automation.
+- **Unknown until measured:** the share of real traffic the CDN answers, how much of the live 46 ms is cold starts, and whether Bot Protection ever stops people.
+- **Until the site check is fixed,** it fails every run, so it can't tell a real outage from the challenge.
 - **Not in the figures here:** Provisioned Memory (360 GB-hrs on Hobby). The owner should read it from Usage. Fewer function runs should lower it.
 - **A side finding:** without JavaScript, a missing record's page is blank today, as the failure pages will be.
