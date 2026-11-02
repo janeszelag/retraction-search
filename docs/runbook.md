@@ -11,7 +11,7 @@ Facts about providers carry the date they were checked. Prices and limits change
 | Search server | Typesense 30.2 on Railway, Hobby plan | Holds the search index on a volume at `/data`, reached over HTTPS |
 | Daily update | GitHub Actions, `.github/workflows/update.yml` | Loads each new upstream snapshot into the search server, scheduled for 01:17 and 07:17 UTC |
 | Website | Vercel, Hobby plan, deployed from `main` | Serves the pages at www.retraction-search.com. The bare domain and the project's `vercel.app` address redirect there. Its server code runs in Washington, D.C. (`iad1`), next to the search server, and is the only thing the site uses to search |
-| Firewall rules | Vercel, the project's Firewall | Limit each IP address to 300 requests a minute, and log every download request |
+| Firewall rules | Vercel, the project's Firewall | Limit each IP address to 300 requests a minute, log every download request, block one crawler's address and deny known AI crawlers |
 | Site check | GitHub Actions, `.github/workflows/site-check.yml` | Loads the live site every 6 hours, scheduled for 02:47, 08:47, 14:47 and 20:47 UTC |
 | Tests | GitHub Actions, `.github/workflows/test.yml` | Runs `npm test` on every pull request and push to `main` |
 
@@ -251,9 +251,14 @@ The IP block, published on 2026-11-01:
 - **Address:** `148.251.75.59`, on every domain in the project
 - **Why:** this one address, calling itself QlyzeBot, sent about 19,700 of 40,900 requests in a day, nearly all to the search page. That's about 14 a minute, well under the rate limit. Its information page asks for a login, so who runs it and whether it reads `robots.txt` are unknown.
 
+The AI crawler rule, published on 2026-11-02:
+
+- **Setting:** under **Bot Management**, **AI Bots**: AI Crawlers on Deny, AI Assistants off. Turning on the AI Bots switch by itself sets both to Log, which blocks nothing. The actions are behind its gear icon.
+- **Why:** Meta's crawler, `meta-externalagent`, sent about 65,400 requests in a day, up to about 160 a minute, from many addresses, so the rate limit never caught it. It also fetched `/api/export`, which `robots.txt` disallows. Vercel answers known AI crawlers with 403 and says Googlebot and Bingbot aren't affected, though AI search and citation tools may find the site harder to read (Vercel dashboard, 2026-11-02).
+
 **Don't set the download rule to Challenge.** On 2026-10-27 it was, for a few minutes: `curl` got Vercel's check page (HTTP 429) instead of the file, but so did the site's Download CSV button, which fetches the file in the background and can't pass the check. The button now opens the link itself when Vercel challenges a download (AC16), but that's untested on the live site.
 
-To change a rule, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production. IP blocks are on the same page, under **IP Blocking**. To find what's sending traffic, open **Firewall**, then **Traffic**, which lists the top addresses, user agents, networks and paths for the past day.
+To change a rule, open **Firewall**, then **Rules**, in the Vercel project. Edit the rule, **Save Rule**, then **Review Changes** and **Publish**, which applies it to production. IP blocks are on the same page, under **IP Blocking**. To find what's sending traffic, open **Firewall**, then **Traffic**, which lists the top addresses, user agents, networks and paths for the past day. Those totals lag. Add `?range=live` to the address for the last 10 minutes.
 
 Things to know before changing the numbers:
 
@@ -264,6 +269,7 @@ Things to know before changing the numbers:
 - Vercel's own platform protection acts without any rule. A burst of about 100 requests a second from the laptop met its "Security Checkpoint" challenge after 130 requests, and the address stayed challenged for about 10 minutes (2026-10-19).
 - Bot Protection and Attack Mode let verified bots through, Google's crawlers among them, so they don't reduce Google's crawling (Vercel docs, checked 2026-11-01). Only `robots.txt` does that. Requests the firewall blocks, challenges or rate limits don't count as CDN requests or data transfer.
 - Hobby allows 10 IP blocks (Vercel docs, checked 2026-11-01).
+- Not every crawler reads `robots.txt`. Of the three heavy crawlers in the site's first week with indexing on, Google's slowed down after the `robots.txt` change, Meta's ignored `Disallow: /api/`, and QlyzeBot was blocked before anyone could tell.
 
 ### Turn on indexing at launch
 
@@ -283,11 +289,11 @@ To turn it off again, delete the variable and redeploy.
 The account is on Hobby, which doesn't bill usage (decision record 005). Since 2026-10-27 it has a card, which pays only for the domain: $15 a year, renewing each year unless renewal is turned off. Each month, Hobby includes 1,000,000 function invocations, 1,000,000 CDN requests, 10 GB of fast origin transfer, 100 GB of fast data transfer and 4 hours of active CPU, among others (Vercel Hobby plan, checked 2026-10-19).
 
 - **Over an allowance,** Vercel stops that feature "in most cases" until 30 days have passed. What visitors see then is unverified.
-- **The most likely to run out** are 4 hours of active CPU and 10 GB of fast origin transfer. Five days after indexing went on, the site had used 3 hours 1 minute and 7.15 GB of them, mostly on crawlers, over about 232,000 function invocations (2026-11-01). Fast origin transfer covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the other risk; downloads have no limit of their own yet, and the download rule only logs them.
+- **The most likely to run out** are 4 hours of active CPU and 10 GB of fast origin transfer. Five days after indexing went on, the site had used 3 hours 1 minute and 7.15 GB of them, mostly on crawlers, over about 232,000 function invocations (2026-11-01). A day later, after a third crawler, it stood at 3 hours 49 minutes and 9.09 GB (2026-11-02). Fast origin transfer covers about 23,000 to 290,000 results pages, or 150 to 750 downloads of every record, a month (spike S1, plan 004). Repeated full downloads are the other risk; downloads have no limit of their own yet, and the download rule only logs them.
 - **The firewall rule's own allowance** is 1,000,000 requests a month on Hobby.
 - **Runtime logs** on Hobby go back 1 hour.
 
-Vercel's **Usage** page shows each allowance for the last 30 days. Vercel emails the account at 75% and 90%.
+Vercel's **Usage** page shows each allowance for the last 30 days, so usage leaves the total 30 days after it happened. The heaviest days, around 2026-10-28, leave it around 2026-11-27. Whether Vercel's limit counts the same window is unverified. Vercel emails the account at 75% and 90%.
 
 ### GitHub's limits
 
@@ -321,6 +327,10 @@ Manual checks the specs asked for, so the next person knows what has been tried.
 | 2026-10-27 | Site check on the domain | Run 40447539869, started by hand after `SITE_URL` changed, passed. The old address redirects to the domain, so it would likely have passed too |
 | 2026-10-27 | Download rule | On Challenge, `curl` on two export links got HTTP 429 with `x-vercel-mitigated: challenge`, while `/` and `/api/health` answered 200; the site's Download CSV button failed the same way. Back on Log, an export answers 200 with the file, and a download in the owner's browser works |
 | 2026-10-27 | Indexing on | After the deployment with `SITE_INDEXING=on`, `robots.txt` reads `Allow: /` and `Disallow: /api/`. The start page and `/about` carry `index, follow`. A search, a filter, a sort, page 2, a record page and a missing page (404) carry `noindex, nofollow`. The default sort and an unknown sort show the start page, so they're indexable too |
+| 2026-11-01 | IP block | Within minutes, the firewall's live view showed only denied requests from QlyzeBot's address, and then none |
+| 2026-11-01 | Query strings disallowed | Minutes after pull request 31 merged, `robots.txt` also reads `Disallow: /*?`. The start and About pages carry `index, follow`; a search, a filter and a record page carry `noindex, nofollow`; `/api/health` answers 200 |
+| 2026-11-02 | Google's crawling | About 290 requests in the past day carried the TLS fingerprint that Google's crawlers had used, against 19,400 the day before the change |
+| 2026-11-02 | AI crawlers denied | Within a minute, denied requests replaced allowed ones in the live view. Meta's user agent gets 403 with `x-vercel-mitigated: deny`. A browser gets 200 on the start, About and search pages, and Googlebot's user agent gets 200 on `/` |
 
 Still to do:
 
