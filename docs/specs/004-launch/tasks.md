@@ -116,6 +116,13 @@ The work goes up in three pull requests:
 
 **Added 2026-11-01,** after Vercel warned that the account had used 75% of its active CPU.
 
-- [ ] **25. Keep crawlers off the filter links.** The owner blocks the busiest crawler's address (done 2026-11-01). In `indexing.ts`, with `SITE_INDEXING` on, `robots.txt` also disallows `/*?`. The runbook records the block, what to check and which allowances ran short. (AC15, AC13)
+- [x] **25. Keep crawlers off the filter links.** The owner blocks the busiest crawler's address (done 2026-11-01). In `indexing.ts`, with `SITE_INDEXING` on, `robots.txt` also disallows `/*?`. The runbook records the block, what to check and which allowances ran short. (AC15, AC13)
   - Done when: the plan's tests for AC15 pass with `npm test`, a production build with `SITE_INDEXING=on` writes `Disallow: /*?`, the live `robots.txt` reads the same, and Vercel's firewall traffic view shows Google's requests falling within a few days.
-  - Result so far, 2026-11-01: the block is published. `npm test` passes (258 pipeline tests, 316 web tests). A production build with `SITE_INDEXING=on` writes `Allow: /`, `Disallow: /api/` and `Disallow: /*?`. The live checks come after the merge.
+  - Result, 2026-11-01: the block is published. `npm test` passes (258 pipeline tests, 316 web tests). A production build with `SITE_INDEXING=on` writes `Allow: /`, `Disallow: /api/` and `Disallow: /*?`. Minutes after pull request 31 merged, the live `robots.txt` read the same. `/` and `/about` carry `index, follow`; `/?q=neuron`, `/?country=Germany` and `/record/7962` carry `noindex, nofollow`; `/api/health` answers 200.
+  - Result, 2026-11-02: in the firewall's traffic view for the past day, about 290 requests carried the TLS fingerprint that Google's crawlers had used, against 19,400 the day before the change. QlyzeBot no longer appears.
+
+**Added 2026-11-02,** after Vercel warned that the account had used 90% of its active CPU.
+
+- [x] **26. Deny known AI crawlers.** With the owner's approval, Vercel's AI Bots ruleset sets AI Crawlers to Deny and leaves AI Assistants off. The runbook records the rule, why it's there, and the allowances it protects. (AC13)
+  - Done when: the firewall's live traffic view shows the crawler's requests denied, and the site still answers browsers and search crawlers.
+  - Result, 2026-11-02: Meta's crawler, `meta-externalagent`, had sent about 65,400 requests in the past day, and about 160 a minute at the time. They came from many addresses starting `57.141.`, too few from each to meet the rate limit. It also fetched `/api/export`, which `robots.txt` disallows. The ruleset was published at about 16:32 UTC, and within a minute denied requests replaced allowed ones in the live view. A request with Meta's user agent got 403 with `x-vercel-mitigated: deny`. To a browser, `/`, `/about`, `/?q=neuron`, `/api/health` and `robots.txt` answered 200, and `/` answered 200 to Googlebot's user agent. Usage then stood at 3 h 49 m of 4 h active CPU and 9.09 of 10 GB fast origin transfer.
